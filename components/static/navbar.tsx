@@ -10,6 +10,7 @@ import {
   RiCloseLine,
   RiArrowRightSLine,
 } from "react-icons/ri";
+import { usePathname } from "next/navigation";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,6 +21,7 @@ const Navbar = () => {
   const [scrolledPastHero, setScrolledPastHero] = useState(false);
   const [isNavbarVisible, setIsNavbarVisible] = useState(true);
   const prevScrollY = useRef(0);
+  const notVisible = usePathname()
   // Handle scroll effect for shadow
   useEffect(() => {
     const handleScroll = () => {
@@ -87,13 +89,6 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScrollProgress);
     return () => window.removeEventListener("scroll", handleScrollProgress);
   }, []);
-
-  // Set active item based on current path
-  // useEffect(() => {
-  //   if (typeof window !== "undefined") {
-  //     setActiveItem(window.location.pathname);
-  //   }
-  // }, []);
 
   // Navigation items
   const navItems = [
@@ -284,13 +279,17 @@ const Navbar = () => {
     },
   };
 
+  if (notVisible === "/admin"){
+    return null
+  }
+
   return (
     <header
       id="navbar"
       className={`fixed w-full z-50 transition-all duration-500 flex flex-col ${
         scrolledPastHero
-          ? "bg-white/90 backdrop-blur-md text-black shadow-md"
-          : "bg-white/60 backdrop-blur-sm text-black"
+          ? "bg-white/90 backdrop-blur-sm text-black shadow-md"
+          : "md:bg-white/60 bg-white/10 backdrop-blur-sm text-black"
       }`}
       style={{
         transform: isNavbarVisible ? "translateY(0)" : "translateY(-100%)",
@@ -322,7 +321,7 @@ const Navbar = () => {
                     className={`block px-3 py-2 text-base font-medium rounded-md ${
                       activeItem === item.href
                         ? "text-black font-bold"
-                        : "text-gray-700 hover:text-black"
+                        : "text-gray-700  hover:text-black"
                     }`}
                     whileHover={{
                       scale: 1.05,
@@ -398,7 +397,7 @@ const Navbar = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
             >
-              <Link href="/login">
+              <Link href="/auth">
                 <motion.div
                   whileHover={{ scale: 1.1, rotate: -5 }}
                   whileTap={{ scale: 0.9 }}
@@ -418,7 +417,7 @@ const Navbar = () => {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => setIsOpen(!isOpen)}
-                className="inline-flex items-center justify-center p-2 rounded-md hover:bg-gray-100 focus:outline-none transition-colors duration-300"
+                className="inline-flex  items-center justify-center p-2 rounded-md hover:bg-gray-100 focus:outline-none transition-colors duration-300"
                 aria-expanded="false"
               >
                 <AnimatePresence mode="wait">
@@ -539,7 +538,7 @@ const Navbar = () => {
               <motion.div variants={itemVariants} className="mb-2">
                 <motion.button
                   onClick={() => setExpandedCategory(!expandedCategory)}
-                  className="w-full flex items-center justify-between px-4 py-3 rounded-lg text-base font-medium text-gray-700 hover:bg-gray-50"
+                  className="w-full flex items-center justify-between px-4 py-3 rounded-lg text-base font-medium text-gray-50 hover:bg-gray-50"
                   whileHover={{ x: 5 }}
                   whileTap={{ scale: 0.98 }}
                 >
@@ -571,7 +570,7 @@ const Navbar = () => {
                               className="flex items-center justify-between"
                             >
                               <Link href={category.href}>
-                                <span className="block px-4 py-2 text-sm font-medium text-gray-600 hover:text-black">
+                                <span className="block px-4 py-2 text-sm font-medium text-gray-50 hover:text-black">
                                   {category.name}
                                 </span>
                               </Link>
@@ -593,7 +592,7 @@ const Navbar = () => {
                                   }}
                                   transition={{ duration: 0.2 }}
                                 >
-                                  <RiArrowRightSLine className="h-4 w-4" />
+                                  <RiArrowRightSLine className="h-4 text-gray-50 w-4" />
                                 </motion.div>
                               </motion.button>
                             </motion.div>
@@ -614,7 +613,7 @@ const Navbar = () => {
                                       whileTap={{ scale: 0.98 }}
                                     >
                                       <Link href={subcategory.href}>
-                                        <span className="block px-4 py-1.5 text-xs font-medium text-gray-500 hover:text-black">
+                                        <span className="block px-4 py-1.5 text-xs font-medium text-gray-800 hover:text-black">
                                           {subcategory.name}
                                         </span>
                                       </Link>
@@ -645,7 +644,7 @@ const Navbar = () => {
                       className={`block px-4 py-3 rounded-lg text-base font-medium transition-colors ${
                         activeItem === item.href
                           ? "text-black font-bold bg-gray-50"
-                          : "text-gray-700"
+                          : "text-gray-50"
                       }`}
                     >
                       {item.name}
@@ -658,14 +657,14 @@ const Navbar = () => {
                 variants={itemVariants}
                 className="flex justify-between items-center mt-6 pt-4 border-t border-gray-200"
               >
-                <Link href="/login">
+                <Link href="/auth">
                   <motion.div
                     whileHover={{
                       scale: 1.05,
                       backgroundColor: "rgba(0,0,0,0.05)",
                     }}
                     whileTap={{ scale: 0.95 }}
-                    className="flex items-center px-4 py-3 rounded-lg text-base font-medium text-gray-700"
+                    className="flex items-center px-4 py-3 rounded-lg text-base font-medium text-gray-200"
                   >
                     <RiUser3Line className="ml-2 h-5 w-5" />
                     ورود / ثبت نام
@@ -679,7 +678,7 @@ const Navbar = () => {
                       backgroundColor: "rgba(0,0,0,0.05)",
                     }}
                     whileTap={{ scale: 0.95 }}
-                    className="flex items-center px-4 py-3 rounded-lg text-base font-medium text-gray-700"
+                    className="flex items-center px-4 py-3 rounded-lg text-base font-medium text-gray-200"
                   >
                     <RiShoppingBag3Line className="ml-2 h-5 w-5" />
                     سبد خرید

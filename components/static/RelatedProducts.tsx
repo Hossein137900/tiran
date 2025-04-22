@@ -11,9 +11,7 @@ export default function RelatedProducts({ products }: RelatedProductsProps) {
 
   return (
     <div className="my-16">
-      <h2 className="text-2xl font-bold mb-6">
-        محصولات مرتبط
-      </h2>
+      <h2 className="text-2xl font-bold mb-6">محصولات مرتبط</h2>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {products.map((product) => (

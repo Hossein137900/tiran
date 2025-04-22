@@ -4,11 +4,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import {
-  FaFacebook,
   FaTwitter,
   FaInstagram,
   FaLinkedin,
-  FaGithub,
   FaTelegram,
 } from "react-icons/fa";
 import { HiMail, HiPhone, HiLocationMarker } from "react-icons/hi";
@@ -37,17 +35,7 @@ const itemVariants = {
   },
 };
 
-const pulseVariants = {
-  initial: { scale: 1 },
-  animate: {
-    scale: [1, 1.05, 1],
-    transition: {
-      duration: 2,
-      repeat: Infinity,
-      repeatType: "reverse",
-    },
-  },
-};
+
 
 const categories = [
   { name: "صفحه اصلی", href: "/" },

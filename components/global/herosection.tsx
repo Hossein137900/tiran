@@ -54,6 +54,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
   // All motion value hooks - MUST be called unconditionally
   const rotateX = useMotionValue(0);
   const rotateY = useMotionValue(0);
+  console.log(setIsAutoPlaying)
 
   // Set isClient to true once component mounts to enable client-only features
   useEffect(() => {

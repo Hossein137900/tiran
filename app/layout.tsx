@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "@/components/static/navbar";
 import { sahel } from "@/next-persian-fonts/sahel";
 import Footer from "@/components/static/footer";
+import { ToastContainer } from "react-toastify";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -17,6 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={` ${sahel.className} antialiased relative`}>
+        <ToastContainer position="top-center" />
         <Navbar />
         {children}
         <Footer />

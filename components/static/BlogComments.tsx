@@ -40,11 +40,11 @@ const initialComments: Comment[] = [
   },
 ];
 
-interface BlogCommentsProps {
-  postId: string;
-}
+// interface BlogCommentsProps {
+//   postId: string;
+// }
 
-export default function BlogComments({ postId }: BlogCommentsProps) {
+export default function BlogComments() {
   const [comments, setComments] = useState<Comment[]>(initialComments);
   const [newComment, setNewComment] = useState("");
 

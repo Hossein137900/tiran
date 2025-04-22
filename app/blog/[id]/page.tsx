@@ -1,4 +1,3 @@
-import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,7 +10,6 @@ import {
   Twitter,
   Linkedin,
 } from "lucide-react";
-import Markdown from "react-markdown";
 import { blogPosts } from "@/lib/blog";
 import BlogComments from "@/components/static/BlogComments";
 import RelatedPosts from "@/components/static/RelatedPosts";
@@ -160,7 +158,9 @@ export default function BlogPostPage({ params }: Props) {
         </div>
 
         {/* Comments section */}
-        <BlogComments postId={post.id} />
+        <BlogComments
+        //  postId={post.id} 
+         />
       </div>
 
       {/* Related posts */}

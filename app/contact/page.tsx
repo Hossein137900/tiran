@@ -81,6 +81,7 @@ const ContactPage = () => {
         setFormStatus("idle");
       }, 5000);
     } catch (error) {
+      console.log(error)
       setFormStatus("error");
       setErrorMessage("مشکلی پیش آمد. لطفاً دوباره تلاش کنید.");
     }
