@@ -16,9 +16,10 @@ export default function AboutPage() {
           <Image
             src="/assets/images/fashion/2.avif"
             alt="تیم تیران"
-            fill
-            priority
-            className="object-cover"
+            width={4000}
+            height={4000}
+            className="object-cover w-full h-full"
+            
           />
           <div className="absolute inset-0  flex items-center justify-center">
             <h1 className="text-4xl md:text-5xl font-bold text-white text-center px-4">
@@ -197,7 +198,10 @@ export default function AboutPage() {
           ما مشتاق شنیدن نظرات، پیشنهادات و سوالات شما هستیم. تیم پشتیبانی ما
           آماده کمک به شماست.
         </p>
-        <Link href="/contact" className="bg-white text-black px-8 py-3 rounded-lg font-medium hover:bg-gray-100 transition-colors">
+        <Link
+          href="/contact"
+          className="bg-white text-black px-8 py-3 rounded-lg font-medium hover:bg-gray-100 transition-colors"
+        >
           تماس با ما
         </Link>
       </section>

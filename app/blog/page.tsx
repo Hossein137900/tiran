@@ -12,8 +12,8 @@ export default function BlogPage() {
 
   return (
     <main className="container mx-auto px-4 py-12" dir="rtl">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold mb-4">وبلاگ </h1>
+      <div className="text-center mt-28 mb-12">
+        <h1 className="text-4xl font-bold mb-4">وبلاگ</h1>
         <p className="text-gray-600 max-w-2xl mx-auto">
           آخرین روندها، بینش ها و الهامات تیم ما را کشف کنید
         </p>
