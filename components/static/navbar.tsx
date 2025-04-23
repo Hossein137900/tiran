@@ -21,8 +21,10 @@ const Navbar = () => {
   const [scrolledPastHero, setScrolledPastHero] = useState(false);
   const [isNavbarVisible, setIsNavbarVisible] = useState(true);
   const prevScrollY = useRef(0);
-  const notVisible = usePathname()
-  console.log(setActiveItem)
+  const notVisible = usePathname();
+  const pathname = usePathname();
+
+  console.log(setActiveItem);
   // Handle scroll effect for shadow
   useEffect(() => {
     const handleScroll = () => {
@@ -280,9 +282,12 @@ const Navbar = () => {
     },
   };
 
-  if (notVisible === "/admin"){
-    return null
+  if (notVisible === "/admin") {
+    return null;
   }
+  useEffect(() => {
+    setActiveItem(pathname);
+  }, [pathname]);
 
   return (
     <header
@@ -305,8 +310,8 @@ const Navbar = () => {
         animate={{ opacity: scrollProgress > 0 ? 1 : 0 }}
         transition={{ duration: 0.3 }}
       />
-      <div className="max-w-7xl mx-auto w-full">
-        <div className="flex items-center justify-between h-20 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-full mx-auto w-full">
+        <div className="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-10">
           {/* Right side - Navigation Items (Desktop) */}
           <div className="hidden md:flex items-center space-x-1 space-x-reverse">
             {navItems.map((item) => (
@@ -319,10 +324,10 @@ const Navbar = () => {
               >
                 <Link href={item.href}>
                   <motion.span
-                    className={`block px-3 py-2 text-base font-medium rounded-md ${
+                    className={`block px-3 py-2 text-base font-medium rounded-md transition-all duration-300 ${
                       activeItem === item.href
                         ? "text-black font-bold"
-                        : "text-gray-700  hover:text-black"
+                        : "text-gray-700 hover:text-black hover:bg-gray-100"
                     }`}
                     whileHover={{
                       scale: 1.05,
@@ -333,11 +338,11 @@ const Navbar = () => {
                     {item.name}
                     {activeItem === item.href && (
                       <motion.div
-                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-black rounded-full"
+                        className="absolute -bottom-1 left-0 right-0 h-1 bg-gradient-to-r from-gray-500 to-gray-600 rounded-full shadow-lg"
                         layoutId="underline"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        transition={{ duration: 0.3 }}
+                        transition={{ duration: 0.5, ease: "easeInOut" }}
                       />
                     )}
                   </motion.span>
@@ -359,9 +364,9 @@ const Navbar = () => {
                 <Image
                   src="/assets/images/logo.png"
                   alt="Tiran Logo"
-                  width={140}
-                  height={50}
-                  className="h-12 w-auto"
+                  width={100}
+                  height={100}
+                  className="h-10 w-auto"
                 />
               </motion.div>
             </Link>
