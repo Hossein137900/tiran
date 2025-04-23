@@ -24,7 +24,6 @@ const Navbar = () => {
   const notVisible = usePathname();
   const pathname = usePathname();
 
-  console.log(setActiveItem);
   // Handle scroll effect for shadow
   useEffect(() => {
     const handleScroll = () => {
