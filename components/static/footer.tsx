@@ -3,14 +3,9 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import {
-  FaTwitter,
-  FaInstagram,
-  FaLinkedin,
-  FaTelegram,
-} from "react-icons/fa";
+import { FaTwitter, FaInstagram, FaLinkedin, FaTelegram } from "react-icons/fa";
 import { HiMail, HiPhone, HiLocationMarker } from "react-icons/hi";
-
+import { usePathname } from "next/navigation";
 // Animation variants
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -35,8 +30,6 @@ const itemVariants = {
   },
 };
 
-
-
 const categories = [
   { name: "صفحه اصلی", href: "/" },
   { name: "محصولات", href: "/products" },
@@ -55,6 +48,12 @@ const services = [
 ];
 
 const Footer = () => {
+  const notVisible = usePathname();
+
+  if (notVisible === "/admin") {
+    return null;
+  }
+
   return (
     <footer dir="rtl" className="bg-white text-white relative">
       {/* Wave SVG Divider */}
