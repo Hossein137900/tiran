@@ -16,7 +16,7 @@ export default function DeleteConfirmationModal({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm"
         >
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
@@ -24,7 +24,7 @@ export default function DeleteConfirmationModal({
             exit={{ scale: 0.9, opacity: 0 }}
             className="bg-white rounded-lg p-6 max-w-sm w-full mx-4 text-right"
           >
-            <h3 className="text-xl font-bold mb-4 text-blue-400">تایید حذف</h3>
+            <h3 className="text-xl font-bold mb-4 text-black">تایید حذف</h3>
             <p className="text-gray-600 mb-6">
               آیا از حذف این محصول اطمینان دارید؟
             </p>
@@ -37,7 +37,7 @@ export default function DeleteConfirmationModal({
               </button>
               <button
                 onClick={onConfirm}
-                className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600 transition-colors"
+                className="px-4 py-2 rounded  text-red-500 hover:bg-gray-50 transition-colors"
               >
                 حذف
               </button>

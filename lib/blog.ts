@@ -3,7 +3,7 @@ export interface BlogPost {
   title: string;
   slug: string;
   excerpt: string;
-  content: string;
+  content?: string;
   coverImage: string;
   author: {
     name: string;

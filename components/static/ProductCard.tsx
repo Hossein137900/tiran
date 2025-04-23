@@ -50,7 +50,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         </div>
       )}
       {/* Product image with hover effect */}
-      <Link href={`/shop/product/${product.id}`}>
+      <Link href={`/shop/${product.id}`} className="group">
         <div
           className="relative h-64 overflow-hidden"
           onMouseEnter={() => setIsHovering(true)}
@@ -67,9 +67,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           {/* Out of stock overlay */}
           {!product.inStock && (
             <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-              <span className="text-white font-medium text-lg">
-                Out of Stock
-              </span>
+              <span className="text-white font-medium text-lg">ناموجود</span>
             </div>
           )}
         </div>
@@ -77,11 +75,9 @@ export default function ProductCard({ product }: ProductCardProps) {
       {/* Product details */}
       <div className="p-4">
         <div className="flex justify-between items-start mb-2">
-          <Link href={`/shop/product/${product.id}`} className="block">
-            <h3 className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
-              {product.name}
-            </h3>
-          </Link>
+          <h3 className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
+            {product.name}
+          </h3>
 
           <div className="flex items-center">
             <Star size={16} className="fill-yellow-400 text-yellow-400" />

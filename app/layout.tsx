@@ -18,7 +18,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={` ${sahel.className} antialiased relative`}>
-        <ToastContainer position="top-center" />
+        <ToastContainer
+          position="top-center"
+          rtl
+          draggable
+          draggableDirection="x"
+        />
         <Navbar />
         {children}
         <Footer />

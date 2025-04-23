@@ -76,13 +76,9 @@ export default function BlogComments() {
             <Image
               src="/images/avatars/user.jpg"
               alt="Your avatar"
-              fill
+              width={40}
+              height={40}
               className="object-cover"
-              onError={(e) => {
-                // Fallback for missing avatar
-                (e.target as HTMLImageElement).src =
-                  "https://via.placeholder.com/40";
-              }}
             />
           </div>
           <div className="flex-1">
@@ -119,13 +115,9 @@ export default function BlogComments() {
                 <Image
                   src={comment.avatar}
                   alt={comment.name}
-                  fill
                   className="object-cover"
-                  onError={(e) => {
-                    // Fallback for missing avatar
-                    (e.target as HTMLImageElement).src =
-                      "https://via.placeholder.com/40";
-                  }}
+                  width={40}
+                  height={40}
                 />
               </div>
 
@@ -145,7 +137,7 @@ export default function BlogComments() {
 
                 {/* Reply button */}
                 <button className="text-sm text-gray-500 hover:text-black">
-                  Reply
+                  پاسخ
                 </button>
 
                 {/* Replies */}
@@ -161,13 +153,9 @@ export default function BlogComments() {
                             <Image
                               src={reply.avatar}
                               alt={reply.name}
-                              fill
+                              width={40}
+                              height={40}
                               className="object-cover"
-                              onError={(e) => {
-                                // Fallback for missing avatar
-                                (e.target as HTMLImageElement).src =
-                                  "https://via.placeholder.com/32";
-                              }}
                             />
                           </div>
 
@@ -200,7 +188,8 @@ export default function BlogComments() {
 
         {comments.length === 0 && (
           <div className="text-center py-10 text-gray-500">
-            No comments yet. Be the first to share your thoughts!
+            <p>هنوز نظری ثبت نشده است.</p>
+            <p className="mt-2">شما اولین نفر باشید که نظر میدهید!</p>
           </div>
         )}
       </div>

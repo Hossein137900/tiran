@@ -17,7 +17,7 @@ export default function RelatedProducts({ products }: RelatedProductsProps) {
         {products.map((product) => (
           <Link
             key={product.id}
-            href={`/shop/product/${product.id}`}
+            href={`/shop/${product.id}`}
             className="group"
           >
             <div className="relative aspect-square overflow-hidden rounded-lg mb-2">
@@ -51,7 +51,7 @@ export default function RelatedProducts({ products }: RelatedProductsProps) {
                   </span>
                 </div>
               ) : (
-                <span className="font-bold">${product.price.toFixed(2)}</span>
+                <span className="font-bold">{product.price.toFixed(2)}تومان </span>
               )}
             </div>
           </Link>

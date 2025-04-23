@@ -107,7 +107,7 @@ export default function ProductTabs({ product }: ProductTabsProps) {
                 <div>
                   <h3 className="font-medium mb-2">Return Policy</h3>
                   <p className="text-gray-600">
-                    If you're not completely satisfied with your purchase, you
+                    If youre not completely satisfied with your purchase, you
                     can return it within 30 days for a full refund. The item
                     must be unused and in the same condition that you received
                     it.

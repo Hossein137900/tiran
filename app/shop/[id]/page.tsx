@@ -1,4 +1,3 @@
-import { notFound } from "next/navigation";
 import { products } from "@/lib/product";
 import ProductGallery from "@/components/static/ProductGallery";
 import ProductInfo from "@/components/static/ProductInfo";
@@ -14,7 +13,7 @@ export default function ProductPage({ params }: Props) {
   const product = products.find((p) => p.id === params.id);
 
   if (!product) {
-    notFound();
+    return null;
   }
 
   // Find related products (same category, excluding current product)
@@ -24,7 +23,7 @@ export default function ProductPage({ params }: Props) {
 
   return (
     <main className="container mx-auto px-4 py-12" dir="rtl">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mt-36">
         {/* Product Gallery */}
         <ProductGallery
           primaryImage={product.primaryImage}

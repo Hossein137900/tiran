@@ -20,9 +20,6 @@ import AddBlogPage from "../addBlog/page";
 import AddCategory from "../addCategory/page";
 import AddProductPage from "../addProduct/page";
 import Profile from "@/components/static/dashboard/profile";
-// import AnalyticsDashboard from "@/components/static/adminComponent/AnalyticsDashboard";
-// import HeatmapViewer from "@/components/static/adminComponent/HeatmapViewer";
-// import UserSegmentation from "@/components/static/adminComponent/UserSegmentation";
 
 type SidebarItem =
   | "products"
@@ -98,33 +95,6 @@ const Sidebar: React.FC<{
   );
 };
 
-const AdminContent: React.FC<{ selected: SidebarItem }> = ({ selected }) => {
-  switch (selected) {
-    case "products":
-      return <Products />;
-    case "carts":
-      return <Carts />;
-    case "users":
-      return <User />;
-    case "blog":
-      return <EditBlog />;
-    case "Addblog":
-      return <AddBlogPage />;
-    case "Addcategory":
-      return <AddCategory />;
-    case "Addproducts":
-      return <AddProductPage />;
-    case "profile":
-      return <Profile />;
-
-    case "analytics":
-      return null;
-
-    default:
-      return <Products />;
-  }
-};
-
 const AdminPage: React.FC = () => {
   const [selectedItem, setSelectedItem] = useState<SidebarItem>("products");
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
@@ -132,6 +102,10 @@ const AdminPage: React.FC = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const router = useRouter();
   console.log(isAdmin)
+  // Add this function to handle changing the selected item
+  const handleChangeSelectedItem = (item: SidebarItem) => {
+    setSelectedItem(item);
+  };
 
   useEffect(() => {
     const verifyAdmin = async () => {
@@ -173,6 +147,7 @@ const AdminPage: React.FC = () => {
 
     verifyAdmin();
   });
+  
   useEffect(() => {
     document.title = "مدرن لایت -  ادمین";
     const metaDescription = document.querySelector('meta[name="description"]');
@@ -184,6 +159,7 @@ const AdminPage: React.FC = () => {
   const toggleSidebar = () => {
     setSidebarOpen((prev) => !prev);
   };
+  
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -191,6 +167,33 @@ const AdminPage: React.FC = () => {
       </div>
     );
   }
+  
+  // Modify the AdminContent component to render the appropriate component based on selectedItem
+  const renderContent = () => {
+    switch (selectedItem) {
+      case "products":
+        return <Products onSelectAddProduct={() => handleChangeSelectedItem("Addproducts")} />;
+      case "carts":
+        return <Carts />;
+      case "users":
+        return <User />;
+      case "blog":
+        return <EditBlog />;
+      case "Addblog":
+        return <AddBlogPage />;
+      case "Addcategory":
+        return <AddCategory />;
+      case "Addproducts":
+        return <AddProductPage />;
+      case "profile":
+        return <Profile />;
+      case "analytics":
+        return null;
+      default:
+        return <Products onSelectAddProduct={() => handleChangeSelectedItem("Addproducts")} />;
+    }
+  };
+
   return (
     <div className="min-h-screen" dir="rtl">
       <div className="flex">
@@ -225,7 +228,7 @@ const AdminPage: React.FC = () => {
               {sidebarOpen ? "✖" : "☰"}
             </button>
           </div>
-          <AdminContent selected={selectedItem} />
+          {renderContent()}
         </div>
       </div>
     </div>

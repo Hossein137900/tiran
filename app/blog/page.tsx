@@ -1,14 +1,8 @@
-import { Metadata } from "next";
+"use client";
 import Link from "next/link";
 import Image from "next/image";
 import { Clock, Calendar } from "lucide-react";
 import { blogPosts } from "@/lib/blog";
-
-export const metadata: Metadata = {
-  title: "Tiran Blog | Insights & Inspiration",
-  description:
-    "Explore our collection of articles on fashion, design, lifestyle, and more.",
-};
 
 export default function BlogPage() {
   // Get featured post (most recent)
@@ -27,14 +21,13 @@ export default function BlogPage() {
 
       {/* Featured Post */}
       <div className="mb-16">
-        <Link href={`/blog/${featuredPost.slug}`} className="group">
+        <Link href={`/blog/${featuredPost.id}`} className="group">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div className="relative aspect-[16/9] overflow-hidden rounded-lg">
               <Image
                 src={featuredPost.coverImage}
                 alt={featuredPost.title}
                 fill
-                sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
                 priority
               />
@@ -88,7 +81,7 @@ export default function BlogPage() {
         {remainingPosts.map((post) => (
           <Link
             key={post.id}
-            href={`/blog/${post.slug}`}
+            href={`/blog/${post.id}`}
             className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300"
           >
             <div className="relative aspect-[16/10] overflow-hidden">
@@ -110,7 +103,7 @@ export default function BlogPage() {
               <div className="flex items-center gap-3 text-xs text-gray-500 mb-3">
                 <div className="flex items-center">
                   <Calendar size={14} className="mr-1" />
-                  {new Date(post.publishedAt).toLocaleDateString("en-US", {
+                  {new Date(post.publishedAt).toLocaleDateString("fa-IR", {
                     year: "numeric",
                     month: "short",
                     day: "numeric",
@@ -118,7 +111,7 @@ export default function BlogPage() {
                 </div>
                 <div className="flex items-center">
                   <Clock size={14} className="mr-1" />
-                  {post.readTime} min read
+                  {post.readTime} زمان مطالعه
                 </div>
               </div>
 

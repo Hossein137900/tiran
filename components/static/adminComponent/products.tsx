@@ -23,8 +23,11 @@ interface Category {
   title: string;
   children: string[];
 }
+interface ProductsProps {
+  onSelectAddProduct?: () => void;
+}
 
-export const Products = () => {
+export const Products = ({ onSelectAddProduct }: ProductsProps) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -37,6 +40,7 @@ export const Products = () => {
   const [currentThumbnail, setCurrentThumbnail] = useState("");
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const handleDeleteClick = (productId: string) => {
     setProductToDelete(productId);
@@ -58,6 +62,8 @@ export const Products = () => {
       setProducts(data.products);
     } catch (error) {
       console.error("Error fetching products:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -188,58 +194,104 @@ export const Products = () => {
       console.error("Error deleting product:", error);
     }
   };
+  const renderEmptyState = () => {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+        <div className="bg-gray-100 p-6 rounded-full mb-6">
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            className="h-24 w-24 text-blue-400" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
+          >
+            <path 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              strokeWidth={1.5} 
+              d="M20 7l-8-4-8 4m16 0l-8 4m-8-4l8 4m8 4l-8 4m-8-4l8 4m8-4v10l-8 4m-8-4V7" 
+            />
+          </svg>
+        </div>
+        <h3 className="text-2xl font-bold text-gray-700 border-b-2 pb-2 mb-2">هیچ محصولی یافت نشد</h3>
+        <p className="text-gray-500 mb-6 max-w-md">
+          در حال حاضر هیچ محصولی در سیستم ثبت نشده است. برای شروع، محصول جدیدی اضافه کنید.
+        </p>
+        <button 
+          className="bg-gray-500 hover:bg-blue-600 text-white font-medium py-2 px-6 rounded-lg transition-colors duration-300"
+          onClick={() => {
+            if (onSelectAddProduct) {
+              onSelectAddProduct();
+            } else {
+              toast.info("این قابلیت در حال توسعه است");
+            }
+          }}
+        >
+          افزودن محصول جدید
+        </button>
+      </div>
+    );
+  };
 
   return (
     <div className="p-6" dir="rtl">
       <h2 className="text-2xl font-bold text-black my-6">مدیریت محصولات</h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {products.map((product) => (
-          <div key={product._id} className="border rounded-lg p-4 shadow">
-            <Image
-              src={"/assets/images/products/prod10.jpg"}
-              alt={product.title}
-              className="w-full h-48 object-cover rounded mb-4"
-              width={300}
-              height={200}
-            />
-            <h3 className="text-xl font-semibold text-white">
-              {product.title}
-            </h3>
-            <p className="text-gray-300">
-              {Number(product.price).toLocaleString("fa-IR")} تومان
-            </p>
+      {loading ? (
+        <div className="flex justify-center items-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        </div>
+      ) : products.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {products.map((product) => (
+            <div key={product._id} className="border rounded-lg p-4 shadow">
+              <Image
+                src={"/assets/images/products/prod10.jpg"}
+                alt={product.title}
+                className="w-full h-48 object-cover rounded mb-4"
+                width={300}
+                height={200}
+              />
+              <h3 className="text-xl font-semibold text-white">
+                {product.title}
+              </h3>
+              <p className="text-gray-300">
+                {Number(product.price).toLocaleString("fa-IR")} تومان
+              </p>
 
-            <div className="mt-4 flex gap-2">
-              <button
-                aria-label="edit-product"
-                onClick={() => handleEdit(product)}
-                className="bg-blue-400 text-white px-4 py-2 rounded hover:bg-blue-600"
-              >
-                ویرایش
-              </button>
-              <>
+              <div className="mt-4 flex gap-2">
                 <button
-                  aria-label="delete-product"
-                  onClick={() => handleDeleteClick(product._id)}
-                  className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                  aria-label="edit-product"
+                  onClick={() => handleEdit(product)}
+                  className="bg-blue-400 text-white px-4 py-2 rounded hover:bg-blue-600"
                 >
-                  حذف
+                  ویرایش
                 </button>
+                <>
+                  <button
+                    aria-label="delete-product"
+                    onClick={() => handleDeleteClick(product._id)}
+                    className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                  >
+                    حذف
+                  </button>
 
-                <DeleteConfirmationModal
-                  isOpen={isDeleteModalOpen}
-                  onClose={() => setIsDeleteModalOpen(false)}
-                  onConfirm={handleConfirmDelete}
-                />
-              </>
+                  <DeleteConfirmationModal
+                    isOpen={isDeleteModalOpen}
+                    onClose={() => setIsDeleteModalOpen(false)}
+                    onConfirm={handleConfirmDelete}
+                  />
+                </>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ) : (
+        renderEmptyState()
+      )}
 
       {editingProduct && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg max-w-4xl w-full max-h-[60vh] overflow-y-auto">
             <h3 className="text-xl font-bold mb-4 text-black">ویرایش محصول</h3>
             <form onSubmit={handleUpdate} className="space-y-6">
@@ -492,8 +544,8 @@ export const Products = () => {
                 <button
                   type="button"
                   onClick={() => setEditingProduct(null)}
-                  className="bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600"
-                >
+                  className="px-4 py-2 rounded  text-red-500 hover:bg-gray-50 transition-colors"
+                  >
                   انصراف
                 </button>
               </div>

@@ -61,7 +61,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
         <span className="text-sm text-gray-500">
           {product.inStock ? (
             <span className="text-green-600 flex items-center">
-              <Check size={16} className="mr-1" /> In Stock
+              <Check size={16} className="mr-1" /> موجود
             </span>
           ) : (
             "Out of Stock"
@@ -77,7 +77,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
               {formattedPrice}
             </span>
             <span className="bg-red-100 text-red-600 text-sm px-2 py-1 rounded">
-              {product.discount}% OFF
+              {product.discount}% تخفیف
             </span>
           </div>
         ) : (
@@ -90,7 +90,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
       {/* Color selection */}
       {product.colors && product.colors.length > 0 && (
         <div>
-          <h3 className="text-sm font-medium mb-2">Color: {selectedColor}</h3>
+          <h3 className="text-sm font-medium mb-2">رنگ: {selectedColor}</h3>
           <div className="flex gap-2">
             {product.colors.map((color) => (
               <button
@@ -115,7 +115,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
       {/* Size selection */}
       {product.sizes && product.sizes.length > 0 && (
         <div>
-          <h3 className="text-sm font-medium mb-2">Size: {selectedSize}</h3>
+          <h3 className="text-sm font-medium mb-2">سایز: {selectedSize}</h3>
           <div className="flex flex-wrap gap-2">
             {product.sizes.map((size) => (
               <button
@@ -136,7 +136,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
 
       {/* Quantity selector */}
       <div>
-        <h3 className="text-sm font-medium mb-2">Quantity</h3>
+        <h3 className="text-sm font-medium mb-2">تعداد</h3>
         <div className="flex items-center border border-gray-300 rounded w-fit">
           <button
             onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}

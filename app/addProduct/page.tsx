@@ -16,15 +16,15 @@ export interface CategoryResponse {
   data: Category[];
 }
 
-interface UploadedFile {
-  name: string;
-  url: string;
-  type: string;
-  _id: string;
-  __v: number;
-  createdAt: string;
-  updatedAt: string;
-}
+// interface UploadedFile {
+//   name: string;
+//   url: string;
+//   type: string;
+//   _id: string;
+//   __v: number;
+//   createdAt: string;
+//   updatedAt: string;
+// }
 
 interface ProductFormData {
   title: string;
@@ -154,10 +154,10 @@ export default function AddProductPage() {
     e.preventDefault();
 
     // Validate required fields
-    if (!formData.image) {
-      toast.error("لطفا تصویر اصلی محصول را انتخاب کنید");
-      return;
-    }
+    // if (!formData.image) {
+    //   toast.error("لطفا تصویر اصلی محصول را انتخاب کنید");
+    //   return;
+    // }
 
     const submitFormData = new FormData();
 

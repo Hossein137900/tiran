@@ -22,6 +22,7 @@ const Navbar = () => {
   const [isNavbarVisible, setIsNavbarVisible] = useState(true);
   const prevScrollY = useRef(0);
   const notVisible = usePathname()
+  console.log(setActiveItem)
   // Handle scroll effect for shadow
   useEffect(() => {
     const handleScroll = () => {

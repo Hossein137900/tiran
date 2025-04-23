@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Star, Send } from "lucide-react";
+import Image from "next/image";
 
 interface Comment {
   id: string;
@@ -60,12 +61,11 @@ export default function ProductComments({ productId }: ProductCommentsProps) {
     setComments((prev) => [comment, ...prev]);
     setNewComment("");
   };
+  console.log(productId);
 
   return (
     <div className="my-16">
-      <h2 className="text-2xl font-bold mb-6">
-        نظرات مشتریان
-      </h2>
+      <h2 className="text-2xl font-bold mb-6">نظرات مشتریان</h2>
 
       {/* Add a review form */}
       <form
@@ -77,9 +77,7 @@ export default function ProductComments({ productId }: ProductCommentsProps) {
         </h3>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-2">
-            امتیاز شما
-          </label>
+          <label className="block text-sm font-medium mb-2">امتیاز شما</label>
           <div className="flex">
             {[1, 2, 3, 4, 5].map((rating) => (
               <button
@@ -122,7 +120,6 @@ export default function ProductComments({ productId }: ProductCommentsProps) {
           type="submit"
           className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
         >
-          
           ثبت نظر
           <Send size={18} />
         </button>
@@ -141,15 +138,12 @@ export default function ProductComments({ productId }: ProductCommentsProps) {
             >
               <div className="flex items-start gap-4">
                 <div className="relative w-10 h-10 rounded-full overflow-hidden bg-gray-200">
-                  <img
+                  <Image
                     src={comment.avatar}
                     alt={comment.name}
                     className="object-cover"
-                    onError={(e) => {
-                      // Fallback for missing avatars
-                      (e.target as HTMLImageElement).src =
-                        "https://via.placeholder.com/40";
-                    }}
+                    width={40}
+                    height={40}
                   />
                 </div>
 
@@ -157,7 +151,7 @@ export default function ProductComments({ productId }: ProductCommentsProps) {
                   <div className="flex flex-wrap items-center gap-2 mb-2">
                     <h4 className="font-medium">{comment.name}</h4>
                     <span className="text-sm text-gray-500">
-                      {new Date(comment.date).toLocaleDateString("en-US", {
+                      {new Date(comment.date).toLocaleDateString("fa-IR", {
                         year: "numeric",
                         month: "long",
                         day: "numeric",

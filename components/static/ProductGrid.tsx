@@ -41,9 +41,11 @@ export default function ProductGrid() {
 
       {filteredProducts.length === 0 && (
         <div className="text-center py-12">
-          <h3 className="text-xl font-medium">No products found</h3>
+          <h3 className="text-xl font-medium">
+            متاسفانه محصولی با این ویژگی پیدا نشد
+          </h3>
           <p className="text-gray-500 mt-2">
-            Try changing your filter criteria
+            لطفا فیلترها را تغییر دهید یا به صفحه اصلی برگردید.
           </p>
         </div>
       )}
