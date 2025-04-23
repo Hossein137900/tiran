@@ -260,7 +260,7 @@ const Footer = () => {
                 <input
                   type="email"
                   placeholder="ایمیل شما"
-                  className="bg-gray-500/50 text-white px-4 py-2 rounded-r-md focus:outline-none focus:ring-2 focus:ring-gray-500 w-full"
+                  className="bg-gray-500/10 border border-black text-black px-4 py-2 rounded-r-md focus:outline-none w-full"
                 />
                 <motion.button
                   whileHover={{ scale: 1.05 }}
@@ -285,21 +285,21 @@ const Footer = () => {
           <div className="flex gap-2 text-sm text-gray-400">
             <motion.a
               href="/privacy"
-              className="hover:text-white transition-colors"
+              className="hover:text-black transition-colors"
               whileHover={{ y: -2 }}
             >
               حریم خصوصی
             </motion.a>
             <motion.a
               href="/terms"
-              className="hover:text-white transition-colors"
+              className="hover:text-black transition-colors"
               whileHover={{ y: -2 }}
             >
               قوانین استفاده
             </motion.a>
             <motion.a
               href="/cookies"
-              className="hover:text-white transition-colors"
+              className="hover:text-black transition-colors"
               whileHover={{ y: -2 }}
             >
               سیاست کوکی‌ها
@@ -309,9 +309,9 @@ const Footer = () => {
       </motion.div>
 
       {/* Animated Background Elements */}
-      <div className="absolute bottom-0 left-0 w-full h-full overflow-hidden z-0 opacity-10 pointer-events-none">
+      <div className="absolute bottom-0 left-0 w-full h-full overflow-hidden z-0 opacity-15 pointer-events-none">
         <div className="absolute w-96 h-96 -bottom-12 -right-12 bg-gray-900 rounded-full filter blur-2xl"></div>
-        <div className="absolute w-96 h-96 -bottom-12 -left-12 bg-slate-800 rounded-full filter blur-3xl"></div>
+        <div className="absolute w-96 h-96 -bottom-12 -left-12 bg-gray-800 rounded-full filter blur-2xl"></div>
       </div>
     </footer>
   );
