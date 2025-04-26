@@ -43,7 +43,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({
   // All state hooks
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
-  const [isMuted, setIsMuted] = useState(true);
   const [direction, setDirection] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isClient, setIsClient] = useState(false);
@@ -54,7 +53,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
   // All motion value hooks - MUST be called unconditionally
   const rotateX = useMotionValue(0);
   const rotateY = useMotionValue(0);
-  console.log(setIsAutoPlaying)
+  console.log(setIsAutoPlaying);
 
   // Set isClient to true once component mounts to enable client-only features
   useEffect(() => {
@@ -101,16 +100,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({
   }, [isAutoPlaying, currentSlide, autoPlayInterval]);
 
   // Enhance the dragX motion value with better constraints
-
-  const toggleMute = () => {
-    setIsMuted((prev) => !prev);
-
-    // Find all video elements and mute/unmute them
-    const videos = document.querySelectorAll("video");
-    videos.forEach((video) => {
-      video.muted = !isMuted;
-    });
-  };
 
   // Replace your existing variants with these improved ones
   // Replace your existing variants with these fade variants
@@ -191,29 +180,14 @@ const HeroSection: React.FC<HeroSectionProps> = ({
           onAnimationStart={() => setIsTransitioning(true)}
           onAnimationComplete={() => setIsTransitioning(false)}
         >
-          {slides[currentSlide].videoBackground ? (
-            <video
-              autoPlay
-              loop
-              muted={isMuted}
-              playsInline
-              className="absolute inset-0 w-full h-full object-cover"
-            >
-              <source
-                src={slides[currentSlide].videoBackground}
-                type="video/mp4"
-              />
-            </video>
-          ) : (
-            <Image
-              src={slides[currentSlide].image}
-              alt={slides[currentSlide].title}
-              fill
-              priority
-              className="object-cover"
-              sizes="100vw"
-            />
-          )}
+          <Image
+            src={slides[currentSlide].image}
+            alt={slides[currentSlide].title}
+            fill
+            priority
+            className="object-cover"
+            sizes="100vw"
+          />
 
           {/* Gradient overlay for better text readability */}
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black opacity-80" />
@@ -255,7 +229,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
                 custom={1}
               >
                 <motion.h1
-                  className="text-4xl md:text-7xl font-bold leading-tight"
+                  className="text-3xl md:text-5xl font-bold leading-tight"
                   style={{ color: titleColor }}
                 >
                   {slides[currentSlide].title}
@@ -268,7 +242,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
                 custom={2}
               >
                 <motion.p
-                  className="text-lg md:text-xl max-w-2xl mx-auto"
+                  className="text-lg md:text-xl text-rose-500 max-w-2xl mx-auto"
                   style={{ color: descriptionColor }}
                 >
                   {slides[currentSlide].description}
@@ -383,19 +357,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({
       </div>
 
       {/* Controls panel */}
-      <div className="absolute top-8 right-8 flex items-center space-x-3 z-20">
-        {showMuteControl && (
-          <motion.button
-            onClick={toggleMute}
-            className="flex items-center justify-center w-10 h-10 rounded-full backdrop-blur-md bg-white/10 border border-white/20 text-white transition-all hover:bg-white/30"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            aria-label={isMuted ? "Unmute" : "Mute"}
-          >
-            {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
-          </motion.button>
-        )}
-      </div>
 
       {/* Enhanced swipe instruction - visible only on mobile */}
       <motion.div

@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { FaTwitter, FaInstagram, FaLinkedin, FaTelegram } from "react-icons/fa";
 import { HiMail, HiPhone, HiLocationMarker } from "react-icons/hi";
 import { usePathname } from "next/navigation";
+import Signature from "../global/signature";
 // Animation variants
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -74,7 +75,6 @@ const Footer = () => {
           ></motion.path>
         </svg>
       </div>
-
       <motion.div
         className="container mx-auto px-6 pt-10 pb-16"
         variants={containerVariants}
@@ -307,12 +307,18 @@ const Footer = () => {
           </div>
         </motion.div>
       </motion.div>
-
       {/* Animated Background Elements */}
       <div className="absolute bottom-0 left-0 w-full h-full overflow-hidden z-0 opacity-15 pointer-events-none">
         <div className="absolute w-96 h-96 -bottom-12 -right-12 bg-gray-900 rounded-full filter blur-2xl"></div>
         <div className="absolute w-96 h-96 -bottom-12 -left-12 bg-gray-800 rounded-full filter blur-2xl"></div>
       </div>
+      <Signature
+        spinDuration={5} // Faster spin (5 seconds per rotation)
+        isSpinning={true} // Enable spinning
+        textColor="#0f172a"
+        logoWidth={20}
+        logoHeight={20}
+      />{" "}
     </footer>
   );
 };
