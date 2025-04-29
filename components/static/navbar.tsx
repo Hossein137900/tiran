@@ -21,9 +21,15 @@ const Navbar = () => {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [scrolledPastHero, setScrolledPastHero] = useState(false);
   const [isNavbarVisible, setIsNavbarVisible] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
   const prevScrollY = useRef(0);
-  const notVisible = usePathname();
   const pathname = usePathname();
+
+  // Set isMounted to true after component mounts to ensure client-side rendering
+  useEffect(() => {
+    setIsMounted(true);
+    setActiveItem(pathname);
+  }, [pathname]);
 
   // Handle scroll effect for shadow
   useEffect(() => {
@@ -63,37 +69,7 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Add this useEffect for hero section detection
-  useEffect(() => {
-    const handleScrollPastHero = () => {
-      // Assuming hero section is roughly 600px tall
-      const heroHeight = 600;
-      if (window.scrollY > heroHeight) {
-        setScrolledPastHero(true);
-      } else {
-        setScrolledPastHero(false);
-      }
-    };
-
-    window.addEventListener("scroll", handleScrollPastHero);
-    return () => window.removeEventListener("scroll", handleScrollPastHero);
-  }, []);
-  // Add this useEffect after your existing scroll effect
-
-  // Add this useEffect for scroll progress
-  useEffect(() => {
-    const handleScrollProgress = () => {
-      const totalHeight =
-        document.documentElement.scrollHeight - window.innerHeight;
-      const progress = (window.scrollY / totalHeight) * 100;
-      setScrollProgress(progress);
-    };
-
-    window.addEventListener("scroll", handleScrollProgress);
-    return () => window.removeEventListener("scroll", handleScrollProgress);
-  }, []);
-
-  // Animation variants
+  // Animation variants definitions (keep all your existing variants here)
   const mobileMenuVariants = {
     closed: {
       opacity: 0,
@@ -199,35 +175,26 @@ const Navbar = () => {
     },
   };
 
-  if (notVisible === "/admin") {
+  // Don't render anything during SSR to prevent hydration mismatch
+  if (!isMounted) {
     return null;
   }
-  useEffect(() => {
-    setActiveItem(pathname);
-  }, [pathname]);
+
+  if (pathname === "/admin") {
+    return null;
+  }
 
   return (
-    <header
+    <nav
       id="navbar"
       className={`fixed w-full z-50 transition-all duration-500 flex flex-col ${
         scrolledPastHero
           ? "bg-white/90 backdrop-blur-sm text-black shadow-md"
           : "md:bg-white/60 bg-white/10 backdrop-blur-sm text-black"
       }`}
-      style={{
-        transform: isNavbarVisible ? "translateY(0)" : "translateY(-100%)",
-        transition: "transform 0.3s ease-in-out",
-      }}
       dir="rtl"
     >
-      <motion.div
-        className="absolute top-0 left-0 h-0.5 bg-gradient-to-r from-blue-500 via-indigo-500 to-blue-500 z-50"
-        style={{ width: `${scrollProgress}%` }}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: scrollProgress > 0 ? 1 : 0 }}
-        transition={{ duration: 0.3 }}
-      />
-      <div className="max-w-screen w-full">
+      <div className="max-w-screen">
         <div className="flex items-center justify-between h-20 px-4 sm:px-6 lg:px-2">
           {" "}
           {/* Right side - Navigation Items (Desktop) */}
@@ -378,7 +345,6 @@ const Navbar = () => {
       </div>
 
       {/* Categories Row - Desktop */}
-
       <motion.div
         className="hidden md:block"
         transition={{ duration: 0.3, ease: "easeInOut" }}
@@ -614,8 +580,7 @@ const Navbar = () => {
           </motion.div>
         )}
       </AnimatePresence>
-    </header>
+    </nav>
   );
 };
-
 export default Navbar;

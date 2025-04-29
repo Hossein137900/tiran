@@ -1,5 +1,10 @@
 "use client";
+import DynamicHero from "@/components/global/dynamicHero";
+import ExampleImageGrid from "@/components/global/ExampleImageGrid";
 import HeroSection from "@/components/global/herosection";
+import ProductSlider from "@/components/global/productSlide";
+import HomeBlogs from "@/components/global/showBlogs";
+import { products } from "@/lib/product";
 
 export default function Home() {
   const heroSlides = [
@@ -42,6 +47,18 @@ export default function Home() {
         height="100vh"
         showMuteControl={false} // Set to true if using video backgrounds
       />
+      <ExampleImageGrid />
+      <DynamicHero
+        title="تحول در تجربه دیجیتال شما"
+        description="در تیران، ما راهکارهای نوآورانه‌ای ایجاد می‌کنیم که برند شما را ارتقا داده و مخاطبان شما را جذب می‌کند. کشف کنید چگونه تخصص ما می‌تواند به شما در دستیابی به اهدافتان کمک کند."
+        backgroundImage="/assets/images/contact.jpg"
+        buttonText="شروع کنید"
+        buttonLink="/contact"
+        alignment="right"
+      />
+      <ProductSlider products={products} autoPlayInterval={4000}  />
+
+      <HomeBlogs />
 
       {/* Rest of your page content */}
     </main>

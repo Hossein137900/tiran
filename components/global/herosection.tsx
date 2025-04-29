@@ -161,11 +161,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
   };
 
   return (
-    <div
-      className="relative w-full overflow-hidden"
-      style={{ height }}
-      ref={containerRef}
-    >
+    <div className="relative w-full" style={{ height }} ref={containerRef}>
       {/* Background Images/Videos with Animation */}
       <AnimatePresence initial={false} custom={direction} mode="wait">
         <motion.div
@@ -483,35 +479,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({
       )}
 
       {/* Scroll indicator */}
-      <motion.div
-        className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20"
-        initial={{ opacity: 0, y: -10 }}
-        animate={{
-          opacity: [0, 1, 0],
-          y: [0, 10, 0],
-        }}
-        transition={{
-          repeat: Infinity,
-          duration: 2,
-          repeatDelay: 1,
-        }}
-      >
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M12 5V19M12 19L19 12M12 19L5 12"
-            stroke="white"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </motion.div>
     </div>
   );
 };
