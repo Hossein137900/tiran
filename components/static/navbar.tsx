@@ -18,7 +18,6 @@ const Navbar = () => {
   const [activeItem, setActiveItem] = useState("/");
   const [expandedCategory, setExpandedCategory] = useState(false);
   const [hoveredCategory, setHoveredCategory] = useState<number | null>(null);
-  const [scrollProgress, setScrollProgress] = useState(0);
   const [scrolledPastHero, setScrolledPastHero] = useState(false);
   const [isNavbarVisible, setIsNavbarVisible] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
