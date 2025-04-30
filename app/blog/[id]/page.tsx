@@ -1,10 +1,16 @@
+"use client";
+
 import Image from "next/image";
 import { ArrowLeft, Calendar, Clock, User } from "lucide-react";
 import { blogPosts } from "@/lib/blog";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-export default function BlogPostPage({ params }: { params: { id: string } }) {
-  const post = blogPosts.find((post) => post.id === params.id);
+export default function BlogPostPage() {
+  const pathname = usePathname();
+  const id = pathname.split("/")[2]; // This will extract the id from /blog/[id]
+
+  const post = blogPosts.find((post) => post.id === id);
 
   if (!post) {
     return null;

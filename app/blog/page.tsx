@@ -1,4 +1,3 @@
-"use client";
 import Link from "next/link";
 import Image from "next/image";
 import { Clock, Calendar } from "lucide-react";

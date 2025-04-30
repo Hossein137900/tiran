@@ -18,11 +18,12 @@ const Navbar = () => {
   const [activeItem, setActiveItem] = useState("/");
   const [expandedCategory, setExpandedCategory] = useState(false);
   const [hoveredCategory, setHoveredCategory] = useState<number | null>(null);
-  const [scrolledPastHero, setScrolledPastHero] = useState(false);
+  const [scrolledPastHero] = useState(false);
   const [isNavbarVisible, setIsNavbarVisible] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
   const prevScrollY = useRef(0);
   const pathname = usePathname();
+  console.log(isNavbarVisible);
 
   // Set isMounted to true after component mounts to ensure client-side rendering
   useEffect(() => {

@@ -2,7 +2,7 @@
 import { useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, useInView, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 // Define the type for each image item
 interface ImageItem {
@@ -19,7 +19,6 @@ interface ImageGridProps {
 
 export default function ImageGrid({ images }: ImageGridProps) {
   const gridRef = useRef(null);
-  const isInView = useInView(gridRef, { once: false, amount: 0.2 });
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   // Container variants

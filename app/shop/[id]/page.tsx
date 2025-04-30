@@ -1,16 +1,18 @@
+"use client";
+
 import { products } from "@/lib/product";
 import ProductGallery from "@/components/static/ProductGallery";
 import ProductInfo from "@/components/static/ProductInfo";
 import ProductTabs from "@/components/static/ProductTabs";
 import ProductComments from "@/components/static/ProductComments";
 import RelatedProducts from "@/components/static/RelatedProducts";
+import { usePathname } from "next/navigation";
 
-type Props = {
-  params: { id: string };
-};
+export default function ProductPage() {
+  const pathname = usePathname();
+  const id = pathname.split("/")[2]; // This will extract the id from /blog/[id]
 
-export default function ProductPage({ params }: Props) {
-  const product = products.find((p) => p.id === params.id);
+  const product = products.find((pro) => pro.id === id);
 
   if (!product) {
     return null;

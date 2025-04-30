@@ -27,21 +27,9 @@ const CorporateGiftsPage = () => {
     },
   };
 
-  const letterAnimation = {
-    hidden: { opacity: 0, y: 50 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-        damping: 12,
-      },
-    },
-  };
+
 
   // Split text for letter animation
-  const titleText = "تیـــــران استایل";
 
   return (
     <div className="min-h-screen  py-16 px-4 sm:px-6 lg:px-8 " dir="rtl">

@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence, useMotionValue } from "framer-motion";
-import { ChevronLeft, ChevronRight, Volume2, VolumeX } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export interface HeroSlide {
   id: number;
@@ -38,7 +38,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
   overlayColor = "rgba(0, 0, 0, 0.4)",
   titleColor = "white",
   descriptionColor = "rgba(255, 255, 255, 0.9)",
-  showMuteControl = false,
+  // showMuteControl = false,
 }) => {
   // All state hooks
   const [currentSlide, setCurrentSlide] = useState(0);
