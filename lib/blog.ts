@@ -25,7 +25,7 @@ export const blogPosts: BlogPost[] = [
       <p>قطعات غیراصل ممکن است عمر کمتری داشته باشند و به سیستم خودروی شما آسیب بزنند...</p>
     `,
     category: "خودرو",
-    coverImage: "/images/blog/renault-cover.jpg",
+    coverImage: "/assets/images/fashion/1.avif",
     publishedAt: "2024-12-01T10:00:00Z",
     readTime: "5 دقیقه",
     author: {
@@ -47,7 +47,7 @@ export const blogPosts: BlogPost[] = [
       </ul>
     `,
     category: "دیجیتال مارکتینگ",
-    coverImage: "/images/blog/seo-2025.jpg",
+    coverImage: "/assets/images/fashion/6.avif",
     publishedAt: "2025-02-10T09:30:00Z",
     readTime: "7 دقیقه",
     author: {
