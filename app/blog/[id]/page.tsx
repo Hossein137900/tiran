@@ -99,7 +99,7 @@ export default function BlogPostPage() {
           <h2 className="text-2xl font-bold mb-6">مطالب مرتبط</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {relatedPosts.map((relatedPost) => (
-              <a
+              <Link
                 key={relatedPost.id}
                 href={`/blog/${relatedPost.id}`}
                 className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300"
@@ -120,7 +120,7 @@ export default function BlogPostPage() {
                     {relatedPost.excerpt}
                   </p>
                 </div>
-              </a>
+              </Link>
             ))}
           </div>
         </div>
