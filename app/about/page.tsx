@@ -19,7 +19,6 @@ export default function AboutPage() {
             width={4000}
             height={4000}
             className="object-cover w-full h-full"
-            
           />
           <div className="absolute inset-0  flex items-center justify-center">
             <h1 className="text-4xl md:text-5xl font-bold text-white text-center px-4">

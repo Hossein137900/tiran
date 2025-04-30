@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 
 export default function HelpPage() {
@@ -48,9 +49,12 @@ export default function HelpPage() {
         <h2 className="text-2xl font-bold mb-4 text-right">پیگیری سفارش</h2>
         <p className="text-right">
           برای اطلاع از وضعیت سفارش‌های خود،{" "}
-          <a href="/profile/orders" className="text-blue-600 hover:underline">
+          <Link
+            href="/profile/orders"
+            className="text-blue-600 hover:underline"
+          >
             این‌جا
-          </a>{" "}
+          </Link>{" "}
           را کلیک کنید و پس از ورود به پنل کاربری، سفارش مورد نظر را انتخاب کنید
           تا اطلاعات تکمیلی آن، نمایش داده شود. در صورتی که سوالی دارید، با
           کارشناسان پشتیبانی ما تماس بگیرید تا از راهنمایی آن‌ها بهره‌مند شوید
