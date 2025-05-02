@@ -81,13 +81,19 @@ const AuthPage = () => {
     password: string
   ) => {
     try {
-      const response = await fetch("/api/auth", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name, phoneNumber, password }),
-      });
+      const username = phoneNumber;
+      const sent_sms = true;
+      const application = 0;
+      const response = await fetch(
+        "https://tiran.shop.hesabroclub.ir/api/web/shop-v1/site/pre-sign-in",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username, sent_sms, application }),
+        }
+      );
 
       const data = await response.json();
 
@@ -99,7 +105,7 @@ const AuthPage = () => {
       return {
         token: data.token,
         user: {
-          name: data.name,
+          name: data.username,
         },
       };
     } catch (error) {
@@ -122,7 +128,7 @@ const AuthPage = () => {
               },
             });
           }
-          window.location.href = "/";
+          // window.location.href = "/";
         } else {
           const userData = await handleSignup(
             formData.name,
@@ -138,7 +144,7 @@ const AuthPage = () => {
             });
           }
 
-          window.location.href = "/";
+          // window.location.href = "/";
         }
       } catch (error) {
         console.log("Authentication error:", error);
