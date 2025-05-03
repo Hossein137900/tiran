@@ -66,9 +66,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Product Details */}
         <div dir="rtl" className="flex flex-col">
-          <h1 className="text-3xl font-bold mb-2">
-            {product.fa_name ? product.fa_name : "efe"}
-          </h1>
+          <h1 className="text-3xl font-bold mb-2">{product.fa_name}</h1>
           <p className="text-gray-600 mb-4">{product.seo_description}</p>
 
           <div className="text-2xl font-bold mb-6">{formattedPrice}</div>
