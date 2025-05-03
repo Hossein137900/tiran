@@ -51,9 +51,10 @@ export default function ProductPage() {
         }
 
         const data = await response.json();
+        console.log(data, "product detail data in api route");
 
         // Make sure we're accessing the correct property based on your API response
-        setProduct(data.product || data);
+        setProduct(data.data);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching product:", error);

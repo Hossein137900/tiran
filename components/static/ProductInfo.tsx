@@ -12,7 +12,7 @@ interface ProductInfoProps {
 }
 
 export default function ProductInfo({ product }: ProductInfoProps) {
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(0);
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
   const [isFavorite, setIsFavorite] = useState(false);
@@ -64,24 +64,11 @@ export default function ProductInfo({ product }: ProductInfoProps) {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Product Image */}
-        {/* <div className="relative h-96 md:h-[500px] rounded-lg overflow-hidden">
-          <Image
-            src={
-              product.main_image_id
-                ? `/api/images/${product.main_image_id}`
-                : "/assets/images/fashion/5.avif"
-            }
-            alt={product.fa_name || "Product Image"}
-            fill
-            className="object-cover"
-            priority
-          />
-        </div> */}
-
         {/* Product Details */}
         <div dir="rtl" className="flex flex-col">
-          <h1 className="text-3xl font-bold mb-2">{product.page_title}</h1>
+          <h1 className="text-3xl font-bold mb-2">
+            {product.fa_name ? product.fa_name : "efe"}
+          </h1>
           <p className="text-gray-600 mb-4">{product.seo_description}</p>
 
           <div className="text-2xl font-bold mb-6">{formattedPrice}</div>

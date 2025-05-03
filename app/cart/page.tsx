@@ -89,7 +89,7 @@ const CartPage = () => {
                     >
                       <div className="flex-shrink-0 w-24 h-24 bg-gray-100 rounded-md overflow-hidden mb-4 sm:mb-0">
                         <Image
-                          src={item.image}
+                          src={item.image || "/assets/images/fashion/5.avif"}
                           alt={item.name}
                           width={96}
                           height={96}
