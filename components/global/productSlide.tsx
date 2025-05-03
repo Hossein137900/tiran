@@ -92,7 +92,7 @@ export default function ProductSlider({
                   <div className="relative w-full md:w-1/2 aspect-square">
                     <Image
                       src={ "/assets/images/fashion/1.avif"}
-                      alt={products[currentIndex].page_title}
+                      alt={products[currentIndex].page_title || "ef"}
                       fill
                       className="object-cover"
                       priority

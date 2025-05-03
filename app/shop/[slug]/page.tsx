@@ -29,36 +29,43 @@ interface Product {
 
 export default function ProductPage() {
   const pathname = usePathname();
-  const id = pathname.split("/")[2]; // This will extract the id from /shop/[id]
+  const slug = pathname.split("/")[2]; // This will extract the slug from /shop/[slug]
 
   const [product, setProduct] = useState<Product | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
- 
-
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await fetch(`/api/product/${id}`, {
+        const response = await fetch(`/api/shop/${slug}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
         });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch product");
+        }
+
         const data = await response.json();
-        console.log(data , "dddddddddddddd")
-        setProduct(data.product);
-        console.log(data.product, "product");
+
+        // Make sure we're accessing the correct property based on your API response
+        setProduct(data.product || data);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching product:", error);
+        setError("Failed to load product");
         setLoading(false);
       }
     };
-    fetchProduct();
-  }, [id]);
+
+    if (slug) {
+      fetchProduct();
+    }
+  }, [slug]);
 
   if (loading) {
     return (
@@ -100,7 +107,7 @@ export default function ProductPage() {
         {/* Product Gallery */}
         <ProductGallery
           primaryImage={primaryImage}
-          secondaryImage={secondaryImages}
+          secondaryImage={primaryImage}
           productName={product.fa_name}
         />
 

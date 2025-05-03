@@ -67,7 +67,7 @@ const ProductCarousel = ({ products }: ProductSliderProps) => {
                     {!product.main_image_id ? (
                       <Image
                         src={"/assets/images/fashion/4.avif"}
-                        alt={product.page_title}
+                        alt={product.page_title || "ef"}
                         fill
                         className="object-cover"
                       />

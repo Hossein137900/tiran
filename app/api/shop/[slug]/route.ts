@@ -1,12 +1,24 @@
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params?: { slug?: string } }
 ) {
   try {
-    const productId = params.id;
+    if (!params || !params.slug) {
+      return new Response(
+        JSON.stringify({ success: false, message: "Missing product slug" }),
+        {
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    }
+
+    const productSlug = params.slug;
 
     const response = await fetch(
-      `https://tiran.shop.hesabroclub.ir/api/web/shop-v1/v2/product/view?id=${productId}`,
+      `https://tiran.shop.hesabroclub.ir/api/web/shop-v1/product/view?slug=${productSlug}&expand=varieties`,
       {
         method: "GET",
         headers: {

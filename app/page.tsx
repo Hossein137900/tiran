@@ -12,7 +12,7 @@ export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
 
   const fetchProducts = async () => {
-    const res = await fetch("/api/product", {
+    const res = await fetch("/api/shop", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

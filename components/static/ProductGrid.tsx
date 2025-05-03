@@ -59,7 +59,7 @@ export default function ProductGrid() {
         setCategories(categoryData.data);
 
         // Fetch products
-        const productResponse = await fetch("api/product");
+        const productResponse = await fetch("api/shop");
 
         if (!productResponse.ok) {
           throw new Error("Failed to fetch products");
