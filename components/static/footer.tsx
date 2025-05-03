@@ -33,7 +33,7 @@ const itemVariants = {
 
 const categories = [
   { name: "صفحه اصلی", href: "/" },
-  { name: "محصولات", href: "/products" },
+  { name: "محصولات", href: "/shop" },
   { name: "راهنما", href: "/help" },
   { name: "درباره ما", href: "/about" },
   { name: "وبلاگ", href: "/blog" },
@@ -41,11 +41,11 @@ const categories = [
 ];
 
 const services = [
-  { name: "طراحی وب سایت", href: "/services/web-development" },
-  { name: "اپلیکیشن موبایل", href: "/services/mobile-apps" },
-  { name: "طراحی رابط کاربری", href: "/services/design" },
-  { name: "مشاوره فنی", href: "/services/consulting" },
-  { name: "خدمات ابری", href: "/services/cloud" },
+  { name: "پیراهن مردانه", href: "/shop/mens-shirts" },
+  { name: "شلوار جین", href: "/shop/jeans" },
+  { name: "کت و شلوار", href: "/shop/suits" },
+  { name: "لباس ورزشی", href: "/shop/sportswear" },
+  { name: "کفش و کتانی", href: "/shop/footwear" },
 ];
 
 const Footer = () => {
