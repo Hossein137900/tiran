@@ -3,7 +3,8 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Product } from "@/lib/product";
+import { Product } from "@/types/type";
+// import { Product } from "@/lib/product";
 
 interface ProductSliderProps {
   products: Product[];
@@ -90,23 +91,23 @@ export default function ProductSlider({
                 <div className="flex flex-col md:flex-row">
                   <div className="relative w-full md:w-1/2 aspect-square">
                     <Image
-                      src={products[currentIndex].primaryImage}
-                      alt={products[currentIndex].name}
+                      src={ "/assets/images/fashion/1.avif"}
+                      alt={products[currentIndex].page_title}
                       fill
                       className="object-cover"
                       priority
                     />
                     <div className="absolute top-4 right-4 bg-black text-white text-sm font-bold px-3 py-1 rounded-full">
-                      {products[currentIndex].category}
+                      {products[currentIndex].brandMain}
                     </div>
                   </div>
                   <div className="p-6 md:p-8 w-full md:w-1/2 flex flex-col justify-between">
                     <div>
                       <h3 className="text-2xl font-bold mb-3">
-                        {products[currentIndex].name}
+                        {products[currentIndex].en_name}
                       </h3>
                       <p className="text-gray-600 mb-6">
-                        {products[currentIndex].description}
+                        {products[currentIndex].seo_description}
                       </p>
 
                       <div className="flex items-center mb-4">
@@ -134,7 +135,7 @@ export default function ProductSlider({
 
                       <div className="flex items-center gap-4 mb-6">
                         <span className="text-2xl font-bold text-black">
-                          {products[currentIndex].price.toLocaleString()} تومان
+                          {products[currentIndex].store_stock.toLocaleString()} تومان
                         </span>
                       </div>
                     </div>

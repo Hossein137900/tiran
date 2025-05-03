@@ -3,7 +3,17 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { categories, navItems } from "../../lib/navbarData";
+import {
+  navItems,
+  categoryItemVariants,
+  categoryVariants,
+  desktopCategoryItemVariants,
+  desktopCategoryRowVariants,
+  itemVariants,
+  logoVariants,
+  mobileMenuVariants,
+} from "../../lib/navbarData";
+
 import {
   RiShoppingBag3Line,
   RiUser3Line,
@@ -12,8 +22,12 @@ import {
   RiArrowRightSLine,
 } from "react-icons/ri";
 import { usePathname } from "next/navigation";
+import { useCart } from "@/context/cartContext";
+import { Category } from "@/types/type";
 
 const Navbar = () => {
+  const { totalItems } = useCart();
+
   const [isOpen, setIsOpen] = useState(false);
   const [activeItem, setActiveItem] = useState("/");
   const [expandedCategory, setExpandedCategory] = useState(false);
@@ -21,6 +35,7 @@ const Navbar = () => {
   const [scrolledPastHero] = useState(false);
   const [isNavbarVisible, setIsNavbarVisible] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
   const prevScrollY = useRef(0);
   const pathname = usePathname();
   console.log(isNavbarVisible);
@@ -31,14 +46,32 @@ const Navbar = () => {
     setActiveItem(pathname);
   }, [pathname]);
 
+  const fetchCategories = async () => {
+    const data = await fetch("/api/category", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!data.ok) {
+      console.error("Failed to fetch categories data");
+      return;
+    }
+    const categoriesData = await data.json();
+    setCategories(categoriesData.data);
+  };
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
   // Handle scroll effect for shadow
   useEffect(() => {
     const handleScroll = () => {
       const navbar = document.getElementById("navbar");
       if (window.scrollY > 10) {
-        navbar?.classList.add("shadow-lg");
+        navbar?.classList.add("shadow-md");
       } else {
-        navbar?.classList.remove("shadow-lg");
+        navbar?.classList.remove("shadow-md");
       }
     };
 
@@ -68,112 +101,6 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  // Animation variants definitions (keep all your existing variants here)
-  const mobileMenuVariants = {
-    closed: {
-      opacity: 0,
-      height: 0,
-      transition: {
-        duration: 0.3,
-        ease: "easeInOut",
-        when: "afterChildren",
-      },
-    },
-    open: {
-      opacity: 1,
-      height: "auto",
-      transition: {
-        duration: 0.4,
-        ease: "easeInOut",
-        when: "beforeChildren",
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants = {
-    closed: {
-      opacity: 0,
-      x: -20,
-      transition: { duration: 0.2 },
-    },
-    open: {
-      opacity: 1,
-      x: 0,
-      transition: { duration: 0.4, ease: "easeOut" },
-    },
-  };
-
-  const categoryVariants = {
-    closed: {
-      opacity: 0,
-      height: 0,
-      transition: { duration: 0.2 },
-    },
-    open: {
-      opacity: 1,
-      height: "auto",
-      transition: {
-        duration: 0.3,
-        ease: "easeOut",
-        staggerChildren: 0.05,
-        delayChildren: 0.1,
-      },
-    },
-  };
-
-  const categoryItemVariants = {
-    closed: { opacity: 0, x: -10 },
-    open: { opacity: 1, x: 0 },
-  };
-
-  const logoVariants = {
-    initial: { scale: 0.8, opacity: 0 },
-    animate: {
-      scale: 1,
-      opacity: 1,
-      transition: {
-        duration: 0.5,
-        ease: "easeOut",
-      },
-    },
-    hover: {
-      scale: 1.05,
-      transition: {
-        duration: 0.2,
-        ease: "easeInOut",
-        yoyo: Infinity,
-      },
-    },
-  };
-
-  const desktopCategoryRowVariants = {
-    hidden: { opacity: 0, y: -10 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.5,
-        when: "beforeChildren",
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const desktopCategoryItemVariants = {
-    hidden: { opacity: 0, y: -5 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.3 },
-    },
-    hover: {
-      scale: 1.05,
-      color: "#000",
-      transition: { duration: 0.2 },
-    },
-  };
 
   // Don't render anything during SSR to prevent hydration mismatch
   if (!isMounted) {
@@ -275,7 +202,7 @@ const Navbar = () => {
                     animate={{ scale: 1 }}
                     className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center"
                   >
-                    0
+                    {totalItems}
                   </motion.span>
                 </motion.div>
               </Link>
@@ -345,6 +272,7 @@ const Navbar = () => {
       </div>
 
       {/* Categories Row - Desktop */}
+      {/* Categories Row - Desktop */}
       <motion.div
         className="hidden md:block"
         transition={{ duration: 0.3, ease: "easeInOut" }}
@@ -356,9 +284,9 @@ const Navbar = () => {
             initial="hidden"
             animate="visible"
           >
-            {categories.map((category, index) => (
+            {categories.map((category, index: number) => (
               <motion.div
-                key={category.name}
+                key={category.id}
                 variants={desktopCategoryItemVariants}
                 whileHover="hover"
                 whileTap={{ scale: 0.95 }}
@@ -366,43 +294,51 @@ const Navbar = () => {
                 onMouseEnter={() => setHoveredCategory(index)}
                 onMouseLeave={() => setHoveredCategory(null)}
               >
-                <Link href={category.href}>
+                <Link
+                  href={`/category/${category.slug}`}
+                  onClick={() => setIsOpen(!isOpen)}
+                >
                   <span className="block px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-black rounded-md hover:bg-gray-50 transition-colors duration-200">
-                    {category.name}
+                    {category.cat_name}
                   </span>
                 </Link>
 
                 {/* Dropdown for subcategories */}
                 <AnimatePresence>
-                  {hoveredCategory === index && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10, height: 0 }}
-                      animate={{ opacity: 1, y: 0, height: "auto" }}
-                      exit={{ opacity: 0, y: 10, height: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="absolute top-full right-0 mt-1 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50 overflow-hidden"
-                      style={{ transformOrigin: "top center" }}
-                    >
-                      <div className="py-2">
-                        {category.subcategories.map((subcategory) => (
-                          <motion.div
-                            key={subcategory.name}
-                            whileHover={{
-                              x: 5,
-                              backgroundColor: "rgba(0,0,0,0.05)",
-                            }}
-                            className="block"
-                          >
-                            <Link href={subcategory.href}>
-                              <span className="block px-4 py-2 text-sm text-gray-700 hover:text-black">
-                                {subcategory.name}
-                              </span>
-                            </Link>
-                          </motion.div>
-                        ))}
-                      </div>
-                    </motion.div>
-                  )}
+                  {hoveredCategory === index &&
+                    category.children &&
+                    category.children.length > 0 && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, height: 0 }}
+                        animate={{ opacity: 1, y: 0, height: "auto" }}
+                        exit={{ opacity: 0, y: 10, height: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute top-full right-0 mt-1 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50 overflow-hidden"
+                        style={{ transformOrigin: "top center" }}
+                      >
+                        <div className="py-2">
+                          {category.children.map((subcategory) => (
+                            <motion.div
+                              key={subcategory.id}
+                              whileHover={{
+                                x: 5,
+                                backgroundColor: "rgba(0,0,0,0.05)",
+                              }}
+                              className="block"
+                            >
+                              <Link
+                                href={`/category/${subcategory.slug}`}
+                                onClick={() => setIsOpen(!isOpen)}
+                              >
+                                <span className="block px-4 py-2 text-sm text-gray-700 hover:text-black">
+                                  {subcategory.cat_name}
+                                </span>
+                              </Link>
+                            </motion.div>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
                 </AnimatePresence>
               </motion.div>
             ))}
@@ -418,15 +354,16 @@ const Navbar = () => {
             animate="open"
             exit="closed"
             variants={mobileMenuVariants}
-            className="md:hidden bg-white/5 overflow-hidden"
+            className="md:hidden bg-white/80 overflow-hidden"
           >
             <div className="px-4 pt-2 pb-5 space-y-1">
               {/* Categories section in mobile menu */}
               {/* Inside the mobile menu, update the categories section */}
+              {/* Inside the mobile menu, update the categories section */}
               <motion.div variants={itemVariants} className="mb-2">
                 <motion.button
                   onClick={() => setExpandedCategory(!expandedCategory)}
-                  className="w-full flex items-center justify-between px-4 py-3 rounded-lg text-base font-medium text-gray-50 hover:bg-gray-50"
+                  className="w-full flex items-center justify-between px-4 py-3 rounded-lg text-base font-medium text-black hover:bg-gray-50"
                   whileHover={{ x: 5 }}
                   whileTap={{ scale: 0.98 }}
                 >
@@ -450,65 +387,75 @@ const Navbar = () => {
                     >
                       <div className="py-1">
                         {categories.map((category, index) => (
-                          <div key={category.name}>
+                          <div key={category.id}>
                             <motion.div
                               variants={categoryItemVariants}
                               whileHover={{ x: 5 }}
                               whileTap={{ scale: 0.98 }}
                               className="flex items-center justify-between"
                             >
-                              <Link href={category.href}>
-                                <span className="block px-4 py-2 text-sm font-medium text-gray-50 hover:text-black">
-                                  {category.name}
+                              <Link
+                                href={`/category/${category.slug}`}
+                                onClick={() => setIsOpen(!isOpen)}
+                              >
+                                <span className="block px-4 py-2 text-sm font-medium text-black hover:text-black">
+                                  {category.cat_name}
                                 </span>
                               </Link>
-                              <motion.button
-                                onClick={() => {
-                                  if (hoveredCategory === index) {
-                                    setHoveredCategory(null);
-                                  } else {
-                                    setHoveredCategory(index);
-                                  }
-                                }}
-                                className="px-4 py-2"
-                                whileTap={{ scale: 0.9 }}
-                              >
-                                <motion.div
-                                  animate={{
-                                    rotate:
-                                      hoveredCategory === index ? 270 : 90,
-                                  }}
-                                  transition={{ duration: 0.2 }}
-                                >
-                                  <RiArrowRightSLine className="h-4 text-gray-50 w-4" />
-                                </motion.div>
-                              </motion.button>
+                              {category.children &&
+                                category.children.length > 0 && (
+                                  <motion.button
+                                    onClick={() => {
+                                      if (hoveredCategory === index) {
+                                        setHoveredCategory(null);
+                                      } else {
+                                        setHoveredCategory(index);
+                                      }
+                                    }}
+                                    className="px-4 py-2"
+                                    whileTap={{ scale: 0.9 }}
+                                  >
+                                    <motion.div
+                                      animate={{
+                                        rotate:
+                                          hoveredCategory === index ? 270 : 90,
+                                      }}
+                                      transition={{ duration: 0.2 }}
+                                    >
+                                      <RiArrowRightSLine className="h-4 text-black w-4" />
+                                    </motion.div>
+                                  </motion.button>
+                                )}
                             </motion.div>
 
                             <AnimatePresence>
-                              {hoveredCategory === index && (
-                                <motion.div
-                                  initial={{ height: 0, opacity: 0 }}
-                                  animate={{ height: "auto", opacity: 1 }}
-                                  exit={{ height: 0, opacity: 0 }}
-                                  transition={{ duration: 0.2 }}
-                                  className="overflow-hidden bg-gray-50/10 mr-6 border-r border-gray-200"
-                                >
-                                  {category.subcategories.map((subcategory) => (
-                                    <motion.div
-                                      key={subcategory.name}
-                                      whileHover={{ x: 5 }}
-                                      whileTap={{ scale: 0.98 }}
-                                    >
-                                      <Link href={subcategory.href}>
-                                        <span className="block px-4 py-1.5 text-xs font-medium text-gray-800 hover:text-black">
-                                          {subcategory.name}
-                                        </span>
-                                      </Link>
-                                    </motion.div>
-                                  ))}
-                                </motion.div>
-                              )}
+                              {hoveredCategory === index &&
+                                category.children &&
+                                category.children.length > 0 && (
+                                  <motion.div
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: "auto", opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    transition={{ duration: 0.2 }}
+                                    className="overflow-hidden bg-gray-50/10 mr-6 border-r border-gray-200"
+                                  >
+                                    {category.children.map((subcategory) => (
+                                      <motion.div
+                                        key={subcategory.id}
+                                        whileHover={{ x: 5 }}
+                                        whileTap={{ scale: 0.98 }}
+                                      >
+                                        <Link
+                                          href={`/category/${subcategory.slug}`}
+                                        >
+                                          <span className="block px-4 py-1.5 text-xs font-medium text-gray-800 hover:text-black">
+                                            {subcategory.cat_name}
+                                          </span>
+                                        </Link>
+                                      </motion.div>
+                                    ))}
+                                  </motion.div>
+                                )}
                             </AnimatePresence>
                           </div>
                         ))}
@@ -529,10 +476,11 @@ const Navbar = () => {
                     <motion.div
                       whileHover={{ x: 5, backgroundColor: "rgba(0,0,0,0.05)" }}
                       whileTap={{ scale: 0.98 }}
+                      onClick={() => setIsOpen(!isOpen)}
                       className={`block px-4 py-3 rounded-lg text-base font-medium transition-colors ${
                         activeItem === item.href
                           ? "text-black font-bold bg-gray-50"
-                          : "text-gray-50"
+                          : "text-black"
                       }`}
                     >
                       {item.name}
@@ -545,33 +493,33 @@ const Navbar = () => {
                 variants={itemVariants}
                 className="flex justify-between items-center mt-6 pt-4 border-t border-gray-200"
               >
-                <Link href="/auth">
+                <Link href="/auth" onClick={() => setIsOpen(!isOpen)}>
                   <motion.div
                     whileHover={{
                       scale: 1.05,
                       backgroundColor: "rgba(0,0,0,0.05)",
                     }}
                     whileTap={{ scale: 0.95 }}
-                    className="flex items-center px-4 py-3 rounded-lg text-base font-medium text-gray-200"
+                    className="flex items-center px-4 py-3 rounded-lg text-base font-medium text-black"
                   >
                     <RiUser3Line className="ml-2 h-5 w-5" />
                     ورود / ثبت نام
                   </motion.div>
                 </Link>
 
-                <Link href="/cart">
+                <Link href="/cart" onClick={() => setIsOpen(!isOpen)}>
                   <motion.div
                     whileHover={{
                       scale: 1.05,
                       backgroundColor: "rgba(0,0,0,0.05)",
                     }}
                     whileTap={{ scale: 0.95 }}
-                    className="flex items-center px-4 py-3 rounded-lg text-base font-medium text-gray-200"
+                    className="flex items-center px-4 py-3 rounded-lg text-base font-medium text-black"
                   >
                     <RiShoppingBag3Line className="ml-2 h-5 w-5" />
                     سبد خرید
                     <span className="mr-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                      0
+                      {totalItems}
                     </span>
                   </motion.div>
                 </Link>

@@ -3,160 +3,140 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import {
-  BiUser,
-  BiPhone,
-  BiLock,
-  BiLockAlt,
-  BiLogIn,
-  BiUserPlus,
-} from "react-icons/bi";
+import { BiPhone, BiLock, BiLogIn } from "react-icons/bi";
 
 const AuthPage = () => {
-  const [isLogin, setIsLogin] = useState(true);
+  const [step, setStep] = useState(1); // Step 1: Phone number, Step 2: SMS code
   const [formData, setFormData] = useState({
-    name: "",
     phone: "",
-    password: "",
-    confirmPassword: "",
+    smsCode: "",
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [isLoading, setIsLoading] = useState(false);
 
-  const validateForm = () => {
+  const validatePhoneForm = () => {
     const newErrors: { [key: string]: string } = {};
-
-    if (!isLogin && formData.name.length < 3) {
-      newErrors.name = "نام باید حداقل ۳ حرف باشد";
-    }
 
     if (formData.phone.length !== 11) {
       newErrors.phone = "شماره موبایل باید ۱۱ رقم باشد";
-    }
-
-    if (formData.password.length < 6) {
-      newErrors.password = "رمز عبور باید حداقل ۶ کاراکتر باشد";
-    }
-
-    if (!isLogin && formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "رمز عبور مطابقت ندارد";
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleLogin = async (phoneNumber: string, password: string) => {
+  const validateSmsForm = () => {
+    const newErrors: { [key: string]: string } = {};
+
+    if (formData.smsCode.length < 4) {
+      newErrors.smsCode = "کد تایید را به درستی وارد کنید";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSendPhoneNumber = async () => {
     try {
-      const response = await fetch("/api/auth/login", {
+      setIsLoading(true);
+      const username = formData.phone;
+      const sent_sms = true;
+      const application = 0;
+
+      const response = await fetch("/api/auth", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ phoneNumber, password }),
+        body: JSON.stringify({ username, sent_sms, application }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        toast.error(data.message || "Login failed");
+        toast.error(data.message || "خطا در ارسال کد تایید");
+        return false;
       }
 
-      localStorage.setItem("token", data.token);
-      return {
-        token: data.token,
-        user: {
-          id: data.userId,
-          name: formData.name, // You may want to get this from the response
+      toast.success("کد تایید به شماره موبایل شما ارسال شد", {
+        style: {
+          background: "#333",
+          color: "#fff",
         },
-      };
+      });
+
+      return true;
     } catch (error) {
       console.log(error);
-      toast.error("Login failed");
+      toast.error("خطا در ارسال کد تایید");
+      return false;
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleSignup = async (
-    name: string,
-    phoneNumber: string,
-    password: string
-  ) => {
+  const handleVerifySmsCode = async () => {
     try {
-      const username = phoneNumber;
-      const sent_sms = true;
-      const application = 0;
-      const response = await fetch(
-        "https://tiran.shop.hesabroclub.ir/api/web/shop-v1/site/pre-sign-in",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ username, sent_sms, application }),
-        }
-      );
+      setIsLoading(true);
+      const response = await fetch("/api/auth/verify", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: formData.phone,
+          sms_code: formData.smsCode,
+          application: 1,
+        }),
+      });
 
       const data = await response.json();
 
       if (!response.ok) {
-        toast.error(data.message || "Signup failed");
+        toast.error(data.message || "کد تایید نامعتبر است");
+        return false;
       }
 
-      localStorage.setItem("token", data.token);
-      return {
-        token: data.token,
-        user: {
-          name: data.username,
+      // Save token to localStorage
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+      }
+
+      toast.success("ورود با موفقیت انجام شد", {
+        style: {
+          background: "#333",
+          color: "#fff",
         },
-      };
+      });
+
+      // Redirect to home page
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 1500);
+
+      return true;
     } catch (error) {
       console.log(error);
-      toast.error("خطا در ثبت نام");
+      toast.error("خطا در تایید کد");
+      return false;
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    if (validateForm()) {
-      try {
-        if (isLogin) {
-          const userData = await handleLogin(formData.phone, formData.password);
-          if (userData) {
-            toast.success(`خوش آمدید ${userData.user.name}`, {
-              style: {
-                background: "#333",
-                color: "#fff",
-              },
-            });
-          }
-          // window.location.href = "/";
-        } else {
-          const userData = await handleSignup(
-            formData.name,
-            formData.phone,
-            formData.password
-          );
-          if (userData) {
-            toast.success(`ثبت نام ${userData.user.name} موفقیت انجام شد`, {
-              style: {
-                background: "#333",
-                color: "#fff",
-              },
-            });
-          }
 
-          // window.location.href = "/";
+    if (step === 1) {
+      if (validatePhoneForm()) {
+        const success = await handleSendPhoneNumber();
+        if (success) {
+          setStep(2);
         }
-      } catch (error) {
-        console.log("Authentication error:", error);
-
-        toast.error("خطا در ورود به سیستم", {
-          style: {
-            background: "#333",
-            color: "#fff",
-          },
-        });
-
-        console.log("Authentication error:", error);
+      }
+    } else {
+      if (validateSmsForm()) {
+        await handleVerifySmsCode();
       }
     }
   };
@@ -208,7 +188,7 @@ const AuthPage = () => {
       >
         <AnimatePresence mode="wait">
           <motion.div
-            key={isLogin ? "login" : "signup"}
+            key={step}
             variants={containerVariants}
             initial="hidden"
             animate="visible"
@@ -218,119 +198,98 @@ const AuthPage = () => {
               variants={itemVariants}
               className="text-3xl font-bold text-gray-800 text-center mb-8 flex items-center justify-center gap-2"
             >
-              {isLogin ? "ورود" : "ثبت نام"}
-              {isLogin ? (
-                <BiLogIn className="text-gray-800" size={28} />
-              ) : (
-                <BiUserPlus className="text-gray-800" size={28} />
-              )}
+              {step === 1 ? "ورود به حساب کاربری" : "تایید کد پیامک"}
+              <BiLogIn className="text-gray-800" size={28} />
             </motion.h2>
 
             <form onSubmit={handleSubmit} className="space-y-5">
-              {!isLogin && (
+              {step === 1 ? (
                 <motion.div variants={itemVariants} className="relative">
-                  <BiUser
+                  <BiPhone
                     className="absolute right-3 top-3.5 text-gray-500"
                     size={20}
                   />
                   <input
-                    name="name"
-                    value={formData.name}
+                    name="phone"
+                    value={formData.phone}
                     onChange={handleChange}
                     className="w-full px-4 py-3 pr-10 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 focus:outline-none focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition-all"
-                    placeholder="نام و نام خانوادگی"
+                    placeholder="شماره موبایل"
+                    disabled={isLoading}
                   />
-                  {errors.name && (
+                  {errors.phone && (
                     <span className="text-red-500 text-sm block mt-1">
-                      {errors.name}
+                      {errors.phone}
                     </span>
                   )}
                 </motion.div>
-              )}
-
-              <motion.div variants={itemVariants} className="relative">
-                <BiPhone
-                  className="absolute right-3 top-3.5 text-gray-500"
-                  size={20}
-                />
-                <input
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 pr-10 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 focus:outline-none focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition-all"
-                  placeholder="شماره موبایل"
-                />
-                {errors.phone && (
-                  <span className="text-red-500 text-sm block mt-1">
-                    {errors.phone}
-                  </span>
-                )}
-              </motion.div>
-
-              <motion.div variants={itemVariants} className="relative">
-                <BiLock
-                  className="absolute right-3 top-3.5 text-gray-500"
-                  size={20}
-                />
-                <input
-                  name="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 pr-10 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 focus:outline-none focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition-all"
-                  placeholder="رمز عبور"
-                />
-                {errors.password && (
-                  <span className="text-red-500 text-sm block mt-1">
-                    {errors.password}
-                  </span>
-                )}
-              </motion.div>
-
-              {!isLogin && (
-                <motion.div variants={itemVariants} className="relative">
-                  <BiLockAlt
-                    className="absolute right-3 top-3.5 text-gray-500"
-                    size={20}
-                  />
-                  <input
-                    name="confirmPassword"
-                    type="password"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 pr-10 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 focus:outline-none focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition-all"
-                    placeholder="تکرار رمز عبور"
-                  />
-                  {errors.confirmPassword && (
-                    <span className="text-red-500 text-sm block mt-1">
-                      {errors.confirmPassword}
-                    </span>
-                  )}
-                </motion.div>
+              ) : (
+                <>
+                  <motion.div
+                    variants={itemVariants}
+                    className="text-center mb-4"
+                  >
+                    <p className="text-gray-600">
+                      کد تایید به شماره {formData.phone} ارسال شد
+                    </p>
+                  </motion.div>
+                  <motion.div variants={itemVariants} className="relative">
+                    <BiLock
+                      className="absolute right-3 top-3.5 text-gray-500"
+                      size={20}
+                    />
+                    <input
+                      name="smsCode"
+                      value={formData.smsCode}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 pr-10 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 focus:outline-none focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition-all"
+                      placeholder="کد تایید"
+                      disabled={isLoading}
+                    />
+                    {errors.smsCode && (
+                      <span className="text-red-500 text-sm block mt-1">
+                        {errors.smsCode}
+                      </span>
+                    )}
+                  </motion.div>
+                </>
               )}
 
               <motion.button
                 variants={itemVariants}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full py-3.5 mt-6 rounded-xl bg-gray-100 border text-black font-bold hover:bg-white transition-all duration-300 flex items-center justify-center gap-2 shadow-md"
+                className={`w-full py-3.5 mt-6 rounded-xl bg-gray-100 border text-black font-bold hover:bg-white transition-all duration-300 flex items-center justify-center gap-2 shadow-md ${
+                  isLoading ? "opacity-70 cursor-not-allowed" : ""
+                }`}
                 type="submit"
+                disabled={isLoading}
               >
-                {isLogin ? <BiLogIn size={20} /> : <BiUserPlus size={20} />}
-                {isLogin ? "ورود" : "ثبت نام"}
+                <BiLogIn size={20} />
+                {isLoading
+                  ? "در حال پردازش..."
+                  : step === 1
+                  ? "دریافت کد تایید"
+                  : "ورود"}
               </motion.button>
             </form>
 
-            <motion.div variants={itemVariants} className="text-center mt-8">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                onClick={() => setIsLogin(!isLogin)}
-                className="text-gray-600 hover:text-black transition-colors flex items-center justify-center gap-2 mx-auto font-medium"
-              >
-                {isLogin ? "ثبت نام نکرده‌اید؟" : "قبلاً ثبت نام کرده‌اید؟"}
-                {isLogin ? <BiUserPlus size={20} /> : <BiLogIn size={20} />}
-              </motion.button>
-            </motion.div>
+            {step === 2 && (
+              <motion.div variants={itemVariants} className="text-center mt-8">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  onClick={() => {
+                    setStep(1);
+                    setFormData((prev) => ({ ...prev, smsCode: "" }));
+                    setErrors({});
+                  }}
+                  className="text-gray-600 hover:text-black transition-colors flex items-center justify-center gap-2 mx-auto font-medium"
+                  disabled={isLoading}
+                >
+                  تغییر شماره موبایل
+                </motion.button>
+              </motion.div>
+            )}
           </motion.div>
         </AnimatePresence>
       </motion.div>

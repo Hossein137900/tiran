@@ -3,38 +3,55 @@ import DynamicHero from "@/components/global/dynamicHero";
 import ExampleImageGrid from "@/components/global/ExampleImageGrid";
 import HeroSection from "@/components/global/herosection";
 import ProductSlider from "@/components/global/productSlide";
+import ProductCarousel from "@/components/global/productSlider";
 import HomeBlogs from "@/components/global/showBlogs";
-import { products } from "@/lib/product";
+import { Product } from "@/types/type";
+import { useEffect, useState } from "react";
 
 export default function Home() {
+  const [products, setProducts] = useState<Product[]>([]);
+
+  const fetchProducts = async () => {
+    const res = await fetch("/api/product", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!res.ok) {
+      throw new Error("Failed to fetch data");
+    }
+    const data = await res.json();
+    setProducts(data.data.items);
+    return data.items;
+  };
+  useEffect(() => {
+    fetchProducts();
+  }, []);
   const heroSlides = [
     {
       id: 1,
       image: "/assets/images/fashion/1.avif",
-      title: "Welcome to Tiran",
+      title: "به تیران خوش آمدید",
       description:
-        "Discover our innovative solutions designed to transform your business",
-      ctaText: "Explore Now",
+        "راهکارهای نوآورانه ما را کشف کنید که برای تحول کسب و کار شما طراحی شده‌اند",
+      ctaText: "اکنون کاوش کنید",
       ctaLink: "/services",
     },
     {
       id: 2,
       image: "/assets/images/fashion/2.avif",
-      title: "Cutting-Edge Technology",
-      description:
-        "Leveraging the latest advancements to deliver exceptional results",
-      ctaText: "Learn More",
+      title: "فناوری پیشرفته",
+      description: "بهره‌گیری از آخرین پیشرفت‌ها برای ارائه نتایج استثنایی",
+      ctaText: "بیشتر بدانید",
       ctaLink: "/technology",
-      // Optional video background
-      // videoBackground: '/videos/tech-background.mp4',
     },
     {
       id: 3,
       image: "/assets/images/fashion/3.avif",
-      title: "Expert Team",
-      description:
-        "Our professionals bring years of experience to every project",
-      ctaText: "Meet Our Team",
+      title: "تیم متخصص",
+      description: "متخصصان ما سال‌ها تجربه را به هر پروژه می‌آورند",
+      ctaText: "با تیم ما آشنا شوید",
       ctaLink: "/about",
     },
   ];
@@ -44,23 +61,23 @@ export default function Home() {
       <HeroSection
         slides={heroSlides}
         autoPlayInterval={6000}
-        height="100vh"
-        showMuteControl={false} // Set to true if using video backgrounds
+        height="60vh"
+        showMuteControl={false}
       />
-      <ExampleImageGrid />
-      <DynamicHero
-        title="تحول در تجربه دیجیتال شما"
-        description="در تیران، ما راهکارهای نوآورانه‌ای ایجاد می‌کنیم که برند شما را ارتقا داده و مخاطبان شما را جذب می‌کند. کشف کنید چگونه تخصص ما می‌تواند به شما در دستیابی به اهدافتان کمک کند."
-        backgroundImage="/assets/images/contact.jpg"
-        buttonText="شروع کنید"
-        buttonLink="/contact"
-        alignment="right"
-      />
-      <ProductSlider products={products} autoPlayInterval={4000}  />
-
-      <HomeBlogs />
-
-      {/* Rest of your page content */}
+      <div className="max-w-7xl mx-auto px-4 mb-8">
+        <ExampleImageGrid />
+        <DynamicHero
+          title="تحول در تجربه دیجیتال شما"
+          description="در تیران، ما راهکارهای نوآورانه‌ای ایجاد می‌کنیم که برند شما را ارتقا داده و مخاطبان شما را جذب می‌کند. کشف کنید چگونه تخصص ما می‌تواند به شما در دستیابی به اهدافتان کمک کند."
+          backgroundImage="/assets/images/contact.jpg"
+          buttonText="شروع کنید"
+          buttonLink="/contact"
+          alignment="right"
+        />
+        {/* <ProductSlider products={products} autoPlayInterval={4000} /> */}
+        <ProductCarousel products={products} />
+        <HomeBlogs />
+      </div>
     </main>
   );
 }

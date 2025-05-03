@@ -1,36 +1,107 @@
 "use client";
 
-import { products } from "@/lib/product";
+import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import ProductGallery from "@/components/static/ProductGallery";
 import ProductInfo from "@/components/static/ProductInfo";
 import ProductTabs from "@/components/static/ProductTabs";
-import ProductComments from "@/components/static/ProductComments";
+// import ProductComments from "@/components/static/ProductComments";
 import RelatedProducts from "@/components/static/RelatedProducts";
-import { usePathname } from "next/navigation";
+
+interface Product {
+  id: number;
+  slug: string;
+  page_title: string;
+  meta_tag: string | null;
+  seo_description: string;
+  fa_name: string;
+  en_name: string;
+  store_stock: number;
+  brandMain: string | null;
+  main_image_id: number | null;
+  category_id?: number;
+  description?: string;
+  price?: number;
+  discount_price?: number;
+  images?: { id: number; url: string }[];
+  specifications?: { key: string; value: string }[];
+}
 
 export default function ProductPage() {
   const pathname = usePathname();
-  const id = pathname.split("/")[2]; // This will extract the id from /blog/[id]
+  const id = pathname.split("/")[2]; // This will extract the id from /shop/[id]
 
-  const product = products.find((pro) => pro.id === id);
+  const [product, setProduct] = useState<Product | null>(null);
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  if (!product) {
-    return null;
+ 
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const response = await fetch(`/api/product/${id}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const data = await response.json();
+        console.log(data , "dddddddddddddd")
+        setProduct(data.product);
+        console.log(data.product, "product");
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching product:", error);
+        setLoading(false);
+      }
+    };
+    fetchProduct();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div>
+      </div>
+    );
   }
 
-  // Find related products (same category, excluding current product)
-  const relatedProducts = products
-    .filter((p) => p.category === product.category && p.id !== product.id)
-    .slice(0, 4);
+  if (error || !product) {
+    return (
+      <div className="container mx-auto px-4 py-12 text-center ">
+        <h3 className="text-xl font-medium text-red-600 mt-36">
+          {error || "Product not found"}
+        </h3>
+        <button
+          onClick={() => window.history.back()}
+          className="mt-4 px-4 py-2 bg-black text-white rounded-full hover:bg-gray-800 transition-colors"
+        >
+          بازگشت به فروشگاه
+        </button>
+      </div>
+    );
+  }
+
+  // Prepare images for gallery
+  const productImages = product.images || [];
+  const primaryImage = product.main_image_id
+    ? `/api/image/${product.main_image_id}`
+    : productImages[0]?.url || "/assets/images/fashion/6.avif";
+
+  const secondaryImages = productImages
+    .filter((img) => img.id !== product.main_image_id)
+    .map((img) => img.url);
 
   return (
     <main className="container mx-auto px-4 py-12" dir="rtl">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mt-36">
         {/* Product Gallery */}
         <ProductGallery
-          primaryImage={product.primaryImage}
-          secondaryImage={product.secondaryImage}
-          productName={product.name}
+          primaryImage={primaryImage}
+          secondaryImage={secondaryImages}
+          productName={product.fa_name}
         />
 
         {/* Product Information */}
@@ -41,7 +112,7 @@ export default function ProductPage() {
       <ProductTabs product={product} />
 
       {/* Product Comments */}
-      <ProductComments productId={product.id} />
+      {/* <ProductComments productId={product.id} /> */}
 
       {/* Related Products */}
       {relatedProducts.length > 0 && (

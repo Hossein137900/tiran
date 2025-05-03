@@ -1,3 +1,4 @@
+
 export const navItems = [
   { name: "فروشگاه", href: "/shop" },
   { name: "راهنما", href: "/help" },
@@ -9,75 +10,107 @@ export const navItems = [
 ];
 
 // Categories with subcategories
-export const categories = [
-  {
-    name: "لباس مردانه",
-    href: "/category/mens-clothing",
-    subcategories: [
-      { name: "پیراهن", href: "/category/mens-clothing/shirts" },
-      { name: "شلوار", href: "/category/mens-clothing/pants" },
-      { name: "کت و کاپشن", href: "/category/mens-clothing/jackets" },
-      { name: "کفش", href: "/category/mens-clothing/shoes" },
-    ],
+export const mobileMenuVariants = {
+  closed: {
+    opacity: 0,
+    height: 0,
+    transition: {
+      duration: 0.3,
+      ease: "easeInOut",
+      when: "afterChildren",
+    },
   },
-  {
-    name: "لباس زنانه",
-    href: "/category/womens-clothing",
-    subcategories: [
-      { name: "بلوز و تاپ", href: "/category/womens-clothing/tops" },
-      { name: "دامن", href: "/category/womens-clothing/skirts" },
-      { name: "شلوار", href: "/category/womens-clothing/pants" },
-      { name: "مانتو", href: "/category/womens-clothing/coats" },
-    ],
+  open: {
+    opacity: 1,
+    height: "auto",
+    transition: {
+      duration: 0.4,
+      ease: "easeInOut",
+      when: "beforeChildren",
+      staggerChildren: 0.1,
+    },
   },
-  {
-    name: "لوازم الکترونیکی",
-    href: "/category/electronics",
-    subcategories: [
-      { name: "موبایل", href: "/category/electronics/mobile" },
-      { name: "لپ تاپ", href: "/category/electronics/laptops" },
-      { name: "تبلت", href: "/category/electronics/tablets" },
-      { name: "هدفون", href: "/category/electronics/headphones" },
-    ],
+};
+
+export const itemVariants = {
+  closed: {
+    opacity: 0,
+    x: -20,
+    transition: { duration: 0.2 },
   },
-  {
-    name: "جواهرات",
-    href: "/category/jewelry",
-    subcategories: [
-      { name: "گردنبند", href: "/category/jewelry/necklaces" },
-      { name: "انگشتر", href: "/category/jewelry/rings" },
-      { name: "دستبند", href: "/category/jewelry/bracelets" },
-      { name: "گوشواره", href: "/category/jewelry/earrings" },
-    ],
+  open: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.4, ease: "easeOut" },
   },
-  {
-    name: "لوازم خانگی",
-    href: "/category/home-appliances",
-    subcategories: [
-      { name: "آشپزخانه", href: "/category/home-appliances/kitchen" },
-      { name: "دکوراسیون", href: "/category/home-appliances/decor" },
-      { name: "لوازم برقی", href: "/category/home-appliances/electronics" },
-      { name: "حمام", href: "/category/home-appliances/bathroom" },
-    ],
+};
+
+export const categoryVariants = {
+  closed: {
+    opacity: 0,
+    height: 0,
+    transition: { duration: 0.2 },
   },
-  {
-    name: "کتاب",
-    href: "/category/books",
-    subcategories: [
-      { name: "رمان", href: "/category/books/fiction" },
-      { name: "علمی", href: "/category/books/science" },
-      { name: "تاریخی", href: "/category/books/history" },
-      { name: "کودک", href: "/category/books/children" },
-    ],
+  open: {
+    opacity: 1,
+    height: "auto",
+    transition: {
+      duration: 0.3,
+      ease: "easeOut",
+      staggerChildren: 0.05,
+      delayChildren: 0.1,
+    },
   },
-  {
-    name: "ورزشی",
-    href: "/category/sports",
-    subcategories: [
-      { name: "لباس ورزشی", href: "/category/sports/clothing" },
-      { name: "کفش ورزشی", href: "/category/sports/shoes" },
-      { name: "تجهیزات", href: "/category/sports/equipment" },
-      { name: "مکمل‌ها", href: "/category/sports/supplements" },
-    ],
+};
+
+export const categoryItemVariants = {
+  closed: { opacity: 0, x: -10 },
+  open: { opacity: 1, x: 0 },
+};
+
+export const logoVariants = {
+  initial: { scale: 0.8, opacity: 0 },
+  animate: {
+    scale: 1,
+    opacity: 1,
+    transition: {
+      duration: 0.5,
+      ease: "easeOut",
+    },
   },
-];
+  hover: {
+    scale: 1.02,
+    transition: {
+      duration: 0.4,
+      ease: "easeInOut",
+      yoyo: Infinity,
+    },
+  },
+};
+
+export const desktopCategoryRowVariants = {
+  hidden: { opacity: 0, y: -10 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      when: "beforeChildren",
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+export const desktopCategoryItemVariants = {
+  hidden: { opacity: 0, y: -5 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.3 },
+  },
+  hover: {
+    scale: 1.05,
+    color: "#000",
+    transition: { duration: 0.2 },
+  },
+};

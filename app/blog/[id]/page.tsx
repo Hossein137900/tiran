@@ -71,7 +71,10 @@ export default function BlogPostPage() {
           <p className="text-gray-700 leading-relaxed mb-6">{post.excerpt}</p>
 
           {/* Placeholder content - replace with actual content from your CMS */}
-          <p className="text-gray-700 leading-relaxed mb-6">{post.content}</p>
+          <div
+            className="text-gray-700 leading-relaxed mb-6"
+            dangerouslySetInnerHTML={{ __html: post.content }}
+          />
         </div>
 
         {/* Author info */}

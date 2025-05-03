@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/static/navbar";
-import { sahel } from "@/next-persian-fonts/sahel";
+import { ray } from "@/next-persian-fonts/ray";
 import Footer from "@/components/static/footer";
 import { ToastContainer } from "react-toastify";
+import { CartProvider } from "@/context/cartContext";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -17,16 +18,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={` ${sahel.className} antialiased relative`}>
+      <body className={` ${ray.className} antialiased relative`}>
         <ToastContainer
           position="top-center"
           rtl
           draggable
           draggableDirection="x"
         />
-        <Navbar />
-        {children}
-        <Footer />
+        <CartProvider>
+          <Navbar />
+          {children}
+
+          <Footer />
+        </CartProvider>
       </body>
     </html>
   );

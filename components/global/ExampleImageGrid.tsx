@@ -38,11 +38,11 @@ const imageItems = [
 
 export default function ExampleImageGrid() {
   return (
-    <div className="bg-gray-100 py-16 mb-8">
+    <div className=" py-16 mb-8">
       <div className="container mx-auto px-4">
         <div className="text-center" dir="rtl">
-          <h2 className="text-3xl font-bold mb-4">رویدادهای ویژه</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <h2 className="md:text-3xl text-xl font-bold mb-4">رویدادهای ویژه</h2>
+          <p className="text-gray-600 border-b border-dashed pb-2 text-sm md:text-lg mb-8 max-w-2xl mx-auto">
             آخرین رویدادها و برنامه‌های ویژه تیران را دنبال کنید و از فرصت‌های
             پیش رو مطلع شوید.
           </p>

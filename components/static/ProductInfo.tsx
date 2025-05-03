@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Star, ShoppingCart, Heart, Check, Minus, Plus } from "lucide-react";
+import Image from "next/image";
+import { ShoppingCart, Heart, Check } from "lucide-react";
 import { motion } from "framer-motion";
-import { Product } from "@/lib/product";
+import { useCart } from "@/context/cartContext";
+import { Product } from "@/types/type";
 
 interface ProductInfoProps {
   product: Product;
@@ -11,204 +13,201 @@ interface ProductInfoProps {
 
 export default function ProductInfo({ product }: ProductInfoProps) {
   const [quantity, setQuantity] = useState(1);
-  const [selectedColor, setSelectedColor] = useState(
-    product.colors?.[0] || null
-  );
-  const [selectedSize, setSelectedSize] = useState(product.sizes?.[0] || null);
+  const [selectedSize, setSelectedSize] = useState("");
+  const [selectedColor, setSelectedColor] = useState("");
   const [isFavorite, setIsFavorite] = useState(false);
-  const [addedToCart, setAddedToCart] = useState(false);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const { addItem } = useCart();
 
   // Format price with discount if available
   const formattedPrice = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
-  }).format(product.price);
+  }).format(product?.variety?.price_main ?? 0);
 
-  const discountedPrice = product.discount
-    ? new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(product.price * (1 - product.discount / 100))
-    : null;
+  // Get available sizes and colors from product properties
+  const sizes =
+    product?.variety?.Properties?.filter(
+      (prop) => prop.property.title === "سایز"
+    ) || [];
+
+  const colors =
+    product?.variety?.Properties?.filter(
+      (prop) => prop.property.title === "رنگ"
+    ) || [];
 
   const handleAddToCart = () => {
-    // Here you would add the product to cart with the selected options
-    // For now, we'll just show a success animation
-    setAddedToCart(true);
-    setTimeout(() => setAddedToCart(false), 2000);
+    if (!product.store_stock) return;
+
+    // Show adding animation
+    setIsAddingToCart(true);
+
+    // Add item to cart
+    addItem({
+      id: product.id.toString(),
+      name: product.fa_name,
+      price: product.variety?.price_main ?? 0,
+      quantity: quantity,
+      image: product?.main_image_id || null,
+    });
+
+    // Reset button after animation
+    setTimeout(() => {
+      setIsAddingToCart(false);
+    }, 1500);
   };
 
+  const incrementQuantity = () => setQuantity((prev) => prev + 1);
+  const decrementQuantity = () =>
+    setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
+
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold">{product.name}</h1>
-
-      <div className="flex items-center gap-4">
-        <div className="flex items-center">
-          {[...Array(5)].map((_, i) => (
-            <Star
-              key={i}
-              size={18}
-              className={
-                i < Math.floor(product.rating)
-                  ? "fill-yellow-400 text-yellow-400"
-                  : "text-gray-300"
-              }
-            />
-          ))}
-          <span className="ml-2 text-sm text-gray-600">{product.rating}</span>
-        </div>
-
-        <span className="text-sm text-gray-500">
-          {product.inStock ? (
-            <span className="text-green-600 flex items-center">
-              <Check size={16} className="mr-1" /> موجود
-            </span>
-          ) : (
-            "Out of Stock"
-          )}
-        </span>
-      </div>
-
-      <div className="text-xl font-bold">
-        {discountedPrice ? (
-          <div className="flex items-center gap-2">
-            <span className="text-red-600">{discountedPrice}</span>
-            <span className="text-gray-500 text-lg line-through">
-              {formattedPrice}
-            </span>
-            <span className="bg-red-100 text-red-600 text-sm px-2 py-1 rounded">
-              {product.discount}% تخفیف
-            </span>
-          </div>
-        ) : (
-          <span>{formattedPrice}</span>
-        )}
-      </div>
-
-      <p className="text-gray-600">{product.description}</p>
-
-      {/* Color selection */}
-      {product.colors && product.colors.length > 0 && (
-        <div>
-          <h3 className="text-sm font-medium mb-2">رنگ: {selectedColor}</h3>
-          <div className="flex gap-2">
-            {product.colors.map((color) => (
-              <button
-                key={color}
-                onClick={() => setSelectedColor(color)}
-                className={`w-8 h-8 rounded-full transition-all ${
-                  selectedColor === color
-                    ? "ring-2 ring-offset-2 ring-black"
-                    : "ring-1 ring-gray-300"
-                }`}
-                style={{
-                  backgroundColor: color.toLowerCase(),
-                  boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.1)",
-                }}
-                title={color}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Size selection */}
-      {product.sizes && product.sizes.length > 0 && (
-        <div>
-          <h3 className="text-sm font-medium mb-2">سایز: {selectedSize}</h3>
-          <div className="flex flex-wrap gap-2">
-            {product.sizes.map((size) => (
-              <button
-                key={size}
-                onClick={() => setSelectedSize(size)}
-                className={`min-w-[3rem] h-10 px-3 rounded border transition-all ${
-                  selectedSize === size
-                    ? "border-black bg-black text-white"
-                    : "border-gray-300 hover:border-gray-400"
-                }`}
-              >
-                {size}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Quantity selector */}
-      <div>
-        <h3 className="text-sm font-medium mb-2">تعداد</h3>
-        <div className="flex items-center border border-gray-300 rounded w-fit">
-          <button
-            onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
-            className="px-3 py-2 text-gray-500 hover:bg-gray-100"
-            disabled={quantity <= 1}
-          >
-            <Minus size={16} />
-          </button>
-          <span className="px-4 py-2 text-center w-12">{quantity}</span>
-          <button
-            onClick={() => setQuantity((prev) => prev + 1)}
-            className="px-3 py-2 text-gray-500 hover:bg-gray-100"
-            disabled={!product.inStock}
-          >
-            <Plus size={16} />
-          </button>
-        </div>
-      </div>
-
-      {/* Action buttons */}
-      <div className="flex gap-3 pt-2">
-        <motion.button
-          whileTap={{ scale: 0.95 }}
-          onClick={handleAddToCart}
-          disabled={!product.inStock}
-          className={`flex-1 flex items-center justify-center gap-2 py-3 px-6 rounded-lg font-medium transition-all ${
-            product.inStock
-              ? "bg-black text-white hover:bg-blue-600"
-              : "bg-gray-200 text-gray-500 cursor-not-allowed"
-          }`}
-        >
-          <ShoppingCart size={20} />
-          {addedToCart ? (
-            <motion.span
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-            >
-              به سبد خرید شما اضافه شد!
-            </motion.span>
-          ) : (
-            "اضافه کردن به سبد خرید"
-          )}
-        </motion.button>
-
-        <motion.button
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setIsFavorite(!isFavorite)}
-          className="flex items-center justify-center p-3 rounded-lg border border-gray-300 hover:border-gray-400"
-        >
-          <Heart
-            size={20}
-            className={isFavorite ? "fill-red-500 text-red-500" : ""}
+    <div className="container mx-auto px-4 py-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Product Image */}
+        <div className="relative h-96 md:h-[500px] rounded-lg overflow-hidden">
+          <Image
+            src={
+              product.main_image_id
+                ? `/api/images/${product.main_image_id}`
+                : "/assets/images/fashion/5.avif"
+            }
+            alt={product.fa_name}
+            fill
+            className="object-cover"
+            priority
           />
-        </motion.button>
-      </div>
+        </div>
 
-      {/* Tags */}
-      {product.tags && product.tags.length > 0 && (
-        <div className="pt-4 border-t border-gray-200">
-          <div className="flex flex-wrap gap-2">
-            {product.tags.map((tag) => (
-              <span
-                key={tag}
-                className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded"
+        {/* Product Details */}
+        <div dir="rtl" className="flex flex-col">
+          <h1 className="text-3xl font-bold mb-2">{product.fa_name}</h1>
+          <p className="text-gray-600 mb-4">{product.seo_description}</p>
+
+          <div className="text-2xl font-bold mb-6">{formattedPrice}</div>
+
+          {/* Size Selection */}
+          {sizes.length > 0 && (
+            <div className="mb-6">
+              <h3 className="text-lg font-medium mb-2">سایز</h3>
+              <div className="flex flex-wrap gap-2">
+                {sizes.map((size) => (
+                  <button
+                    key={size.id}
+                    onClick={() => setSelectedSize(size.title)}
+                    className={`px-4 py-2 border rounded-md ${
+                      selectedSize === size.title
+                        ? "border-blue-500 bg-blue-50"
+                        : "border-gray-300"
+                    }`}
+                  >
+                    {size.title}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Color Selection */}
+          {colors.length > 0 && (
+            <div className="mb-6">
+              <h3 className="text-lg font-medium mb-2">رنگ</h3>
+              <div className="flex flex-wrap gap-2">
+                {colors.map((color) => (
+                  <button
+                    key={color.id}
+                    onClick={() => setSelectedColor(color.title)}
+                    className={`w-10 h-10 rounded-full border-2 ${
+                      selectedColor === color.title
+                        ? "border-blue-500"
+                        : "border-transparent"
+                    }`}
+                    style={{ backgroundColor: color.code || "#000000" }}
+                    title={color.title}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Quantity */}
+          <div className="mb-6">
+            <h3 className="text-lg font-medium mb-2">تعداد</h3>
+            <div className="flex items-center">
+              <button
+                onClick={decrementQuantity}
+                className="w-10 h-10 bg-gray-100 rounded-l-md flex items-center justify-center"
               >
-                {tag}
-              </span>
-            ))}
+                -
+              </button>
+              <div className="w-16 h-10 flex items-center justify-center border-t border-b">
+                {quantity}
+              </div>
+              <button
+                onClick={incrementQuantity}
+                className="w-10 h-10 bg-gray-100 rounded-r-md flex items-center justify-center"
+              >
+                +
+              </button>
+            </div>
+          </div>
+
+          {/* Add to Cart Button */}
+          <div className="flex gap-4">
+            <motion.button
+              disabled={!product.store_stock}
+              onClick={handleAddToCart}
+              whileHover={product.store_stock ? { scale: 1.05 } : {}}
+              whileTap={product.store_stock ? { scale: 0.95 } : {}}
+              className={`flex-1 py-3 px-6 rounded-md flex items-center justify-center gap-2 ${
+                product.store_stock
+                  ? "bg-black text-white hover:bg-blue-600 transition-colors"
+                  : "bg-gray-200 text-gray-400 cursor-not-allowed"
+              }`}
+            >
+              {isAddingToCart ? (
+                <>
+                  <Check size={20} />
+                  <span>اضافه شد</span>
+                </>
+              ) : (
+                <>
+                  <ShoppingCart size={20} />
+                  <span>افزودن به سبد خرید</span>
+                </>
+              )}
+            </motion.button>
+
+            <motion.button
+              onClick={() => setIsFavorite(!isFavorite)}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="p-3 rounded-md border border-gray-300"
+            >
+              <Heart
+                size={20}
+                className={
+                  isFavorite ? "fill-red-500 text-red-500" : "text-gray-400"
+                }
+              />
+            </motion.button>
+          </div>
+
+          {/* Additional Product Info */}
+          <div className="mt-8 border-t pt-6">
+            <h3 className="text-lg font-medium mb-2">مشخصات محصول</h3>
+            <ul className="list-disc list-inside space-y-1 text-gray-600">
+              <li>
+                دسته‌بندی: {product.variety?.category?.cat_name || "نامشخص"}
+              </li>
+              <li>موجودی: {product.store_stock > 0 ? "موجود" : "ناموجود"}</li>
+              {product.variety?.show_unit && (
+                <li>واحد: {product.variety.show_unit}</li>
+              )}
+            </ul>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
