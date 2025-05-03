@@ -33,23 +33,23 @@ export default function BlogPostPage() {
         </Link>
         {/* Header */}
         <header className="mb-8 text-center">
-          <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
+          <h1 className="text-xl md:text-4xl font-bold mb-4">{post.title}</h1>
 
-          <div className="flex items-center justify-center gap-6 text-gray-500 mb-6">
-            <div className="flex items-center">
-              <Calendar size={18} className="mr-2" />
+          <div className="flex items-center justify-center text-nowrap gap-2 md:gap-6 text-gray-500 mb-6">
+            <div className="flex text-xs items-center">
+              <Calendar size={18} className="md:ml-2" />
               {new Date(post.publishedAt).toLocaleDateString("fa-IR", {
                 year: "numeric",
                 month: "long",
                 day: "numeric",
               })}
             </div>
-            <div className="flex items-center">
-              <Clock size={18} className="mr-2" />
+            <div className="flex text-nowrap text-xs items-center">
+              <Clock size={18} className="md:ml-2" />
               {post.readTime} زمان مطالعه
             </div>
-            <div className="flex items-center">
-              <User size={18} className="mr-2" />
+            <div className="flex text-xs items-center">
+              <User size={18} className="md:ml-2" />
               {post.author.name}
             </div>
           </div>
@@ -66,7 +66,7 @@ export default function BlogPostPage() {
         </header>
 
         {/* Content */}
-        <div className="prose prose-lg max-w-none">
+        <div className="p-2">
           {/* This would be your actual blog content */}
           <p className="text-gray-700 leading-relaxed mb-6">{post.excerpt}</p>
 
@@ -87,7 +87,7 @@ export default function BlogPostPage() {
               className="object-cover"
             />
           </div>
-          <div>
+          <div className="mr-2">
             <h3 className="font-bold text-lg">{post.author.name}</h3>
             <p className="text-gray-600">
               {post.author.name || "نویسنده و محتوا ساز در تیران"}

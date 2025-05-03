@@ -22,3 +22,7 @@ body {
   color: black;
   font-family: Arial, Helvetica, sans-serif;
 }
+::selection {
+  background: blue;
+  color: white;
+}

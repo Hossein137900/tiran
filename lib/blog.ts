@@ -31,7 +31,7 @@ export const blogPosts: BlogPost[] = [
     readTime: "5 دقیقه",
     author: {
       name: "سارا محمدی",
-      avatar: "/images/authors/mohammad.jpg",
+      avatar: "/assets/images/fashion/2.avif",
     },
   },
   {
@@ -53,7 +53,7 @@ export const blogPosts: BlogPost[] = [
     readTime: "7 دقیقه",
     author: {
       name: "نیلوفر احمدی",
-      avatar: "/images/authors/zahra.jpg",
+      avatar: "/assets/images/fashion/6.avif",
     },
   },
 ];
