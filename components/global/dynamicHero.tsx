@@ -30,7 +30,6 @@ const DynamicHero = ({
 }: DynamicHeroProps) => {
   const [isVisible, setIsVisible] = useState(false);
   const [parallaxOffset, setParallaxOffset] = useState(0);
-  console.log(parallaxOffset);
 
   useEffect(() => {
     setIsVisible(true);
@@ -63,6 +62,7 @@ const DynamicHero = ({
         className="absolute inset-0 w-full h-full"
         style={{
           transition: "transform 0.1s ease-out",
+          transform: `(${parallaxOffset})`,
         }}
       >
         <Image

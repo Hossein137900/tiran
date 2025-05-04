@@ -2,7 +2,6 @@
 import DynamicHero from "@/components/global/dynamicHero";
 import ExampleImageGrid from "@/components/global/ExampleImageGrid";
 import HeroSection from "@/components/global/herosection";
-import ProductSlider from "@/components/global/productSlide";
 import ProductCarousel from "@/components/global/productSlider";
 import HomeBlogs from "@/components/global/showBlogs";
 import { Product } from "@/types/type";
@@ -12,18 +11,21 @@ export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
 
   const fetchProducts = async () => {
-    const res = await fetch("/api/shop", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (!res.ok) {
-      throw new Error("Failed to fetch data");
+    try {
+      const res = await fetch("/api/shop", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!res.ok) {
+        throw new Error("Failed to fetch data");
+      }
+      const data = await res.json();
+      setProducts(data.data.items);
+    } catch (error) {
+      console.error("Error fetching products:", error);
     }
-    const data = await res.json();
-    setProducts(data.data.items);
-    return data.items;
   };
   useEffect(() => {
     fetchProducts();

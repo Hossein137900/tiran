@@ -2,34 +2,8 @@
 import { useState, useEffect } from "react";
 import ProductCard from "./ProductCard";
 import { CartProvider } from "@/context/cartContext";
-import { Category } from "@/types/type";
-
-interface Product {
-  id: number;
-  slug: string;
-  page_title: string;
-  meta_tag: string | null;
-  seo_description: string;
-  fa_name: string;
-  en_name: string;
-  store_stock: number;
-  brandMain: any | null;
-  main_image_id: number | null;
-  category_id?: number;
-}
-
-interface ProductResponse {
-  success: boolean;
-  data: {
-    items: Product[];
-    _meta: {
-      totalCount: number;
-      pageCount: number;
-      currentPage: number;
-      perPage: number;
-    };
-  };
-}
+import { Category, Product } from "@/types/type";
+import Link from "next/link";
 
 export default function ProductGrid() {
   const [filter, setFilter] = useState("همه");
@@ -65,10 +39,11 @@ export default function ProductGrid() {
           throw new Error("Failed to fetch products");
         }
 
-        const productData: ProductResponse = await productResponse.json();
+        const productData = await productResponse.json();
 
         if (productData.success && productData.data.items) {
           setProducts(productData.data.items);
+          console.log(productData.data, "productData.data.items");
         } else {
           throw new Error("Invalid product data format");
         }
@@ -87,10 +62,16 @@ export default function ProductGrid() {
     filter === "همه"
       ? products
       : products.filter((product) => {
-          const category = categories.find(
-            (cat) => cat.id === product.category_id
+          // Check if the product's variety has a matching category or parent category
+          return (
+            product.variety &&
+            product.variety.category &&
+            // Match direct category name
+            (product.variety.category.cat_name === filter ||
+              // Match parent category name
+              (product.variety.category.parent &&
+                product.variety.category.parent.cat_name === filter))
           );
-          return category && category.cat_name === filter;
         });
 
   if (loading) {
@@ -128,7 +109,7 @@ export default function ProductGrid() {
                 : "bg-gray-100 hover:bg-gray-200"
             }`}
           >
-            All
+            همه
           </button>
 
           {categories.map((category) => (
@@ -146,22 +127,28 @@ export default function ProductGrid() {
           ))}
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {filteredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {filteredProducts.length > 0 ? (
+            filteredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))
+          ) : (
+            <div className="text-center flex flex-col justify-center items-center py-12 col-span-full">
+              <h3 className="text-xl font-medium">
+                متاسفانه محصولی با این ویژگی پیدا نشد
+              </h3>
+              <p className="text-gray-500 mt-2">
+                لطفا فیلترها را تغییر دهید یا به صفحه اصلی برگردید.
+              </p>
+              <Link
+                href="/"
+                className="mt-4 px-6 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition-colors"
+              >
+                بازگشت به صفحه اصلی
+              </Link>
+            </div>
+          )}
         </div>
-
-        {filteredProducts.length === 0 && (
-          <div className="text-center py-12">
-            <h3 className="text-xl font-medium">
-              متاسفانه محصولی با این ویژگی پیدا نشد
-            </h3>
-            <p className="text-gray-500 mt-2">
-              لطفا فیلترها را تغییر دهید یا به صفحه اصلی برگردید.
-            </p>
-          </div>
-        )}
       </div>
     </CartProvider>
   );

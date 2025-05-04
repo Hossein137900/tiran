@@ -42,7 +42,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
 }) => {
   // All state hooks
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [isAutoPlaying] = useState(true);
   const [direction, setDirection] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isClient, setIsClient] = useState(false);
@@ -53,7 +53,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({
   // All motion value hooks - MUST be called unconditionally
   const rotateX = useMotionValue(0);
   const rotateY = useMotionValue(0);
-  console.log(setIsAutoPlaying);
 
   // Set isClient to true once component mounts to enable client-only features
   useEffect(() => {

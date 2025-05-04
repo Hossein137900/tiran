@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import ProductGallery from "@/components/static/ProductGallery";
 import ProductInfo from "@/components/static/ProductInfo";
 import ProductTabs from "@/components/static/ProductTabs";
-// import ProductComments from "@/components/static/ProductComments";
 import RelatedProducts from "@/components/static/RelatedProducts";
 
 interface Product {
@@ -51,7 +50,6 @@ export default function ProductPage() {
         }
 
         const data = await response.json();
-        console.log(data, "product detail data in api route");
 
         // Make sure we're accessing the correct property based on your API response
         setProduct(data.data);
@@ -97,10 +95,6 @@ export default function ProductPage() {
   const primaryImage = product.main_image_id
     ? `/api/image/${product.main_image_id}`
     : productImages[0]?.url || "/assets/images/fashion/6.avif";
-
-  const secondaryImages = productImages
-    .filter((img) => img.id !== product.main_image_id)
-    .map((img) => img.url);
 
   return (
     <main className="container mx-auto px-4 py-12" dir="rtl">

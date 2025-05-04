@@ -26,3 +26,62 @@ body {
   background: blue;
   color: white;
 }
+/* Custom styles for the Persian date picker */
+.persian-datepicker-container {
+  width: 100%;
+}
+
+.custom-input {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  font-size: 14px;
+  text-align: right;
+  direction: rtl;
+}
+
+.custom-container {
+  width: 100%;
+}
+
+.rmdp-container {
+  width: 100%;
+}
+
+.rmdp-calendar {
+  width: 320px;
+  max-width: 100%;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.rmdp-day, .rmdp-week-day {
+  font-size: 14px;
+}
+
+.rmdp-selected {
+  background-color: #1f2937 !important;
+  color: white !important;
+}
+
+.rmdp-today {
+  border: 1px solid #1f2937 !important;
+}
+
+.rmdp-header-values {
+  font-weight: bold;
+  color: #1f2937;
+}
+
+.rmdp-arrow {
+  border-color: #1f2937;
+}
+
+.rmdp-arrow-container:hover {
+  background-color: #f7fafc;
+  box-shadow: 0 0 3px #e2e8f0;
+}
+

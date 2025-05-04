@@ -20,10 +20,12 @@ import {
   RiMenuLine,
   RiCloseLine,
   RiArrowRightSLine,
+  RiDashboardLine,
+  RiLoginCircleLine,
 } from "react-icons/ri";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useCart } from "@/context/cartContext";
-import { Category } from "@/types/type";
+import { Category, UserProfile } from "@/types/type";
 
 const Navbar = () => {
   const { totalItems } = useCart();
@@ -36,9 +38,12 @@ const Navbar = () => {
   const [isNavbarVisible, setIsNavbarVisible] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
+  const router = useRouter();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [userProfile, setUserProfile] = useState<UserProfile>();
   const prevScrollY = useRef(0);
   const pathname = usePathname();
-  console.log(isNavbarVisible);
 
   // Set isMounted to true after component mounts to ensure client-side rendering
   useEffect(() => {
@@ -84,7 +89,10 @@ const Navbar = () => {
       const currentScrollY = window.scrollY;
 
       // Show navbar when scrolling up or at the top
-      if (prevScrollY.current > currentScrollY || currentScrollY < 100) {
+      if (
+        (prevScrollY.current > currentScrollY || currentScrollY < 100,
+        isNavbarVisible)
+      ) {
         setIsNavbarVisible(true);
       }
       // Hide navbar when scrolling down significantly
@@ -101,6 +109,55 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      setIsLoading(true);
+      try {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+          setIsLoggedIn(false);
+          setIsLoading(false);
+          return;
+        }
+
+        // Verify token by making a request to the user API
+        const response = await fetch("/api/user", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+        console.log(data, "nnnnnnnnnnnnnnnnnn");
+
+        if (data.success && data.data) {
+          setIsLoggedIn(true);
+          setUserProfile(data.data);
+        } else {
+          // Token is invalid or expired
+          localStorage.removeItem("token");
+          setIsLoggedIn(false);
+        }
+      } catch (error) {
+        console.error("Error checking authentication:", error);
+        setIsLoggedIn(false);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="w-8 h-8 flex items-center justify-center">
+        <div className="w-4 h-4 border-2 border-gray-600 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   // Don't render anything during SSR to prevent hydration mismatch
   if (!isMounted) {
@@ -183,7 +240,7 @@ const Navbar = () => {
             </Link>
           </div>
           {/* Left side - Cart and Login */}
-          <div className="flex items-center">
+          <div className="flex gap-3 items-center">
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -223,6 +280,46 @@ const Navbar = () => {
                 </motion.div>
               </Link>
             </motion.div>
+            <div className="relative group">
+              {isLoggedIn ? (
+                <>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="flex items-center text-gray-700 hover:text-gray-900"
+                  >
+                    <span className="ml-1 text-sm font-medium">
+                      {userProfile?.user.username || "حساب کاربری"}
+                    </span>
+                  </motion.button>
+
+                  {/* Dropdown menu */}
+                  <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 hidden group-hover:block">
+                    <Link href="/dashboard">
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md w-full text-right"
+                      >
+                        <RiDashboardLine className="ml-2" />
+                        داشبورد کاربری
+                      </motion.button>
+                    </Link>
+                  </div>
+                </>
+              ) : (
+                <Link href="/auth">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="flex items-center text-gray-700 hover:text-gray-900"
+                  >
+                    <RiLoginCircleLine className="ml-1" />
+                    <span className="text-sm font-medium">ورود / ثبت‌نام</span>
+                  </motion.button>
+                </Link>
+              )}
+            </div>
 
             {/* Mobile menu button */}
             <div className="md:hidden">
