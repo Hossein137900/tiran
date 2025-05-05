@@ -8,6 +8,7 @@ import ProductCarousel from "@/components/global/productSlider";
 import HomeBlogs from "@/components/global/showBlogs";
 import SewingAnimation from "@/components/static/sewingAnimation";
 import { Product } from "@/types/type";
+import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
 export default function Home() {
@@ -63,9 +64,48 @@ export default function Home() {
 
   return (
     <main>
-      <div className="h-screen bg-white"></div>
-      <SewingAnimation />
-
+      <div className="pt-64"></div>
+      <div className="flex items-center justify-center flex-row h-screen">
+        <div className="w-1/3 px-8">
+          <motion.div
+            initial={{ opacity: 0, x: 100 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{
+              duration: 0.8,
+              ease: "easeOut",
+              delay: 0.5,
+            }}
+            className="text-center md:text-left"
+          >
+            <motion.h2
+              className="text-3xl md:text-4xl font-bold text-black mb-4 dir-rtl text-right"
+              initial={{ y: 20 }}
+              animate={{ y: 0 }}
+              transition={{ duration: 0.5, delay: 0.8 }}
+            >
+              تیران استایل{" "}
+            </motion.h2>
+            <motion.p
+              className="text-lg text-gray-700 mb-6 text-right mt-6 "
+              initial={{ y: 20 }}
+              animate={{ y: 0 }}
+              transition={{ duration: 0.5, delay: 1 }}
+            >
+              لذت دائمی استفاده از یک محصول
+            </motion.p>
+            {/* <motion.button
+              className="px-6 py-3 bg-black text-white rounded-full item-start ml-auto shadow-lg hover:bg-purple-700 transition-colors"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.5, delay: 1.2 }}
+            >
+            </motion.button> */}
+          </motion.div>
+        </div>
+        <SewingAnimation />
+      </div>
 
       <ImageGrow
         imageSrc="/assets/images/imagegrow.avif"
