@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useRef } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,14 +10,7 @@ interface ProductSliderProps {
 }
 
 const ProductCarousel = ({ products }: ProductSliderProps) => {
-  const [width, setWidth] = useState(0);
-  const carousel = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (carousel.current) {
-      setWidth(carousel.current.scrollWidth - carousel.current.offsetWidth);
-    }
-  }, [products]);
+  const scrollContainer = useRef<HTMLDivElement>(null);
 
   if (!products || products.length === 0) {
     return (
@@ -25,11 +18,9 @@ const ProductCarousel = ({ products }: ProductSliderProps) => {
     );
   }
 
-  console.log(products, "products in carousel");
-
   return (
-    <div className="my-8" dir="rtl">
-      <div className="flex flex-row justify-between items-center my-7 ">
+    <div className="my-8 relative mx-4 sm:mx-0" dir="rtl">
+      <div className="flex flex-row justify-between items-center my-7">
         <div>
           <h2 className="md:text-3xl font-bold">آخرین محصولات</h2>
         </div>
@@ -43,34 +34,49 @@ const ProductCarousel = ({ products }: ProductSliderProps) => {
           </Link>
         </div>
       </div>
-      <motion.div
-        ref={carousel}
-        className="overflow-hidden cursor-grab"
-        whileTap={{ cursor: "grabbing" }}
+
+      {/* Scrollable container */}
+      <div
+        ref={scrollContainer}
+        className="overflow-x-auto scrollbar-hide pb-4 -mx-4 px-4 scroll-smooth"
+        style={{
+          scrollbarWidth: "none",
+          WebkitOverflowScrolling: "touch",
+          msOverflowStyle: "none",
+        }}
       >
-        <motion.div
-          drag="x"
-          dragConstraints={{ right: 0, left: -width }}
-          className="flex"
-        >
-          {products.map((product) => (
+        <div className="flex gap-4">
+          {products.map((product, index) => (
             <motion.div
               key={product.id}
-              className="min-w-[250px] md:min-w-[300px] p-4"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5 }}
+              className="min-w-[250px] md:min-w-[300px] shadow-sm flex-shrink-0 "
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.4,
+                delay: index * 0.1,
+                ease: "easeOut",
+              }}
             >
               <Link href={`/shop/${product.slug}`}>
-                <div className="bg-white rounded-sm overflow-hidden h-full flex flex-col">
-                  <div className="relative h-48 bg-gray-100">
+                <motion.div
+                  className="bg-white rounded-sm  overflow-hidden h-full flex flex-col  transition-all duration-300"
+                  whileHover={{
+                    y: -5,
+                   
+                  }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <div className="relative h-96 w-[350px] bg-gray-100 overflow-hidden">
                     {!product.main_image_id ? (
-                      <Image
-                        src={"/assets/images/fashion/4.avif"}
-                        alt={product.page_title || "ef"}
-                        fill
-                        className="object-cover"
-                      />
+                      <motion.div transition={{ duration: 0.3 }}>
+                        <Image
+                          src={"/assets/images/fashion/4.avif"}
+                          alt={product.page_title || "ef"}
+                          fill
+                          className="object-cover aspect-[9/9]"
+                        />
+                      </motion.div>
                     ) : (
                       <div className="flex items-center justify-center h-full">
                         <span className="text-gray-400">عکس موجود نیست</span>
@@ -81,12 +87,9 @@ const ProductCarousel = ({ products }: ProductSliderProps) => {
                     <h3 className="font-semibold text-lg mb-2">
                       {product.fa_name}
                     </h3>
-                    {/* <p className="text-sm text-gray-600 mb-2">
-                      {product.en_name}
-                    </p> */}
-                    <p className="text-sm text-gray-500 line-clamp-2 mb-auto">
+                    {/* <p className="text-sm text-gray-500 line-clamp-2 mb-auto">
                       {product.seo_description}
-                    </p>
+                    </p> */}
 
                     <div className="mt-4 flex justify-between items-center">
                       <span className="text-sm">
@@ -97,16 +100,17 @@ const ProductCarousel = ({ products }: ProductSliderProps) => {
                         )}
                       </span>
                       <span className="text-sm text-black font-bold">
-                        {product.variety?.price_final || 5555000} تومان
+                        {product.variety?.price_main.toLocaleString("fa-IR")}
+                        تومان
                       </span>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               </Link>
             </motion.div>
           ))}
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
     </div>
   );
 };

@@ -91,6 +91,7 @@ const AuthPage = () => {
       });
 
       const data = await response.json();
+      console.log(data, "fronnnt");
 
       if (!response.ok) {
         toast.error(data.message || "کد تایید نامعتبر است");
@@ -98,8 +99,8 @@ const AuthPage = () => {
       }
 
       // Save token to localStorage
-      if (data.token) {
-        localStorage.setItem("token", data.token);
+      if (data.data.token) {
+        localStorage.setItem("token", data.data.token);
       }
 
       toast.success("ورود با موفقیت انجام شد", {

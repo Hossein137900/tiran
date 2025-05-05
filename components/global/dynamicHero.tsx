@@ -53,7 +53,7 @@ const DynamicHero = ({
 
   return (
     <div
-      className="relative w-full overflow-hidden"
+      className="relative mt-40 w-full overflow-hidden"
       style={{ height }}
       dir="rtl"
     >

@@ -6,6 +6,7 @@ import ProductGallery from "@/components/static/ProductGallery";
 import ProductInfo from "@/components/static/ProductInfo";
 import ProductTabs from "@/components/static/ProductTabs";
 import RelatedProducts from "@/components/static/RelatedProducts";
+import ProductComments from "@/components/static/ProductComments";
 
 interface Product {
   id: number;
@@ -111,10 +112,10 @@ export default function ProductPage() {
       </div>
 
       {/* Product Details Tabs */}
-      <ProductTabs product={product} />
+      <ProductTabs product={product}  />
 
       {/* Product Comments */}
-      {/* <ProductComments productId={product.id} /> */}
+      <ProductComments productSlug={product.slug} productId={product.id} />
 
       {/* Related Products */}
       {relatedProducts.length > 0 && (

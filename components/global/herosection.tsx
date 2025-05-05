@@ -181,7 +181,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
             fill
             priority
             className="object-cover"
-            sizes="100vw"
+            // sizes="100vw"
           />
 
           {/* Gradient overlay for better text readability */}

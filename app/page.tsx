@@ -2,8 +2,11 @@
 import DynamicHero from "@/components/global/dynamicHero";
 import ExampleImageGrid from "@/components/global/ExampleImageGrid";
 import HeroSection from "@/components/global/herosection";
+import ImageGrow from "@/components/global/imageGrow";
+import ProductSlider from "@/components/global/productSlide";
 import ProductCarousel from "@/components/global/productSlider";
 import HomeBlogs from "@/components/global/showBlogs";
+import SewingAnimation from "@/components/static/sewingAnimation";
 import { Product } from "@/types/type";
 import { useEffect, useState } from "react";
 
@@ -60,14 +63,37 @@ export default function Home() {
 
   return (
     <main>
-      <HeroSection
+      <div className="h-screen bg-white"></div>
+      <SewingAnimation />
+
+
+      <ImageGrow
+        imageSrc="/assets/images/imagegrow.avif"
+        title="Experience Luxury"
+        description="Discover our exclusive collection designed for those who appreciate the extraordinary."
+        buttonText="Explore Collection"
+        buttonLink="/collection"
+        overlayColor="rgba(0, 0, 0, 0.3)"
+        height="100vh"
+      />
+      <ExampleImageGrid />
+      <ImageGrow
+        imageSrc="/assets/images/imagegrow.avif"
+        title="Experience Luxury"
+        description="Discover our exclusive collection designed for those who appreciate the extraordinary."
+        buttonText="Explore Collection"
+        buttonLink="/collection"
+        overlayColor="rgba(0, 0, 0, 0.3)"
+        height="100vh"
+      />
+
+      {/* <HeroSection
         slides={heroSlides}
         autoPlayInterval={6000}
-        height="60vh"
+        height="80vh"
         showMuteControl={false}
-      />
+      /> */}
       <div className="max-w-7xl mx-auto px-4 mb-8">
-        <ExampleImageGrid />
         <DynamicHero
           title="تحول در تجربه دیجیتال شما"
           description="در تیران، ما راهکارهای نوآورانه‌ای ایجاد می‌کنیم که برند شما را ارتقا داده و مخاطبان شما را جذب می‌کند. کشف کنید چگونه تخصص ما می‌تواند به شما در دستیابی به اهدافتان کمک کند."

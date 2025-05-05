@@ -58,7 +58,8 @@ body {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-.rmdp-day, .rmdp-week-day {
+.rmdp-day,
+.rmdp-week-day {
   font-size: 14px;
 }
 
@@ -84,4 +85,3 @@ body {
   background-color: #f7fafc;
   box-shadow: 0 0 3px #e2e8f0;
 }
-

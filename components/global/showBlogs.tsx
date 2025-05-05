@@ -32,7 +32,7 @@ export default function HomeBlogs() {
           <Link
             key={post.id}
             href={`/blog/${post.id}`}
-            className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col h-full"
+            className="group bg-white rounded-sm overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col h-full"
           >
             <div className="relative aspect-[16/10] overflow-hidden">
               <Image

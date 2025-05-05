@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useScroll } from "framer-motion";
 import {
   navItems,
   categoryItemVariants,
@@ -26,6 +26,7 @@ import {
 import { usePathname, useRouter } from "next/navigation";
 import { useCart } from "@/context/cartContext";
 import { Category, UserProfile } from "@/types/type";
+import MegaMenu from "./megaMenu";
 
 const Navbar = () => {
   const { totalItems } = useCart();
@@ -44,6 +45,7 @@ const Navbar = () => {
   const [userProfile, setUserProfile] = useState<UserProfile>();
   const prevScrollY = useRef(0);
   const pathname = usePathname();
+  const { scrollYProgress } = useScroll();
 
   // Set isMounted to true after component mounts to ensure client-side rendering
   useEffect(() => {
@@ -130,7 +132,6 @@ const Navbar = () => {
         });
 
         const data = await response.json();
-        console.log(data, "nnnnnnnnnnnnnnnnnn");
 
         if (data.success && data.data) {
           setIsLoggedIn(true);
@@ -171,11 +172,9 @@ const Navbar = () => {
   return (
     <nav
       id="navbar"
-      className={`fixed w-full z-50 transition-all duration-500 flex flex-col ${
-        scrolledPastHero
-          ? "bg-white/90 backdrop-blur-sm text-black shadow-md"
-          : "md:bg-white/60 bg-white/10 backdrop-blur-sm text-black"
-      }`}
+      className={`fixed w-full z-50 transition-all duration-500 flex flex-col 
+           md:bg-[#F5F5F5] bg-white/10 backdrop-blur-sm text-black
+      `}
       dir="rtl"
     >
       <div className="max-w-screen">
@@ -286,7 +285,7 @@ const Navbar = () => {
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="flex items-center text-gray-700 hover:text-gray-900"
+                    className=" hidden md:flex items-center text-gray-700 hover:text-gray-900"
                   >
                     <span className="ml-1 text-sm font-medium">
                       {userProfile?.user.username || "حساب کاربری"}
@@ -330,7 +329,7 @@ const Navbar = () => {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => setIsOpen(!isOpen)}
-                className="inline-flex  items-center justify-center p-2 rounded-md hover:bg-gray-100 focus:outline-none transition-colors duration-300"
+                className="inline-flex items-center justify-center p-2 rounded-md hover:bg-gray-100 focus:outline-none transition-colors duration-300"
                 aria-expanded="false"
               >
                 <AnimatePresence mode="wait">
@@ -369,14 +368,13 @@ const Navbar = () => {
       </div>
 
       {/* Categories Row - Desktop */}
-      {/* Categories Row - Desktop */}
       <motion.div
-        className="hidden md:block"
+        className="hidden md:block relative bg-white border-b border-gray-200"
         transition={{ duration: 0.3, ease: "easeInOut" }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
-            className="flex items-center justify-center space-x-1 space-x-reverse py-2 "
+            className="flex items-center justify-center space-x-1 space-x-reverse py-2"
             variants={desktopCategoryRowVariants}
             initial="hidden"
             animate="visible"
@@ -385,62 +383,33 @@ const Navbar = () => {
               <motion.div
                 key={category.id}
                 variants={desktopCategoryItemVariants}
-                whileHover="hover"
                 whileTap={{ scale: 0.95 }}
                 className="px-1 flex-shrink-0 relative group"
                 onMouseEnter={() => setHoveredCategory(index)}
                 onMouseLeave={() => setHoveredCategory(null)}
               >
-                <Link
-                  href={`/category/${category.slug}`}
-                  onClick={() => setIsOpen(!isOpen)}
-                >
-                  <span className="block px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-black rounded-md hover:bg-gray-50 transition-colors duration-200">
+                <Link href={`/category/${category.slug}`}>
+                  <span
+                    className={`block px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-black transition-all duration-300 border-b-2 ${
+                      hoveredCategory === index
+                        ? "border-black"
+                        : "border-transparent"
+                    }`}
+                  >
                     {category.cat_name}
                   </span>
                 </Link>
-
-                {/* Dropdown for subcategories */}
-                <AnimatePresence>
-                  {hoveredCategory === index &&
-                    category.children &&
-                    category.children.length > 0 && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10, height: 0 }}
-                        animate={{ opacity: 1, y: 0, height: "auto" }}
-                        exit={{ opacity: 0, y: 10, height: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className="absolute top-full right-0 mt-1 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50 overflow-hidden"
-                        style={{ transformOrigin: "top center" }}
-                      >
-                        <div className="py-2">
-                          {category.children.map((subcategory) => (
-                            <motion.div
-                              key={subcategory.id}
-                              whileHover={{
-                                x: 5,
-                                backgroundColor: "rgba(0,0,0,0.05)",
-                              }}
-                              className="block"
-                            >
-                              <Link
-                                href={`/category/${subcategory.slug}`}
-                                onClick={() => setIsOpen(!isOpen)}
-                              >
-                                <span className="block px-4 py-2 text-sm text-gray-700 hover:text-black">
-                                  {subcategory.cat_name}
-                                </span>
-                              </Link>
-                            </motion.div>
-                          ))}
-                        </div>
-                      </motion.div>
-                    )}
-                </AnimatePresence>
               </motion.div>
             ))}
           </motion.div>
         </div>
+
+        {/* Mega Menu Component */}
+        <MegaMenu
+          categories={categories}
+          hoveredCategory={hoveredCategory}
+          setHoveredCategory={setHoveredCategory}
+        />
       </motion.div>
 
       {/* Mobile menu */}
@@ -455,8 +424,6 @@ const Navbar = () => {
           >
             <div className="px-4 pt-2 pb-5 space-y-1">
               {/* Categories section in mobile menu */}
-              {/* Inside the mobile menu, update the categories section */}
-              {/* Inside the mobile menu, update the categories section */}
               <motion.div variants={itemVariants} className="mb-2">
                 <motion.button
                   onClick={() => setExpandedCategory(!expandedCategory)}
@@ -491,10 +458,7 @@ const Navbar = () => {
                               whileTap={{ scale: 0.98 }}
                               className="flex items-center justify-between"
                             >
-                              <Link
-                                href={`/category/${category.slug}`}
-                                onClick={() => setIsOpen(!isOpen)}
-                              >
+                              <Link href={`/category/${category.slug}`}>
                                 <span className="block px-4 py-2 text-sm font-medium text-black hover:text-black">
                                   {category.cat_name}
                                 </span>
@@ -625,6 +589,10 @@ const Navbar = () => {
           </motion.div>
         )}
       </AnimatePresence>
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-1 bg-black origin-left z-50"
+        style={{ scaleX: scrollYProgress }}
+      />
     </nav>
   );
 };

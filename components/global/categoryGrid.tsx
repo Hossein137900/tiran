@@ -3,6 +3,8 @@ import { useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import { ArrowBigLeftDashIcon, ArrowLeft } from "lucide-react";
+import { FaArrowCircleRight } from "react-icons/fa";
 
 // Define the type for each image item
 interface ImageItem {
@@ -41,16 +43,16 @@ export default function ImageGrid({ images }: ImageGridProps) {
     <div className="container mx-auto px-4 mb-8" dir="rtl">
       <motion.div
         ref={gridRef}
-        className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8"
+        className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-8"
       >
         {images.map((image) => (
           <motion.div
             key={image.id}
-            className="relative aspect-video overflow-hidden rounded-sm shadow-md"
+            className="relative aspect-[5/9] overflow-hidden rounded-sm shadow-md"
             variants={itemVariants}
             whileHover={{
               scale: 1.03,
-              transition: { duration: 0.3 },
+              transition: { duration: 0.7 },
             }}
             onHoverStart={() => setHoveredId(image.id)}
             onHoverEnd={() => setHoveredId(null)}
@@ -67,9 +69,9 @@ export default function ImageGrid({ images }: ImageGridProps) {
               />
 
               {/* Gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent transition-opacity duration-300" />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/20 to-transparent transition-all duration-300" />
 
-              <div className="absolute inset-0 p-6 flex flex-col justify-end">
+              <div className="absolute inset-0 p-6 flex flex-col justify-start">
                 <AnimatePresence>
                   {hoveredId === image.id ? (
                     <motion.div
@@ -87,10 +89,11 @@ export default function ImageGrid({ images }: ImageGridProps) {
                 </AnimatePresence>
 
                 <motion.h3
-                  className="text-white text-xl md:text-2xl font-bold"
+                  className="text-white inline text-xl md:text-2xl font-medium"
                   layout
                 >
                   {image.title}
+                  <ArrowLeft className="w-5 h-5 mr-1 inline" />
                 </motion.h3>
               </div>
             </Link>
