@@ -32,7 +32,7 @@ export default function ProductPage() {
   const slug = pathname.split("/")[2]; // This will extract the slug from /shop/[slug]
 
   const [product, setProduct] = useState<Product | null>(null);
-  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const [relatedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

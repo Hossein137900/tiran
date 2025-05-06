@@ -28,6 +28,8 @@ export async function POST(request: Request) {
       },
     });
   } catch (error) {
+    console.log(error);
+
     return new Response(JSON.stringify({ error: "Internal Server Error" }), {
       status: 500,
     });

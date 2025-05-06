@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { GiClothes, GiHanger, GiLargeDress } from "react-icons/gi";
-import { TbHanger, TbShirt } from "react-icons/tb";
+import {  GiHanger } from "react-icons/gi";
+import {  TbShirt } from "react-icons/tb";
 
 export default function NotFound() {
   return (

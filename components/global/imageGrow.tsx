@@ -45,7 +45,7 @@ const ImageGrow: React.FC<ImageGrowProps> = ({
   const containerWidth = useTransform(
     scrollYProgress,
     [0.1, 0.4], // Starts later (0.1) and ends later (0.6)
-    ["10%", "100%"]
+    ["70%", "100%"]
   );
 
   const imageScale = useTransform(
@@ -59,8 +59,8 @@ const ImageGrow: React.FC<ImageGrowProps> = ({
   // Content animation based on scroll - delayed further
   const contentOpacity = useTransform(
     scrollYProgress,
-    [0.3, 0.7], // Content appears later in the animation
-    [0, 1]
+    [0.3, 0.4], // Content appears later in the animation
+    [0.1, 1]
   );
 
   const contentY = useTransform(scrollYProgress, [0.3, 0.7], [30, 0]);
@@ -69,13 +69,13 @@ const ImageGrow: React.FC<ImageGrowProps> = ({
   const borderRadius = useTransform(
     scrollYProgress,
     [0.1, 0.65],
-    ["px", "0px"]
+    ["2px", "0px"]
   );
 
   return (
     <div
       ref={sectionRef}
-      className="relative w-full overflow-hidden " // Increased margin for more scroll space
+      className="relative w-full overflow-hidden -mt-20" // Increased margin for more scroll space
       style={{ height }}
     >
       <motion.div
@@ -118,14 +118,14 @@ const ImageGrow: React.FC<ImageGrowProps> = ({
               transition={{ duration: 1.5 }} // Slowest for content
             >
               <h2
-                className="text-4xl md:text-5xl font-bold mb-4"
+                className="text-4xl md:text-5xl font-light mb-4"
                 style={{ color: titleColor }}
               >
                 {title}
               </h2>
 
               <p
-                className="text-lg md:text-xl mb-8"
+                className="text-lg md:text-xl mb-8 "
                 style={{ color: descriptionColor }}
               >
                 {description}

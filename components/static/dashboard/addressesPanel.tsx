@@ -21,13 +21,36 @@ interface Address {
   isDefault: boolean;
 }
 
+interface CustomerData {
+  id: number;
+  user: {
+    id: number;
+    username: string;
+    first_name: string | null;
+    last_name: string | null;
+    email: string | null;
+  };
+  addresses: Address[];
+  numbers: Array<{
+    id: number;
+    tell: string;
+    is_main: boolean;
+    is_verified: boolean;
+  }>;
+  total_balance: number;
+  coins: number;
+}
+
 const AddressesPanel = () => {
   const [addresses, setAddresses] = useState<Address[]>([]);
+  const [customerData, setCustomerData] = useState<CustomerData | null>(null);
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingAddressId, setEditingAddressId] = useState<number | null>(null);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+  console.log(customerData);
+
 
   const [formData, setFormData] = useState<Omit<Address, "id">>({
     title: "",
@@ -41,61 +64,55 @@ const AddressesPanel = () => {
   });
 
   useEffect(() => {
-    const fetchAddresses = async () => {
+    const fetchCustomerData = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch("/api/user/addresses", {
+        if (!token) {
+          setError("لطفا وارد حساب کاربری خود شوید");
+          setLoading(false);
+          return;
+        }
+
+        const response = await fetch("/api/profile", {
+          method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
-        const data = await response.json();
-        if (data.success) {
-          setAddresses(data.addresses || []);
+        const result = await response.json();
+
+        if (result.success) {
+          setCustomerData(result.data);
+          // Map the addresses from the API to our expected format
+          if (result.data.addresses && Array.isArray(result.data.addresses)) {
+            const formattedAddresses = result.data.addresses.map(
+              (addr: Address) => ({
+                id: addr.id,
+                title: addr.title || "آدرس",
+                recipient: addr.recipient || "",
+                province: addr.province || "",
+                city: addr.city || "",
+                address: addr.address || "",
+                postalCode: addr.postalCode || "",
+                phone: addr.phone || "",
+                isDefault: addr.isDefault || false,
+              })
+            );
+            setAddresses(formattedAddresses);
+          }
         } else {
-          setError(data.message || "خطا در دریافت آدرس‌ها");
+          setError(result.message || "خطا در دریافت اطلاعات کاربر");
         }
       } catch (error) {
-        console.error("Error fetching addresses:", error);
+        console.error("Error fetching customer data:", error);
         setError("خطا در ارتباط با سرور");
       } finally {
         setLoading(false);
       }
     };
 
-    // For demo purposes, let's create some mock data
-    const mockAddresses: Address[] = [
-      {
-        id: 1,
-        title: "منزل",
-        recipient: "حسین محمدی",
-        province: "تهران",
-        city: "تهران",
-        address:
-          "خیابان ولیعصر، بالاتر از میدان ونک، کوچه نگار، پلاک ۱۲، واحد ۳",
-        postalCode: "1234567890",
-        phone: "09123456789",
-        isDefault: true,
-      },
-      {
-        id: 2,
-        title: "محل کار",
-        recipient: "حسین محمدی",
-        province: "تهران",
-        city: "تهران",
-        address: "سعادت آباد، بلوار دریا، خیابان صراف‌ها، پلاک ۴۵، طبقه ۲",
-        postalCode: "9876543210",
-        phone: "09123456789",
-        isDefault: false,
-      },
-    ];
-
-    // Simulate API call
-    setTimeout(() => {
-      setAddresses(mockAddresses);
-      setLoading(false);
-    }, 800);
+    fetchCustomerData();
   }, []);
 
   const handleChange = (
@@ -179,11 +196,6 @@ const AddressesPanel = () => {
       setError("خطا در ارتباط با سرور");
       setTimeout(() => setError(""), 3000);
     }
-
-    // For demo purposes, simulate success
-    setAddresses(addresses.filter((address) => address.id !== id));
-    setSuccess("آدرس با موفقیت حذف شد");
-    setTimeout(() => setSuccess(""), 3000);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -251,36 +263,9 @@ const AddressesPanel = () => {
     } finally {
       setLoading(false);
     }
-
-    // For demo purposes, simulate success
-    setTimeout(() => {
-      setLoading(false);
-
-      if (editingAddressId) {
-        setAddresses(
-          addresses.map((address) =>
-            address.id === editingAddressId
-              ? { ...formData, id: editingAddressId }
-              : address
-          )
-        );
-        setSuccess("آدرس با موفقیت بروزرسانی شد");
-      } else {
-        // Generate a new ID for the demo
-        const newId = Math.max(...addresses.map((a) => a.id), 0) + 1;
-        setAddresses([...addresses, { ...formData, id: newId }]);
-        setSuccess("آدرس جدید با موفقیت اضافه شد");
-      }
-
-      setShowAddForm(false);
-      resetForm();
-      setEditingAddressId(null);
-
-      setTimeout(() => setSuccess(""), 3000);
-    }, 1000);
   };
 
-  if (loading && addresses.length === 0) {
+  if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-900"></div>
@@ -308,17 +293,6 @@ const AddressesPanel = () => {
           </motion.button>
         )}
       </div>
-
-      {success && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-6 p-4 bg-green-50 text-green-700 rounded-md flex items-center"
-        >
-          <RiCheckLine className="w-5 h-5 ml-2" />
-          {success}
-        </motion.div>
-      )}
 
       {success && (
         <motion.div

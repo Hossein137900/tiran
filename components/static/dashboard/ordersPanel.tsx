@@ -73,6 +73,7 @@ const OrdersPanel = () => {
       setOrders(mockOrders);
       setLoading(false);
     }, 800);
+    fetchOrders()
   }, []);
 
   // Format price with commas for thousands

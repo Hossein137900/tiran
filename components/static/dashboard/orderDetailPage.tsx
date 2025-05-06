@@ -120,6 +120,7 @@ export default function OrderDetailPage({
       setOrder(mockOrder);
       setLoading(false);
     }, 800);
+    fetchOrderDetail()
   }, [params.id, router]);
 
   // Format price with commas for thousands

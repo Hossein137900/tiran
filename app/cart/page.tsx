@@ -27,7 +27,9 @@ const CartPage = () => {
   // User data - in a real app, you'd fetch this from your auth system
   const [userAccount, setUserAccount] = useState<UserProfile | null>(null);
   const [userDataLoading, setUserDataLoading] = useState(true); // Shipping method options
-  const [shippingMethods, setShippingMethods] = useState([
+  console.log(userDataLoading);
+
+  const [shippingMethods] = useState([
     { id: 1, name: "پست پیشتاز", price: 30000 },
     { id: 2, name: "پیک موتوری", price: 25000 },
   ]);
@@ -41,7 +43,7 @@ const CartPage = () => {
     moment().add(1, "day").format("jYYYY/jMM/jDD")
   );
   // Payment method options
-  const [paymentMethods, setPaymentMethods] = useState([
+  const [paymentMethods] = useState([
     { id: 1, name: "پرداخت آنلاین", value: "online" },
     { id: 2, name: "پرداخت در محل", value: "cash" },
   ]);
@@ -104,33 +106,33 @@ const CartPage = () => {
   };
 
   // Handle date change from the date picker
-  const handleDateChange = (date: Date | null) => {
-    if (!date) return;
+  // const handleDateChange = (date: Date | null) => {
+  //   if (!date) return;
 
-    setSelectedDate(date);
+  //   setSelectedDate(date);
 
-    // Convert to Jalali format for API
-    const jalaliDate = jMoment(date).format("jYYYY/jMM/jDD");
-    setSelectedDeliveryDate(jalaliDate);
-  };
+  //   // Convert to Jalali format for API
+  //   const jalaliDate = jMoment(date).format("jYYYY/jMM/jDD");
+  //   setSelectedDeliveryDate(jalaliDate);
+  // };
 
   // Custom date picker input to display Jalali date
-  const CustomDatePickerInput = ({
-    value,
-    onClick,
-  }: {
-    value?: string;
-    onClick?: () => void;
-  }) => (
-    <button
-      className="w-full p-2 border border-gray-300 rounded-md text-right"
-      onClick={onClick}
-    >
-      {selectedDate
-        ? jMoment(selectedDate).format("jYYYY/jMM/jDD")
-        : "انتخاب تاریخ"}
-    </button>
-  );
+  // const CustomDatePickerInput = ({
+  //   value,
+  //   onClick,
+  // }: {
+  //   value?: string;
+  //   onClick?: () => void;
+  // }) => (
+  //   <button
+  //     className="w-full p-2 border border-gray-300 rounded-md text-right"
+  //     onClick={onClick}
+  //   >
+  //     {selectedDate
+  //       ? jMoment(selectedDate).format("jYYYY/jMM/jDD")
+  //       : "انتخاب تاریخ"}
+  //   </button>
+  // );
 
   // Handle payment method change
   const handlePaymentMethodChange = (
