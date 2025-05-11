@@ -19,7 +19,9 @@ export default function ProductGallery({
   additionalImages = [],
 }: ProductGalleryProps) {
   // Combine all images into one array
-  const allImages = [primaryImage, secondaryImage, ...additionalImages];
+  const allImages = [primaryImage, secondaryImage, ...additionalImages].filter(
+    Boolean
+  );
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isZoomed, setIsZoomed] = useState(false);
 
@@ -39,10 +41,23 @@ export default function ProductGallery({
     setCurrentImageIndex(index);
   };
 
+  // If there are no images, show a placeholder
+  if (allImages.length === 0) {
+    return (
+      <div className="space-y-4">
+        <div className="relative aspect-square rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
+          <div className="text-gray-400 text-center p-4">
+            <p>تصویری برای این محصول موجود نیست</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
       {/* Main Image */}
-      <div className="relative aspect-square rounded-lg overflow-hidden bg-gray-50">
+      <div className="relative aspect-square rounded-lg overflow-hidden ">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentImageIndex}
@@ -54,10 +69,10 @@ export default function ProductGallery({
           >
             <Image
               src={allImages[currentImageIndex]}
-              alt={`${productName} - View ${currentImageIndex + 1}`}
+              alt={`${productName} - تصویر ${currentImageIndex + 1}`}
               fill
-              sizes="(max-width: 768px) 100vw, 50vw"
-              className={`object-cover transition-transform duration-300 ${
+              // sizes="(max-width: 768px) 100vw, 50vw"
+              className={`object-contain transition-transform duration-300 ${
                 isZoomed ? "scale-150 cursor-zoom-out" : "cursor-zoom-in"
               }`}
               onClick={() => setIsZoomed(!isZoomed)}
@@ -74,7 +89,7 @@ export default function ProductGallery({
           <ZoomIn size={20} />
         </button>
 
-        {/* Navigation arrows */}
+        {/* Navigation arrows - only show if there's more than one image */}
         {allImages.length > 1 && (
           <>
             <button
@@ -93,20 +108,22 @@ export default function ProductGallery({
         )}
       </div>
 
-      {/* Thumbnails */}
+      {/* Thumbnails - only show if there's more than one image */}
       {allImages.length > 1 && (
-        <div className="flex gap-2 overflow-x-auto pb-2">
+        <div className="flex gap-2  overflow-x-auto pb-2">
           {allImages.map((image, index) => (
             <button
               key={index}
-              className={`relative w-24 aspect-square rounded overflow-hidden ${
-                currentImageIndex === index ? "ring-2 ring-black" : "opacity-70"
+              className={`relative w-24 mt-1 mr-4 aspect-square rounded overflow-hidden ${
+                currentImageIndex === index
+                  ? "ring-2 ring-black/40"
+                  : "opacity-70"
               }`}
               onClick={() => handleThumbnailClick(index)}
             >
               <Image
                 src={image}
-                alt={`${productName} thumbnail ${index + 1}`}
+                alt={`${productName} تصویر کوچک ${index + 1}`}
                 fill
                 sizes="100px"
                 className="object-cover"

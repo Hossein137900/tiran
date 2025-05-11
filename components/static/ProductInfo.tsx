@@ -5,6 +5,12 @@ import { motion } from "framer-motion";
 import { useCart } from "@/context/cartContext";
 import { Product } from "@/types/type";
 import { toast } from "react-toastify";
+import AddressModal from "./addressModal";
+import {
+  addToCart,
+  completeCheckout,
+  getCheckoutInfo,
+} from "@/middleware/checkout";
 
 // Define missing types
 interface PropertyChild {
@@ -61,9 +67,9 @@ export default function ProductInfo({ product }: ProductInfoProps) {
   const [selectedVariety, setSelectedVariety] = useState<Variety | null>(null);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [showAddressModal, setShowAddressModal] = useState(false);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
   const { addItem } = useCart();
-
-  console.log(product , "product");
 
   // Initialize with the first variety if available
   useEffect(() => {
@@ -121,7 +127,6 @@ export default function ProductInfo({ product }: ProductInfoProps) {
   // Create a flat array of all properties for backward compatibility
   // const allProperties: SizeOption[] = Object.values(propertiesByType).flat();
 
-
   // Get color information
   const color = selectedVariety?.getColor || null;
 
@@ -148,7 +153,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
     }
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!selectedVariety || selectedVariety.store_stock <= 0) {
       toast.error("این محصول در انبار موجود نیست", {
         position: "top-center",
@@ -160,32 +165,94 @@ export default function ProductInfo({ product }: ProductInfoProps) {
     // Show adding animation
     setIsAddingToCart(true);
 
-    // Add item to cart
-    addItem({
-      id: selectedVariety.id.toString(),
-      name: product.fa_name,
-      price: selectedVariety.price_main,
-      quantity: quantity,
-      image: product?.main_image_id || null,
-      size: selectedSize,
-      color: selectedColor,
-    });
+    try {
+      // Check if address exists in localStorage
+      const addressId = localStorage.getItem("address_id");
 
-    toast.info("محصول به سبد خرید اضافه شد", {
-      position: "top-center",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "colored",
-    });
+      if (!addressId) {
+        // If no address, show the address modal
+        setShowAddressModal(true);
+        return;
+      }
 
-    // Reset button after animation
-    setTimeout(() => {
-      setIsAddingToCart(false);
-    }, 1500);
+      // If address exists, proceed with adding to cart
+      await processAddToCart(parseInt(addressId));
+    } catch (error: any) {
+      toast.error(error.message || "خطا در افزودن به سبد خرید", {
+        position: "top-center",
+        autoClose: 3000,
+      });
+    } finally {
+      // Reset button after animation
+      setTimeout(() => {
+        setIsAddingToCart(false);
+      }, 1500);
+    }
+  };
+
+  const processAddToCart = async (addressId: number) => {
+    setCheckoutLoading(true);
+
+    try {
+      if (!selectedVariety) return;
+
+      // 1. Add item to local cart context
+      addItem({
+        id: selectedVariety.id.toString(),
+        name: product.fa_name,
+        price: selectedVariety.price_main,
+        quantity: quantity,
+        image: product?.main_image_id || null,
+        size: selectedSize,
+        color: selectedColor,
+      });
+
+      // 2. Add item to server cart
+      await addToCart(selectedVariety.id, quantity);
+
+      // 3. Get checkout information
+      const checkoutInfo = await getCheckoutInfo(addressId);
+
+      if (!checkoutInfo.sendMethods || checkoutInfo.sendMethods.length === 0) {
+        throw new Error("روش ارسال در دسترس نیست");
+      }
+      // 4. Use the first send method and pay method
+      const sendMethod = checkoutInfo.sendMethods[0];
+      const payMethod = checkoutInfo.payMethods[0];
+
+      // Get the first available receive date
+      let receiveDate = "";
+      if (sendMethod.receives && sendMethod.receives.length > 0) {
+        receiveDate = sendMethod.receives[0].date;
+      } else {
+        // Default to a date if none available
+        receiveDate = "1404/02/22";
+      }
+
+      // 5. Complete the checkout process
+      await completeCheckout(
+        addressId,
+        sendMethod.id,
+        payMethod.id,
+        receiveDate
+      );
+
+      toast.success("سفارش شما با موفقیت ثبت شد", {
+        position: "top-center",
+        autoClose: 3000,
+      });
+    } catch (error: any) {
+      toast.error(error.message || "خطا در تکمیل سفارش", {
+        position: "top-center",
+        autoClose: 3000,
+      });
+    } finally {
+      setCheckoutLoading(false);
+    }
+  };
+  const handleAddressCreated = (addressId: number) => {
+    // After address is created, continue with the cart process
+    processAddToCart(addressId);
   };
 
   const incrementQuantity = () => setQuantity((prev) => prev + 1);
@@ -207,7 +274,10 @@ export default function ProductInfo({ product }: ProductInfoProps) {
           {Object.entries(propertiesByType).map(
             ([propertyType, options]) =>
               options.length > 0 && (
-                <div className="mb-6 flex flex-wrap gap-2 justify-start items-center" key={propertyType}>
+                <div
+                  className="mb-6 flex flex-wrap gap-2 justify-start items-center"
+                  key={propertyType}
+                >
                   <h3 className="text-lg font-medium">{propertyType} : </h3>
                   <div className="">
                     {options.map((option) => (
@@ -288,7 +358,11 @@ export default function ProductInfo({ product }: ProductInfoProps) {
           {/* Add to Cart Button */}
           <div className="flex gap-4">
             <motion.button
-              disabled={!selectedVariety || selectedVariety.store_stock <= 0}
+              disabled={
+                !selectedVariety ||
+                selectedVariety.store_stock <= 0 ||
+                checkoutLoading
+              }
               onClick={handleAddToCart}
               whileHover={
                 (selectedVariety?.store_stock ?? 0) > 0 ? { scale: 1.05 } : {}
@@ -297,7 +371,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
                 (selectedVariety?.store_stock ?? 0) > 0 ? { scale: 0.95 } : {}
               }
               className={`flex-1 py-3 px-6 rounded-md flex items-center justify-center gap-2 ${
-                (selectedVariety?.store_stock ?? 0) > 0
+                (selectedVariety?.store_stock ?? 0) > 0 && !checkoutLoading
                   ? "bg-black text-white hover:bg-blue-600 transition-colors"
                   : "bg-gray-200 text-gray-400 cursor-not-allowed"
               }`}
@@ -307,6 +381,8 @@ export default function ProductInfo({ product }: ProductInfoProps) {
                   <Check size={20} />
                   <span>اضافه شد</span>
                 </>
+              ) : checkoutLoading ? (
+                <span>در حال پردازش...</span>
               ) : (
                 <>
                   <ShoppingCart size={20} />
@@ -348,6 +424,13 @@ export default function ProductInfo({ product }: ProductInfoProps) {
           </div>
         </div>
       </div>
+
+      {/* Address Modal */}
+      <AddressModal
+        isOpen={showAddressModal}
+        onClose={() => setShowAddressModal(false)}
+        onAddressCreated={handleAddressCreated}
+      />
     </div>
   );
 }

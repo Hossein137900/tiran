@@ -105,35 +105,6 @@ const CartPage = () => {
     setSelectedShippingMethod(Number(e.target.value));
   };
 
-  // Handle date change from the date picker
-  // const handleDateChange = (date: Date | null) => {
-  //   if (!date) return;
-
-  //   setSelectedDate(date);
-
-  //   // Convert to Jalali format for API
-  //   const jalaliDate = jMoment(date).format("jYYYY/jMM/jDD");
-  //   setSelectedDeliveryDate(jalaliDate);
-  // };
-
-  // Custom date picker input to display Jalali date
-  // const CustomDatePickerInput = ({
-  //   value,
-  //   onClick,
-  // }: {
-  //   value?: string;
-  //   onClick?: () => void;
-  // }) => (
-  //   <button
-  //     className="w-full p-2 border border-gray-300 rounded-md text-right"
-  //     onClick={onClick}
-  //   >
-  //     {selectedDate
-  //       ? jMoment(selectedDate).format("jYYYY/jMM/jDD")
-  //       : "انتخاب تاریخ"}
-  //   </button>
-  // );
-
   // Handle payment method change
   const handlePaymentMethodChange = (
     e: React.ChangeEvent<HTMLInputElement>

@@ -22,7 +22,11 @@ export interface Product {
   fa_name: string;
   en_name: string;
   store_stock: number;
-  brandMain: any | null;
+  images: Array<{
+    id: number;
+    src: string;
+  }>;
+  brandMain: string | null;
   main_image_id: number | null;
   variety: {
     id: number;

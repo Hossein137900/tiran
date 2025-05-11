@@ -51,8 +51,8 @@ export default function ProductCard({ product }: ProductCardProps) {
         >
           <Image
             src={
-              product.main_image_id
-                ? `/api/images/${product.main_image_id}`
+              product.images.length > 0
+                ? product.images[0].src
                 : "/assets/images/fashion/5.avif"
             }
             alt={product.fa_name || "محصول"}

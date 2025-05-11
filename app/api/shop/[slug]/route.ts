@@ -18,7 +18,7 @@ export async function GET(
     const productSlug = params.slug;
 
     const response = await fetch(
-      `https://tiran.shop.hesabroclub.ir/api/web/shop-v1/product/view?slug=${productSlug}&expand=varieties`,
+      `https://tiran.shop.hesabroclub.ir/api/web/shop-v1/product/view?slug=${productSlug}&expand=varieties,images`,
       {
         method: "GET",
         headers: {

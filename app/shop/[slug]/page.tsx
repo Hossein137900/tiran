@@ -23,7 +23,7 @@ interface Product {
   description?: string;
   price?: number;
   discount_price?: number;
-  images?: { id: number; url: string }[];
+  images?: { id: number; src: string }[];
   specifications?: { key: string; value: string }[];
 }
 
@@ -93,9 +93,23 @@ export default function ProductPage() {
 
   // Prepare images for gallery
   const productImages = product.images || [];
-  const primaryImage = product.main_image_id
-    ? `/api/image/${product.main_image_id}`
-    : productImages[0]?.url || "/assets/images/fashion/6.avif";
+  
+  // Get primary image - either from the first image in the array or use default
+  const primaryImage = productImages.length > 0 
+    ? productImages[0].src 
+    : "/assets/images/fashion/6.avif";
+
+    console.log(primaryImage , ".........")
+  
+  // Get secondary image - either from the second image or reuse the primary image
+  const secondaryImage = productImages.length > 1 
+    ? productImages[1].src 
+    : primaryImage;
+  
+  // Get additional images (excluding the first two that we already used)
+  const additionalImages = productImages.length > 2 
+    ? productImages.slice(2).map(img => img.src) 
+    : [];
 
   return (
     <main className="container mx-auto px-4 py-12" dir="rtl">
@@ -103,7 +117,8 @@ export default function ProductPage() {
         {/* Product Gallery */}
         <ProductGallery
           primaryImage={primaryImage}
-          secondaryImage={primaryImage}
+          secondaryImage={secondaryImage}
+          additionalImages={additionalImages}
           productName={product.fa_name}
         />
 
@@ -112,7 +127,7 @@ export default function ProductPage() {
       </div>
 
       {/* Product Details Tabs */}
-      <ProductTabs product={product}  />
+      <ProductTabs product={product} />
 
       {/* Product Comments */}
       <ProductComments productSlug={product.slug} productId={product.id} />

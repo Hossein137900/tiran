@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
   console.log(token)
   try {
     const response = await fetch(
-      "https://tiran.shop.hesabroclub.ir/api/web/shop-v1/v2/profile",
+      "https://tiran.shop.hesabroclub.ir/api/web/shop-v1/v2/profile?expand=addresses",
       {
         method: "GET",
         headers: {
@@ -18,6 +18,7 @@ export async function GET(req: NextRequest) {
     );
 
     const data = await response.json();
+    console.log(data)
 
     if (!response.ok) {
       return new Response(
