@@ -4,7 +4,6 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const addressId = searchParams.get("address_id");
-    const expand = searchParams.get("expand");
 
     const token = request.headers.get("Authorization");
 
@@ -15,13 +14,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // const url = `https://tiran.shop.hesabroclub.ir/api/web/shop-v1/v2/cart/checkout?${
-    //   addressId ? `address_id=${addressId}` : ""
-    // }${expand ? `&expand=${expand}` : ""}`;
-    const url =
-      "https://tiran.shop.hesabroclub.ir/api/web/shop-v1/v2/cart/checkout?expand=receives&address_id=114169";
-
-    console.log("Fetching checkout info from:", url);
+    const url = `https://tiran.shop.hesabroclub.ir/api/web/shop-v1/v2/cart/checkout?expand=receives&address_id=${addressId}`;
 
     const response = await fetch(url, {
       headers: {

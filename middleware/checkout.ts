@@ -1,5 +1,5 @@
 // Get checkout information based on address ID
-export const getCheckoutInfo = async () => {
+export const getCheckoutInfo = async (addressId:number) => {
   try {
     const token = localStorage.getItem("token");
     if (!token) {
