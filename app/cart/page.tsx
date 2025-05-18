@@ -36,9 +36,9 @@ const CartPage = () => {
   const [selectedShippingMethod, setSelectedShippingMethod] = useState(1);
 
   // Delivery date options
-  const [selectedDate, setSelectedDate] = useState<Date | null>(
-    new Date(Date.now() + 86400000)
-  ); // Tomorrow
+  // const [selectedDate, setSelectedDate] = useState<Date | null>(
+  //   new Date(Date.now() + 86400000)
+  // ); // Tomorrow
   const [selectedDeliveryDate, setSelectedDeliveryDate] = useState<string>(
     moment().add(1, "day").format("jYYYY/jMM/jDD")
   );
@@ -248,7 +248,9 @@ const CartPage = () => {
                       {/* Item details - same as before */}
                       <div className="flex-shrink-0 w-24 h-24 bg-gray-100 rounded-md overflow-hidden mb-4 sm:mb-0">
                         <Image
-                          src={item.image || "/assets/images/fashion/5.avif"}
+                          src={String(
+                            item.image || "/assets/images/fashion/5.avif"
+                          )}
                           alt={item.name}
                           width={96}
                           height={96}

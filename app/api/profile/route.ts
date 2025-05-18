@@ -1,10 +1,15 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+import { NextResponse } from "next/server";
+import { headers } from "next/headers";
 
-export default async function GET(req: NextApiRequest, res: NextApiResponse) {
-  const token = req.headers.authorization;
+export async function GET() {
+  const headersList = await headers();
+  const token = headersList.get("authorization");
 
   if (!token) {
-    return res.status(401).json({ success: false, message: "Unauthorized" });
+    return NextResponse.json(
+      { success: false, message: "Unauthorized" },
+      { status: 401 }
+    );
   }
 
   try {
@@ -21,20 +26,27 @@ export default async function GET(req: NextApiRequest, res: NextApiResponse) {
     const data = await response.json();
 
     if (data.success) {
-      return res.status(200).json({
-        success: true,
-        addresses: data.data.addresses || [],
-      });
+      return NextResponse.json(
+        {
+          success: true,
+          addresses: data.data.addresses || [],
+        },
+        { status: 200 }
+      );
     } else {
-      return res.status(400).json({
-        success: false,
-        message: "Failed to fetch addresses",
-      });
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Failed to fetch addresses",
+        },
+        { status: 400 }
+      );
     }
   } catch (error) {
     console.error("Error fetching addresses:", error);
-    return res
-      .status(500)
-      .json({ success: false, message: "Internal server error" });
+    return NextResponse.json(
+      { success: false, message: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

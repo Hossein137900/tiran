@@ -4,7 +4,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import LocationSelector from "../static/LocationSelector";
 import { getCheckoutInfo } from "@/middleware/checkout";
-
+interface ValidationError {
+  field: string;
+  message: string;
+}
 interface AddressModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -87,7 +90,7 @@ export default function AddressModal({
         if (result.data && Array.isArray(result.data)) {
           // Handle validation errors
           const errorMessages = result.data
-            .map((err) => `${err.field}: ${err.message}`)
+            .map((err: ValidationError) => `${err.field}: ${err.message}`)
             .join(", ");
           throw new Error(errorMessages || "خطا در ثبت آدرس");
         } else {
@@ -111,8 +114,8 @@ export default function AddressModal({
 
       // Close the modal
       onClose();
-    } catch (err: any) {
-      setError(err.message || "خطا در ثبت آدرس");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "خطا در ثبت آدرس");
     } finally {
       setLoading(false);
     }

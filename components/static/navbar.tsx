@@ -23,7 +23,7 @@ import {
   RiDashboardLine,
   RiLoginCircleLine,
 } from "react-icons/ri";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useCart } from "@/context/cartContext";
 import { Category, UserProfile } from "@/types/type";
 import MegaMenu from "./megaMenu";
@@ -35,11 +35,11 @@ const Navbar = () => {
   const [activeItem, setActiveItem] = useState("/");
   const [expandedCategory, setExpandedCategory] = useState(false);
   const [hoveredCategory, setHoveredCategory] = useState<number | null>(null);
-  const [scrolledPastHero] = useState(false);
+  // const [scrolledPastHero] = useState(false);
   const [isNavbarVisible, setIsNavbarVisible] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
-  const router = useRouter();
+  // const router = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [userProfile, setUserProfile] = useState<UserProfile>();

@@ -1,10 +1,19 @@
 "use client";
 import { useRef, Suspense, useState, useEffect } from "react";
-import { useScroll, motion } from "framer-motion";
+import { useScroll } from "framer-motion";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useGLTF, Html, useProgress, Environment } from "@react-three/drei";
 import * as THREE from "three";
 import { useMediaQuery } from "react-responsive";
+
+
+interface SewingMachineProps {
+  // Add specific props here if needed
+  className?: string;
+  style?: React.CSSProperties;
+  
+  // Add any other props that the component accepts
+}
 
 // Loading indicator component
 function Loader() {
@@ -22,7 +31,8 @@ function Loader() {
 }
 
 // GLB Model Sewing Machine - enhanced with interactions
-function SewingMachine(props: any) {
+function SewingMachine(props: SewingMachineProps) {
+
   // Load the GLB file
   const { scene } = useGLTF("/assets/old_sewing_machine.glb");
   const group = useRef<THREE.Group>(null);
@@ -255,7 +265,7 @@ export default function SewingAnimation() {
         <directionalLight position={[0, 5, 5]} intensity={0.5} castShadow />
 
         <Suspense fallback={<Loader />}>
-          <SewingMachine position={[0, -0.5, 0]} />
+          <SewingMachine />
           <Environment preset="city" />
         </Suspense>
       </Canvas>

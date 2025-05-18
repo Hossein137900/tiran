@@ -135,6 +135,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
     propertyId: number,
     propertyTypeId: number
   ) => {
+    console.log(propertyTypeId);
     // Update the selected property
     setSelectedSize(propertyTitle); // You might want to rename this state variable
 
@@ -177,11 +178,14 @@ export default function ProductInfo({ product }: ProductInfoProps) {
 
       // If address exists, proceed with adding to cart
       await processAddToCart(parseInt(addressId));
-    } catch (error: any) {
-      toast.error(error.message || "خطا در افزودن به سبد خرید", {
-        position: "top-center",
-        autoClose: 3000,
-      });
+    } catch (error: unknown) {
+      toast.error(
+        error instanceof Error ? error.message : "خطا در افزودن به سبد خرید",
+        {
+          position: "top-center",
+          autoClose: 3000,
+        }
+      );
     } finally {
       // Reset button after animation
       setTimeout(() => {
@@ -241,11 +245,14 @@ export default function ProductInfo({ product }: ProductInfoProps) {
         position: "top-center",
         autoClose: 3000,
       });
-    } catch (error: any) {
-      toast.error(error.message || "خطا در تکمیل سفارش", {
-        position: "top-center",
-        autoClose: 3000,
-      });
+    } catch (error: unknown) {
+      toast.error(
+        error instanceof Error ? error.message : "خطا در تکمیل سفارش",
+        {
+          position: "top-center",
+          autoClose: 3000,
+        }
+      );
     } finally {
       setCheckoutLoading(false);
     }

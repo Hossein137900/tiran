@@ -1,63 +1,36 @@
-export async function GET(
-  request: Request,
-  { params }: { params?: { slug?: string } }
-) {
+import { NextRequest } from "next/server";
+
+export async function GET(request: NextRequest) {
   try {
-    if (!params || !params.slug) {
-      return new Response(
-        JSON.stringify({ success: false, message: "Missing product slug" }),
-        {
-          status: 400,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+    const slug = request.headers.get("slug");
+
+    // Validate slug
+    if (!slug) {
+      return Response.json(
+        { success: false, message: "Missing product slug" },
+        { status: 400 }
       );
     }
 
-    const productSlug = params.slug;
-
+    // Fetch product data
     const response = await fetch(
-      `https://tiran.shop.hesabroclub.ir/api/web/shop-v1/product/view?slug=${productSlug}&expand=varieties,images`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
+      `https://tiran.shop.hesabroclub.ir/api/web/shop-v1/product/view?slug=${slug}&expand=varieties,images`
     );
 
     if (!response.ok) {
-      return new Response(
-        JSON.stringify({ success: false, message: "Product not found" }),
-        {
-          status: 404,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+      return Response.json(
+        { success: false, message: "Product not found" },
+        { status: 404 }
       );
     }
 
     const data = await response.json();
-    console.log(data, "product detail data in api route");
-
-    return new Response(JSON.stringify(data), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    return Response.json(data);
   } catch (error) {
     console.error("Error fetching product detail:", error);
-    return new Response(
-      JSON.stringify({ success: false, message: "Internal server error" }),
-      {
-        status: 500,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
+    return Response.json(
+      { success: false, message: "Internal server error" },
+      { status: 500 }
     );
   }
 }

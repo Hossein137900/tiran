@@ -13,7 +13,7 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
   const [isHovering, setIsHovering] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
-
+console.log(isHovering)
   // Format price
   const formattedPrice = new Intl.NumberFormat("fa-IR", {
     style: "currency",

@@ -1,5 +1,5 @@
 import React from "react";
-import DatePicker from "react-multi-date-picker";
+import DatePicker, { DateObject } from "react-multi-date-picker";
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
 import "react-multi-date-picker/styles/layouts/mobile.css";
@@ -19,7 +19,9 @@ const PersianDatePicker: React.FC<PersianDatePickerProps> = ({
   maxDate,
   className,
 }) => {
-  const handleChange = (date: any) => {
+  // ...
+
+  const handleChange = (date: DateObject | null) => {
     if (date) {
       // Format date as jYYYY/jMM/jDD
       const formattedDate = date.format("YYYY/MM/DD");

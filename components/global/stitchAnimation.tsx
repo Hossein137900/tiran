@@ -1,5 +1,55 @@
 import React, { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, MotionValue } from "framer-motion";
+
+// Create a custom hook to generate a single stitch's motion values
+function useStitchMotion(
+  scrollYProgress: MotionValue<number>,
+  appearAt: number
+) {
+  const pathLength = useTransform(
+    scrollYProgress,
+    [appearAt, appearAt + 0.02],
+    [0, 1]
+  );
+
+  const opacity = useTransform(
+    scrollYProgress,
+    [appearAt - 0.01, appearAt],
+    [0, 1]
+  );
+
+  return { pathLength, opacity };
+}
+
+// Create a component for a single stitch
+const Stitch = ({
+  stitch,
+  scrollYProgress,
+}: {
+  stitch: { x1: number; y1: number; x2: number; y2: number; appearAt: number };
+  scrollYProgress: MotionValue<number>;
+}) => {
+  const { pathLength, opacity } = useStitchMotion(
+    scrollYProgress,
+    stitch.appearAt
+  );
+
+  return (
+    <motion.line
+      x1={stitch.x1}
+      y1={stitch.y1}
+      x2={stitch.x2}
+      y2={stitch.y2}
+      stroke="#333"
+      strokeWidth="1.5"
+      initial={{ pathLength: 0, opacity: 0 }}
+      style={{
+        pathLength,
+        opacity,
+      }}
+    />
+  );
+};
 
 const StitchAnimation: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -75,28 +125,7 @@ const StitchAnimation: React.FC = () => {
 
         {/* Stitches that appear progressively */}
         {stitchPoints.map((stitch, i) => (
-          <motion.line
-            key={i}
-            x1={stitch.x1}
-            y1={stitch.y1}
-            x2={stitch.x2}
-            y2={stitch.y2}
-            stroke="#333"
-            strokeWidth="1.5"
-            initial={{ pathLength: 0, opacity: 0 }}
-            style={{
-              pathLength: useTransform(
-                scrollYProgress,
-                [stitch.appearAt, stitch.appearAt + 0.02],
-                [0, 1]
-              ),
-              opacity: useTransform(
-                scrollYProgress,
-                [stitch.appearAt - 0.01, stitch.appearAt],
-                [0, 1]
-              ),
-            }}
-          />
+          <Stitch key={i} stitch={stitch} scrollYProgress={scrollYProgress} />
         ))}
 
         {/* Thread that follows the needle with a slight delay */}

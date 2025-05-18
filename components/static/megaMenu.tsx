@@ -19,6 +19,7 @@ const MegaMenu: React.FC<MegaMenuProps> = ({
   const [hoveredSubcategory, setHoveredSubcategory] = useState<number | null>(
     null
   );
+  console.log(hoveredSubcategory)
 
   useEffect(() => {
     setIsClient(true);

@@ -11,6 +11,7 @@ export interface Category {
   selected: number;
   parent: Category | null;
   children: Category[];
+  image_url:string
 }
 
 export interface Product {
