@@ -30,7 +30,11 @@ const PersianDatePicker: React.FC<PersianDatePickerProps> = ({
   return (
     <div className={className}>
       <DatePicker
-        value={value}
+        value={value}    
+
+
+
+        
         onChange={handleChange}
         calendar={persian}
         locale={persian_fa}
