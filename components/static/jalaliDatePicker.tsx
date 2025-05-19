@@ -1,12 +1,12 @@
 import React from "react";
-import DatePicker, { DateObject } from "react-multi-date-picker";
+import DatePicker from "react-multi-date-picker";
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
-import "react-multi-date-picker/styles/layouts/mobile.css";
+import type { DateObject } from "react-multi-date-picker";
 
 interface PersianDatePickerProps {
   value: string;
-  onChange: (value: string) => void;
+  onChange: (date: string) => void;
   minDate?: Date;
   maxDate?: Date;
   className?: string;
@@ -19,18 +19,16 @@ const PersianDatePicker: React.FC<PersianDatePickerProps> = ({
   maxDate,
   className,
 }) => {
-  // ...
-
-  const handleChange = (date: DateObject | null) => {
-    if (date) {
-      // Format date as jYYYY/jMM/jDD
+  const handleChange = (date: DateObject | DateObject[] | null) => {
+    if (date && !Array.isArray(date)) {
+      // Format the date as YYYY/MM/DD
       const formattedDate = date.format("YYYY/MM/DD");
       onChange(formattedDate);
     }
   };
 
   return (
-    <div className={`persian-datepicker-container ${className || ""}`}>
+    <div className={className}>
       <DatePicker
         value={value}
         onChange={handleChange}
@@ -39,9 +37,7 @@ const PersianDatePicker: React.FC<PersianDatePickerProps> = ({
         calendarPosition="bottom-right"
         minDate={minDate}
         maxDate={maxDate}
-        inputClass="custom-input"
-        containerClassName="custom-container"
-        placeholder="انتخاب تاریخ"
+        inputClass="w-full p-2 border border-gray-300 rounded-md"
       />
     </div>
   );
