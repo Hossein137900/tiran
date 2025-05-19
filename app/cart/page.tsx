@@ -15,7 +15,7 @@ import { useRouter } from "next/navigation";
 import { UserProfile } from "@/types/type";
 import moment from "moment";
 import jMoment from "moment-jalaali";
-import PersianDatePicker from "@/components/static/jalaliDatePicker";
+// import PersianDatePicker from "@/components/static/jalaliDatePicker";
 // Initialize jMoment
 jMoment.loadPersian({ dialect: "persian-modern", usePersianDigits: true });
 
@@ -42,6 +42,8 @@ const CartPage = () => {
   const [selectedDeliveryDate, setSelectedDeliveryDate] = useState<string>(
     moment().add(1, "day").format("jYYYY/jMM/jDD")
   );
+
+  console.log(setSelectedDeliveryDate)
   // Payment method options
   const [paymentMethods] = useState([
     { id: 1, name: "پرداخت آنلاین", value: "online" },
@@ -186,8 +188,8 @@ const CartPage = () => {
   };
 
   // Calculate min and max dates
-  const minDate = new Date(Date.now() + 86400000); // Tomorrow
-  const maxDate = new Date(Date.now() + 30 * 86400000); // 30 days from now
+  // const minDate = new Date(Date.now() + 86400000); // Tomorrow
+  // const maxDate = new Date(Date.now() + 30 * 86400000); // 30 days from now
 
   return (
     <div className="min-h-screen pt-36 pb-16 px-4 sm:px-6 lg:px-8" dir="rtl">
@@ -370,13 +372,13 @@ const CartPage = () => {
               className="bg-white rounded-lg shadow-md p-6"
             >
               <h2 className="text-lg font-semibold mb-4">تاریخ تحویل</h2>
-              <PersianDatePicker
+              {/* <PersianDatePicker
                 value={selectedDeliveryDate}
                 onChange={setSelectedDeliveryDate}
                 minDate={minDate}
                 maxDate={maxDate}
                 className="w-full"
-              />
+              /> */}
               {selectedDeliveryDate && (
                 <p className="mt-2 text-sm text-gray-600">
                   تاریخ انتخاب شده: {selectedDeliveryDate}
