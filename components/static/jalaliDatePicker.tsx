@@ -1,50 +1,50 @@
-import React from "react";
-import DatePicker from "react-multi-date-picker";
-import persian from "react-date-object/calendars/persian";
-import persian_fa from "react-date-object/locales/persian_fa";
-import type { DateObject } from "react-multi-date-picker";
+// import React from "react";
+// import DatePicker from "react-multi-date-picker";
+// import persian from "react-date-object/calendars/persian";
+// import persian_fa from "react-date-object/locales/persian_fa";
+// import type { DateObject } from "react-multi-date-picker";
 
-interface PersianDatePickerProps {
-  value: string;
-  onChange: (date: string) => void;
-  minDate?: Date;
-  maxDate?: Date;
-  className?: string;
-}
+// interface PersianDatePickerProps {
+//   value: string;
+//   onChange: (date: string) => void;
+//   minDate?: Date;
+//   maxDate?: Date;
+//   className?: string;
+// }
 
-const PersianDatePicker: React.FC<PersianDatePickerProps> = ({
-  value,
-  onChange,
-  minDate,
-  maxDate,
-  className,
-}) => {
-  const handleChange = (date: DateObject | DateObject[] | null) => {
-    if (date && !Array.isArray(date)) {
-      // Format the date as YYYY/MM/DD
-      const formattedDate = date.format("YYYY/MM/DD");
-      onChange(formattedDate);
-    }
-  };
+// const PersianDatePicker: React.FC<PersianDatePickerProps> = ({
+//   value,
+//   onChange,
+//   minDate,
+//   maxDate,
+//   className,
+// }) => {
+//   const handleChange = (date: DateObject | DateObject[] | null) => {
+//     if (date && !Array.isArray(date)) {
+//       // Format the date as YYYY/MM/DD
+//       const formattedDate = date.format("YYYY/MM/DD");
+//       onChange(formattedDate);
+//     }
+//   };
 
-  return (
-    <div className={className}>
-      <DatePicker
-        value={value}    
+//   return (
+//     <div className={className}>
+//       <DatePicker
+//         value={value}    
 
 
 
-        
-        onChange={handleChange}
-        calendar={persian}
-        locale={persian_fa}
-        calendarPosition="bottom-right"
-        minDate={minDate}
-        maxDate={maxDate}
-        inputClass="w-full p-2 border border-gray-300 rounded-md"
-      />
-    </div>
-  );
-};
 
-export default PersianDatePicker;
+//         onChange={handleChange}
+//         calendar={persian}
+//         locale={persian_fa}
+//         calendarPosition="bottom-right"
+//         minDate={minDate}
+//         maxDate={maxDate}
+//         inputClass="w-full p-2 border border-gray-300 rounded-md"
+//       />
+//     </div>
+//   );
+// };
+
+// export default PersianDatePicker;
