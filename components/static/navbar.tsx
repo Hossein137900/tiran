@@ -311,7 +311,7 @@ const Navbar = () => {
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="flex items-center text-gray-700 hover:text-gray-900"
+                    className="hidden  md:flex  items-center  text-gray-700 hover:text-gray-900"
                   >
                     <RiLoginCircleLine className="ml-1" />
                     <span className="text-sm font-medium">ورود / ثبت‌نام</span>
@@ -564,7 +564,7 @@ const Navbar = () => {
                     className="flex items-center px-4 py-3 rounded-lg text-base font-medium text-black"
                   >
                     <RiUser3Line className="ml-2 h-5 w-5" />
-                    ورود / ثبت نام
+                    {/* ورود / ثبت نام */}
                   </motion.div>
                 </Link>
 

@@ -29,7 +29,7 @@ console.log(isHovering)
   return (
     <div
       dir="rtl"
-      className="group relative bg-white rounded-sm overflow-hidden shadow-sm hover:shadow-md transition-all duration-300"
+      className="group relative bg-white rounded-sm overflow-hidden shadow-md p-2 hover:shadow-xl transition-all duration-300"
     >
       {/* Favorite button */}
       <button

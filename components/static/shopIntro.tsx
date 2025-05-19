@@ -16,7 +16,7 @@ const ShopIntro: React.FC<ShopIntroProps> = ({ onComplete }) => {
       setShowLogo(true);
     }, 1000);
 
-    // Complete the intro after 6 seconds
+    // Complete the intro after 4 seconds
     const completeTimer = setTimeout(() => {
       onComplete();
     }, 4000);
@@ -36,7 +36,7 @@ const ShopIntro: React.FC<ShopIntroProps> = ({ onComplete }) => {
     >
       {/* Background animation - white overlay coming from bottom */}
       <motion.div
-        className="absolute inset-0 border-t border-black bg-white"
+        className="absolute inset-0 bg-white"
         initial={{ y: "100%" }}
         animate={{ y: 0 }}
         transition={{
