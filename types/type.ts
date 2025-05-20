@@ -29,6 +29,7 @@ export interface Product {
   }>;
   brandMain: string | null;
   main_image_id: number | null;
+  // Single variety object (for backward compatibility)
   variety: {
     id: number;
     price_main: number;
@@ -96,7 +97,88 @@ export interface Product {
     store_stock: number;
     color: number;
   };
+  // Array of varieties (for new implementation)
+  varieties?: Array<{
+    id: number;
+    price_main: number;
+    priceOff: number;
+    for_sale: number;
+    product_alert: string;
+    Properties: Record<string, number>;
+    showProperties: Array<{
+      id: number;
+      title: string;
+      sort: number;
+      child: {
+        id: number;
+        title: string;
+      };
+    }>;
+    storage_image_ids: string;
+    full_name: string;
+    category: {
+      id: number;
+      cat_name: string;
+      cat_en_name: string;
+      slug: string;
+      src: string;
+      icon: string;
+      page_title: string;
+      meta_tag: string;
+      seo_des: string;
+      selected: number;
+      parent: {
+        id: number;
+        cat_name: string;
+        cat_en_name: string;
+        slug: string;
+        src: string;
+        icon: string;
+        page_title: string;
+        meta_tag: string;
+        seo_des: string;
+        selected: number;
+        parent: any | null;
+      } | null;
+    };
+    is_main: boolean;
+    show_price: number;
+    show_price_off: number | null;
+    show_unit: string;
+    units: Array<{
+      id: number;
+      title: string;
+      short_title: string | null;
+      step: string;
+      ratio: number;
+      is_main: number;
+      can_buy: number;
+      main_title: string;
+    }>;
+    fa_name: string;
+    seo_description: string;
+    slug: string;
+    product_id: number;
+    getColor: {
+      id: number;
+      fa_name: string;
+      en_name: string;
+      code: string;
+    } | null;
+    getWarranty: any | null;
+    sepidar_code: string | null;
+    b_code: string | null;
+    price_store: number | null;
+    price_site: number | null;
+    price_buy: number | null;
+    mainTitle: string;
+    store_stock: number;
+    src: string;
+    color: number;
+  }>;
 }
+
+
 
 export interface ProductResponse {
   items: Product[];

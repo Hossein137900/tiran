@@ -288,12 +288,12 @@ const Navbar = () => {
                     className=" hidden md:flex items-center text-gray-700 hover:text-gray-900"
                   >
                     <span className="ml-1 text-sm font-medium">
-                      {userProfile?.user.username || "حساب کاربری"}
+                      {userProfile?.user.username}
                     </span>
                   </motion.button>
 
                   {/* Dropdown menu */}
-                  <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 hidden group-hover:block">
+                  <div className="absolute left-0 w-48 bg-white rounded-md shadow-lg py-1 z-10 hidden group-hover:block">
                     <Link href="/dashboard">
                       <motion.button
                         whileHover={{ scale: 1.05 }}

@@ -1,4 +1,5 @@
 "use client";
+import { useEffect, useState } from "react";
 import DynamicHero from "@/components/global/dynamicHero";
 import ExampleImageGrid from "@/components/global/ExampleImageGrid";
 import ImageGrow from "@/components/global/imageGrow";
@@ -7,7 +8,6 @@ import HomeBlogs from "@/components/global/showBlogs";
 import SewingAnimation from "@/components/static/sewingAnimation";
 import { Product } from "@/types/type";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
 
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -32,37 +32,9 @@ export default function Home() {
   useEffect(() => {
     fetchProducts();
   }, []);
-  // const heroSlides = [
-  //   {
-  //     id: 1,
-  //     image: "/assets/images/fashion/1.avif",
-  //     title: "به تیران خوش آمدید",
-  //     description:
-  //       "راهکارهای نوآورانه ما را کشف کنید که برای تحول کسب و کار شما طراحی شده‌اند",
-  //     ctaText: "اکنون کاوش کنید",
-  //     ctaLink: "/services",
-  //   },
-  //   {
-  //     id: 2,
-  //     image: "/assets/images/fashion/2.avif",
-  //     title: "فناوری پیشرفته",
-  //     description: "بهره‌گیری از آخرین پیشرفت‌ها برای ارائه نتایج استثنایی",
-  //     ctaText: "بیشتر بدانید",
-  //     ctaLink: "/technology",
-  //   },
-  //   {
-  //     id: 3,
-  //     image: "/assets/images/fashion/3.avif",
-  //     title: "تیم متخصص",
-  //     description: "متخصصان ما سال‌ها تجربه را به هر پروژه می‌آورند",
-  //     ctaText: "با تیم ما آشنا شوید",
-  //     ctaLink: "/about",
-  //   },
-  // ];
 
   return (
     <main>
-      {/* <div className="pt-64"></div> */}
       <div className="flex items-center justify-center flex-row-reverse h-screen">
         <div className="md:w-1/3 px-8">
           <motion.div
@@ -91,15 +63,6 @@ export default function Home() {
             >
               لذت دائمی استفاده از یک محصول
             </motion.p>
-            {/* <motion.button
-              className="px-6 py-3 bg-black text-white rounded-full item-start ml-auto shadow-lg hover:bg-purple-700 transition-colors"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.5, delay: 1.2 }}
-            >
-            </motion.button> */}
           </motion.div>
         </div>
         <SewingAnimation />
@@ -125,12 +88,6 @@ export default function Home() {
         height="100vh"
       />
 
-      {/* <HeroSection
-        slides={heroSlides}
-        autoPlayInterval={6000}
-        height="80vh"
-        showMuteControl={false}
-      /> */}
       <div className="max-w-7xl mx-auto px-4 mb-8">
         <DynamicHero
           title="تحول در تجربه دیجیتال شما"

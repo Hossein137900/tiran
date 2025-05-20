@@ -12,59 +12,17 @@ import {
   getCheckoutInfo,
 } from "@/middleware/checkout";
 
-// Define missing types
-interface PropertyChild {
-  id: number;
-  title: string;
-}
-
-interface PropertyShow {
-  id: number;
-  title: string;
-  child: PropertyChild;
-}
-
-interface Color {
-  id?: number;
-  fa_name: string;
-  code?: string;
-}
-
-interface Category {
-  id: number;
-  cat_name: string;
-}
-
-interface Variety {
-  id: number;
-  price_main: number;
-  store_stock: number;
-  showProperties?: PropertyShow[];
-  getColor?: Color;
-  category?: Category;
-  show_unit?: string;
-}
-
-// Extend Product interface to include varieties
-interface ExtendedProduct extends Product {
-  varieties: Variety[];
-}
-
 interface ProductInfoProps {
-  product: ExtendedProduct;
-}
-
-interface SizeOption {
-  id: number;
-  title: string;
-  propertyId: number;
+  product: Product;
 }
 
 export default function ProductInfo({ product }: ProductInfoProps) {
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
-  const [selectedVariety, setSelectedVariety] = useState<Variety | null>(null);
+  const [selectedVariety, setSelectedVariety] = useState<
+    NonNullable<Product["varieties"]>[number] | null
+  >(null);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
@@ -77,7 +35,10 @@ export default function ProductInfo({ product }: ProductInfoProps) {
       setSelectedVariety(product.varieties[0]);
 
       // Set initial size if available
-      if (product.varieties[0].showProperties) {
+      if (
+        product.varieties[0].showProperties &&
+        product.varieties[0].showProperties.length > 0
+      ) {
         const sizeProperty = product.varieties[0].showProperties.find(
           (prop) => prop.title === "سایز"
         );
@@ -101,7 +62,10 @@ export default function ProductInfo({ product }: ProductInfoProps) {
   }).format(selectedVariety?.price_main ?? 0);
 
   // Extract all available properties from varieties
-  const propertiesByType: Record<string, SizeOption[]> = {};
+  const propertiesByType: Record<
+    string,
+    Array<{ id: number; title: string; propertyId: number }>
+  > = {};
 
   // Collect all properties from all varieties
   product?.varieties?.forEach((variety) => {
@@ -124,9 +88,6 @@ export default function ProductInfo({ product }: ProductInfoProps) {
     });
   });
 
-  // Create a flat array of all properties for backward compatibility
-  // const allProperties: SizeOption[] = Object.values(propertiesByType).flat();
-
   // Get color information
   const color = selectedVariety?.getColor || null;
 
@@ -135,12 +96,11 @@ export default function ProductInfo({ product }: ProductInfoProps) {
     propertyId: number,
     propertyTypeId: number
   ) => {
-    console.log(propertyTypeId);
     // Update the selected property
-    setSelectedSize(propertyTitle); // You might want to rename this state variable
+    setSelectedSize(propertyTitle);
 
     // Find variety that matches this property
-    const matchingVariety = product.varieties.find((variety) =>
+    const matchingVariety = product?.varieties?.find((variety) =>
       variety.showProperties?.some((prop) => prop.child.id === propertyId)
     );
 
@@ -257,6 +217,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
       setCheckoutLoading(false);
     }
   };
+
   const handleAddressCreated = (addressId: number) => {
     // After address is created, continue with the cart process
     processAddToCart(addressId);

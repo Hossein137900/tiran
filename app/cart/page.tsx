@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 import { UserProfile } from "@/types/type";
 import moment from "moment";
 import jMoment from "moment-jalaali";
+import PersianDatePicker from "@/components/static/jalaliDatePicker";
 // import PersianDatePicker from "@/components/static/jalaliDatePicker";
 // Initialize jMoment
 jMoment.loadPersian({ dialect: "persian-modern", usePersianDigits: true });
@@ -35,15 +36,12 @@ const CartPage = () => {
   ]);
   const [selectedShippingMethod, setSelectedShippingMethod] = useState(1);
 
-  // Delivery date options
-  // const [selectedDate, setSelectedDate] = useState<Date | null>(
-  //   new Date(Date.now() + 86400000)
-  // ); // Tomorrow
+  const [selectedDate, setSelectedDate] = useState("1404/03/01");
   const [selectedDeliveryDate, setSelectedDeliveryDate] = useState<string>(
     moment().add(1, "day").format("jYYYY/jMM/jDD")
   );
 
-  console.log(setSelectedDeliveryDate)
+  console.log(setSelectedDeliveryDate);
   // Payment method options
   const [paymentMethods] = useState([
     { id: 1, name: "پرداخت آنلاین", value: "online" },
@@ -61,6 +59,9 @@ const CartPage = () => {
 
   const fetchUserAccount = async () => {
     const token = localStorage.getItem("token");
+    if (!token) {
+      router.replace("/auth");
+    }
 
     try {
       setUserDataLoading(true);
@@ -372,13 +373,11 @@ const CartPage = () => {
               className="bg-white rounded-lg shadow-md p-6"
             >
               <h2 className="text-lg font-semibold mb-4">تاریخ تحویل</h2>
-              {/* <PersianDatePicker
-                value={selectedDeliveryDate}
-                onChange={setSelectedDeliveryDate}
-                minDate={minDate}
-                maxDate={maxDate}
+              <PersianDatePicker
+                value={selectedDate}
+                onChange={(newDate) => setSelectedDate(newDate)}
                 className="w-full"
-              /> */}
+              />
               {selectedDeliveryDate && (
                 <p className="mt-2 text-sm text-gray-600">
                   تاریخ انتخاب شده: {selectedDeliveryDate}

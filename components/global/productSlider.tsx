@@ -14,9 +14,15 @@ const ProductCarousel = ({ products }: ProductSliderProps) => {
 
   if (!products || products.length === 0) {
     return (
-      <div className="p-4 text-center">محصولاتی برای نمایش وجود ندارد</div>
+      <div className="p-4 text-black text-center">
+        محصولاتی برای نمایش وجود ندارد
+      </div>
     );
   }
+
+  // Get the last 6 products from the array
+  const lastSixProducts =
+    products.length <= 6 ? products : products.slice(products.length - 6);
 
   return (
     <div className="my-8 relative mx-4 sm:mx-0" dir="rtl">
@@ -46,7 +52,7 @@ const ProductCarousel = ({ products }: ProductSliderProps) => {
         }}
       >
         <div className="flex gap-4">
-          {products.map((product, index) => (
+          {lastSixProducts.map((product, index) => (
             <motion.div
               key={product.id}
               className="min-w-[250px] md:min-w-[300px] shadow-sm flex-shrink-0 "
@@ -63,16 +69,15 @@ const ProductCarousel = ({ products }: ProductSliderProps) => {
                   className="bg-white rounded-sm  overflow-hidden h-full flex flex-col  transition-all duration-300"
                   whileHover={{
                     y: -5,
-                   
                   }}
                   transition={{ duration: 0.2 }}
                 >
                   <div className="relative h-96 w-[350px] bg-gray-100 overflow-hidden">
-                    {!product.main_image_id ? (
+                    {product.images ? (
                       <motion.div transition={{ duration: 0.3 }}>
                         <Image
-                          src={"/assets/images/fashion/4.avif"}
-                          alt={product.page_title || "ef"}
+                          src={product.images[0].src}
+                          alt={product.page_title}
                           fill
                           className="object-cover aspect-[9/9]"
                         />
@@ -87,9 +92,6 @@ const ProductCarousel = ({ products }: ProductSliderProps) => {
                     <h3 className="font-semibold text-lg mb-2">
                       {product.fa_name}
                     </h3>
-                    {/* <p className="text-sm text-gray-500 line-clamp-2 mb-auto">
-                      {product.seo_description}
-                    </p> */}
 
                     <div className="mt-4 flex justify-between items-center">
                       <span className="text-sm">
@@ -100,8 +102,11 @@ const ProductCarousel = ({ products }: ProductSliderProps) => {
                         )}
                       </span>
                       <span className="text-sm text-black font-bold">
-                        {product.variety?.price_main.toLocaleString("fa-IR")}
-                        تومان
+                        {product.variety &&
+                        typeof product.variety.price_main === "number"
+                          ? product.variety.price_main.toLocaleString("fa-IR") +
+                            " تومان"
+                          : "قیمت نامشخص"}
                       </span>
                     </div>
                   </div>
