@@ -96,7 +96,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
     propertyId: number,
     propertyTypeId: number
   ) => {
-    console.log(propertyTypeId)
+    console.log(propertyTypeId);
     // Update the selected property
     setSelectedSize(propertyTitle);
 
