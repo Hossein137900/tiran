@@ -36,7 +36,7 @@ const Signature: React.FC<SignatureProps> = ({
 
   return (
     <motion.div
-      className={`flex items-center justify-center gap-2 py-4 ${className}`}
+      className={`flex items-center bg-black justify-center gap-2 py-4 ${className}`}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
@@ -67,9 +67,9 @@ const Signature: React.FC<SignatureProps> = ({
               className="flex items-center text-xs opacity-80"
               style={{ color: textColor }}
             >
-              {showYear && <span>© {currentYear}</span>}
-              <span className="mx-1 ">|</span>
-              <span>created by tomaks engineers</span>
+              {showYear && <span className="text-white">© {currentYear}</span>}
+              <span className="mx-1 text-white ">|</span>
+              <span className="text-white">created by tomaks engineers</span>
             </div>
           </div>
         </div>

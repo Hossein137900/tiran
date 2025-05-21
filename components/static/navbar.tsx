@@ -27,6 +27,7 @@ import { usePathname } from "next/navigation";
 import { useCart } from "@/context/cartContext";
 import { Category, UserProfile } from "@/types/type";
 import MegaMenu from "./megaMenu";
+import Breadcrumbs from "../global/breadcrumbs";
 
 const Navbar = () => {
   const { totalItems } = useCart();
@@ -410,6 +411,8 @@ const Navbar = () => {
           hoveredCategory={hoveredCategory}
           setHoveredCategory={setHoveredCategory}
         />
+                  <Breadcrumbs />
+
       </motion.div>
 
       {/* Mobile menu */}

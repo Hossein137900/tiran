@@ -1,12 +1,13 @@
 "use client";
-import React from "react";
+import React, { useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, useInView, useScroll, useTransform } from "framer-motion";
 import { FaTwitter, FaInstagram, FaLinkedin, FaTelegram } from "react-icons/fa";
 import { HiMail, HiPhone, HiLocationMarker } from "react-icons/hi";
 import { usePathname } from "next/navigation";
 import Signature from "../global/signature";
+
 // Animation variants
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -50,6 +51,20 @@ const services = [
 
 const Footer = () => {
   const notVisible = usePathname();
+  const footerEndRef = useRef(null);
+  const isFooterEndInView = useInView(footerEndRef, {
+    once: false,
+    amount: 0.2,
+  });
+  const { scrollYProgress } = useScroll({
+    target: footerEndRef,
+    offset: ["start end", "end end"],
+  });
+
+  // Transform values for parallax effects
+  const logoScale = useTransform(scrollYProgress, [0, 0.5, 1], [0.8, 1, 1.1]);
+  const logoOpacity = useTransform(scrollYProgress, [0, 0.3, 1], [0, 1, 1]);
+  const lineWidth = useTransform(scrollYProgress, [0, 0.6, 1], [0, 100, 100]);
 
   if (notVisible === "/admin") {
     return null;
@@ -307,6 +322,28 @@ const Footer = () => {
           </div>
         </motion.div>
       </motion.div>
+      {/* Full-screen black section with centered logo - TiranStyle-like */}
+      <div ref={footerEndRef} className="relative h-screen bg-black z-9999 ">
+        {/* Centered logo and content */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          {/* Logo with scale animation */}
+          <motion.div
+            className="relative"
+            style={{
+              scale: logoScale,
+              opacity: logoOpacity,
+            }}
+          >
+            <Image
+              src="/assets/images/whitelogo.png"
+              alt="Tiran Logo"
+              width={4000}
+              height={4000}
+              className="h-20 w-auto object-cover"
+            />
+          </motion.div>
+        </div>
+      </div>
       {/* Animated Background Elements */}
       <div className="absolute bottom-0 left-0 w-full h-full overflow-hidden z-0 opacity-15 pointer-events-none">
         <div className="absolute w-96 h-96 -bottom-12 -right-12 bg-gray-900 rounded-full filter blur-2xl"></div>
