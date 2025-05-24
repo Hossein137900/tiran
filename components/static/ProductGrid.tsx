@@ -60,10 +60,8 @@ export default function ProductGrid({ categoryFilter }: ProductGridProps) {
         }
 
         setProducts(filteredProducts);
-        console.log("Filtered products:", filteredProducts);
-        console.log("Category filter:", categoryFilter);
       } catch (error) {
-        console.error("Error fetching products:", error);
+        console.log("Error fetching products:", error);
         setProducts([]);
         setAllProducts([]);
       } finally {
@@ -89,7 +87,7 @@ export default function ProductGrid({ categoryFilter }: ProductGridProps) {
   }
 
   return (
-    <CartProvider>
+    <CartProvider >
       <div className="mt-12">
         {categoryFilter && (
           <div className="mb-6">
