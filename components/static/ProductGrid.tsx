@@ -19,7 +19,7 @@ export default function ProductGrid({ categoryFilter }: ProductGridProps) {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        let url = "/api/shop"; // Your products API endpoint
+        const url = "/api/shop"; // Your products API endpoint
 
         const response = await fetch(url);
         if (!response.ok) {
@@ -37,7 +37,7 @@ export default function ProductGrid({ categoryFilter }: ProductGridProps) {
         let filteredProducts = allProductsData;
 
         if (categoryFilter) {
-          filteredProducts = allProductsData.filter((product: any) => {
+          filteredProducts = allProductsData.filter((product: Product) => {
             // Check if product has variety and category structure
             if (product.variety && product.variety.category) {
               const category = product.variety.category;
@@ -95,7 +95,7 @@ export default function ProductGrid({ categoryFilter }: ProductGridProps) {
           <div className="mb-6">
             <div className="flex items-center justify-between">
               <p className="text-gray-600 text-sm">
-                {products.length} محصول در دسته‌بندی "{categoryFilter}" یافت شد
+                {products.length} محصول در دسته‌بندی {categoryFilter} یافت شد
               </p>
               <Link
                 href="/shop"

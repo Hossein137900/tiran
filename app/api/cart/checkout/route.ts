@@ -4,7 +4,6 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const addressId = searchParams.get("address_id");
-
     const token = request.headers.get("Authorization");
 
     if (!token) {
@@ -15,7 +14,7 @@ export async function GET(request: NextRequest) {
     }
 
     const url = `https://tiran.shop.hesabroclub.ir/api/web/shop-v1/v2/cart/checkout?expand=receives&address_id=${addressId}`;
-
+    console.log(url);
     const response = await fetch(url, {
       headers: {
         Authorization: token,
@@ -60,6 +59,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    console.log(body, "body");
     const token = request.headers.get("Authorization");
 
     if (!token) {
