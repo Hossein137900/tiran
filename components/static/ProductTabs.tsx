@@ -70,14 +70,14 @@ export default function ProductTabs({ product }: ProductTabsProps) {
                 <ul className="space-y-2">
                   {selectedVariety && (
                     <>
-                      <li className="flex justify-between py-2 border-b">
+                      <li className="flex justify-between py-2 border-b border-dashed">
                         <span className="text-gray-600">دسته بندی</span>
                         <span className="font-medium">
                           {selectedVariety.category.cat_name}
                         </span>
                       </li>
                       {selectedVariety.color && (
-                        <li className="flex justify-between py-2 border-b">
+                        <li className="flex justify-between py-2 border-b border-dashed">
                           <span className="text-gray-600">رنگ های موجود </span>
                           <span className="font-medium">
                             {selectedVariety.getColor?.fa_name || ""}
@@ -86,7 +86,7 @@ export default function ProductTabs({ product }: ProductTabsProps) {
                       )}
                       {selectedVariety.showProperties &&
                         selectedVariety.showProperties.length > 0 && (
-                          <li className="flex justify-between py-2 border-b">
+                          <li className="flex justify-between py-2 border-b border-dashed">
                             <span className="text-gray-600">
                               سایزهای موجود{" "}
                             </span>

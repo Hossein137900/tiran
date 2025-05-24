@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { ShoppingCart, Heart, Check } from "lucide-react";
+import { ShoppingCart, Check } from "lucide-react";
 import { motion } from "framer-motion";
 import { useCart } from "@/context/cartContext";
 import { Product } from "@/types/type";
@@ -23,7 +23,6 @@ export default function ProductInfo({ product }: ProductInfoProps) {
   const [selectedVariety, setSelectedVariety] = useState<
     NonNullable<Product["varieties"]>[number] | null
   >(null);
-  const [isFavorite, setIsFavorite] = useState(false);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
@@ -229,30 +228,34 @@ export default function ProductInfo({ product }: ProductInfoProps) {
     setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16">
+    <div className="container mx-auto px-4 sm:px-6 pb-6 sm:pb-8">
+      <div className="grid grid-cols-1 md:grid-cols-1 gap-8 lg:gap-12">
         {/* Product Details */}
         <div dir="rtl" className="flex flex-col">
           {/* Product Header */}
-          <div className="mb-8">
-            <h1 className="text-2xl sm:text-3xl font-bold mb-4">
+          <div className="">
+            <h1
+              id="Heading1"
+              role="heading"
+              className="text-xl sm:text-2xl font-bold mb-2"
+            >
               {product.fa_name}
             </h1>
-            <p className="text-gray-600 text-sm sm:text-base leading-relaxed">
+            <p className="text-gray-600 border-b border-dashed pb-2 border-gray-400 text-sm leading-relaxed">
               {product.seo_description}
             </p>
           </div>
 
           {/* Price and Stock */}
-          <div className="mb-8">
-            <div className="text-2xl sm:text-3xl font-bold text-blue-900 mb-4">
+          <div className="flex flex-row sm:flex-row items-start sm:items-center justify-between border-l border-gray-400 border-dashed ">
+            <div className="text-xl sm:text-2xl font-bold text-blue-900 my-2">
               {formattedPrice}
             </div>
             <span
-              className={`inline-block px-4 py-1.5 rounded-full text-sm font-medium ${
+              className={`inline-block  px-3 py-1  text-xs font-medium ${
                 (selectedVariety?.store_stock ?? 0) > 0
-                  ? "bg-green-100 text-green-800"
-                  : "bg-red-100 text-red-800"
+                  ? " text-green-500"
+                  : " text-red-500"
               }`}
             >
               {(selectedVariety?.store_stock ?? 0) > 0
@@ -260,80 +263,214 @@ export default function ProductInfo({ product }: ProductInfoProps) {
                 : "ناموجود"}
             </span>
           </div>
+        </div>
 
-          {/* Properties Selection */}
+        <div className="flex flex-col lg:flex-row lg:gap-5 gap-y-2 border-t pr-2 border-r border-gray-400 border-dashed pt-4">
+          {/* --- Dynamic Properties --- */}
           {Object.entries(propertiesByType).map(
             ([propertyType, options]) =>
               options.length > 0 && (
-                <div key={propertyType} className="mb-8">
-                  <h3 className="text-lg font-semibold mb-4">
-                    {propertyType}:
-                  </h3>
-                  <div className="flex flex-wrap gap-3">
-                    {options.map((option) => (
-                      <button
-                        key={option.id}
-                        onClick={() =>
-                          handlePropertyChange(
-                            option.title,
-                            option.id,
-                            option.propertyId
-                          )
-                        }
-                        className={`px-5 py-2.5 text-sm border-2 rounded-lg transition-all duration-200 ${
-                          selectedSize === option.title
-                            ? "border-blue-500 bg-blue-50 text-blue-700 font-medium"
-                            : "border-gray-200 hover:border-gray-400"
-                        }`}
+                <div
+                  key={propertyType}
+                  className="flex flex-col lg:flex-row lg:items-center lg:gap-6 w-full lg:w-[48%]"
+                >
+                  {/* Property Label */}
+                  <div className="min-w-[12px] mb-2 lg:mb-0">
+                    <h3 className="text-lg font-semibold text-gray-800">
+                      {propertyType}
+                    </h3>
+                  </div>
+
+                  {/* Property Dropdown */}
+                  <div className="flex-1">
+                    <div className="relative">
+                      <select
+                        value={selectedSize}
+                        onChange={(e) => {
+                          const selectedOption = options.find(
+                            (opt) => opt.title === e.target.value
+                          );
+                          if (selectedOption) {
+                            handlePropertyChange(
+                              selectedOption.title,
+                              selectedOption.id,
+                              selectedOption.propertyId
+                            );
+                          }
+                        }}
+                        className="w-full px-4 py-3 bg-white border-dashed border border-gray-400 text-gray-700 font-medium focus:outline-none focus:border focus:border-dashed focus:border-gray-500 transition-all duration-200 appearance-none hover:border-gray-300"
                       >
-                        {option.title}
-                      </button>
-                    ))}
+                        <option value="">انتخاب {propertyType}</option>
+                        {options.map((option) => (
+                          <option key={option.id} value={option.title}>
+                            {option.title}
+                          </option>
+                        ))}
+                      </select>
+
+                      {/* Dropdown Arrow */}
+                      <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                        <svg
+                          className="w-5 h-5 text-gray-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 9l-7 7-7-7"
+                          />
+                        </svg>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )
           )}
 
-          {/* Color Display */}
+          {/* --- Color Picker --- */}
           {color && (
-            <div className="mb-8">
-              <h3 className="text-lg font-semibold mb-4">رنگ</h3>
-              <div className="flex items-center gap-4">
-                <div
-                  className="w-10 h-10 rounded-full border-2 border-gray-300 shadow-sm"
-                  style={{ backgroundColor: color.code || "#000000" }}
-                />
-                <span className="text-base">{color.fa_name}</span>
+            <div className="flex flex-col lg:flex-row lg:items-center lg:gap-6 w-full lg:w-[57%]">
+              <div className="min-w-[30px] mb-2 lg:mb-0">
+                <h3 className="text-lg font-semibold text-gray-800">رنگ</h3>
+              </div>
+              <div className="flex-1">
+                <div className="relative">
+                  <select
+                    value={selectedColor}
+                    onChange={(e) => {
+                      setSelectedColor(e.target.value);
+                      const match = product?.varieties?.find(
+                        (v) => v.getColor?.fa_name === e.target.value
+                      );
+                      if (match) setSelectedVariety(match);
+                    }}
+                    className="w-full px-4 py-3 bg-white border-dashed border border-gray-400 text-gray-700 font-medium focus:outline-none focus:border focus:border-dashed focus:border-gray-500 transition-all duration-200 appearance-none hover:border-gray-300"
+                  >
+                    <option value="">انتخاب رنگ</option>
+                    {Array.from(
+                      new Set(
+                        product?.varieties
+                          ?.filter((v) => v.getColor)
+                          ?.map((v) => v.getColor!.fa_name)
+                      )
+                    ).map((colorName) => (
+                      <option key={colorName} value={colorName}>
+                        {colorName}
+                      </option>
+                    ))}
+                  </select>
+
+                  {/* Dropdown Arrow */}
+                  <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                    <svg
+                      className="w-5 h-5 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </div>
+                </div>
               </div>
             </div>
           )}
 
-          {/* Quantity */}
-          <div className="mb-8">
-            <h3 className="text-lg font-semibold mb-4">تعداد</h3>
-            <div className="flex items-center w-fit border border-gray-300 rounded-lg overflow-hidden">
-              <button
-                onClick={decrementQuantity}
-                className="w-12 h-12 bg-gray-50 hover:bg-gray-100 flex items-center justify-center transition-colors text-lg"
-                aria-label="کاهش تعداد"
-              >
-                -
-              </button>
-              <div className="w-16 h-12 flex items-center justify-center bg-white text-center font-medium">
-                {quantity}
+          {/* --- Quantity Controller --- */}
+          <div className="flex flex-col lg:flex-row lg:items-center lg:gap-6 w-full lg:w-[48%]">
+            <div className="min-w-[12px] mb-2 lg:mb-0">
+              <h3 className="text-lg font-semibold text-gray-800">تعداد</h3>
+            </div>
+            <div className="">
+              <div className="flex items-center gap-4">
+                {/* Buttons */}
+                <div className="flex items-center bg-gray-50 border border-dashed border-gray-400  overflow-hidden">
+                  <motion.button
+                    onClick={decrementQuantity}
+                    whileHover={{ backgroundColor: "#f3f4f6" }}
+                    whileTap={{ scale: 0.95 }}
+                    className="w-12 h-12 flex items-center justify-center text-gray-600 hover:text-gray-800"
+                  >
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M20 12H4"
+                      />
+                    </svg>
+                  </motion.button>
+
+                  <div className="w-16 h-12 flex items-center justify-center bg-white border-x-2 border-gray-200 font-semibold text-gray-800">
+                    {quantity}
+                  </div>
+
+                  <motion.button
+                    onClick={incrementQuantity}
+                    whileHover={{ backgroundColor: "#f3f4f6" }}
+                    whileTap={{ scale: 0.95 }}
+                    className="w-12 h-12 flex items-center justify-center text-gray-600 hover:text-gray-800"
+                  >
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                      />
+                    </svg>
+                  </motion.button>
+                </div>
+
+                {/* Stock */}
+                <div className="flex items-center gap-2 text-nowrap text-sm">
+                  <div
+                    className={`w-2 h-2 rounded-full ${
+                      (selectedVariety?.store_stock ?? 0) > 0
+                        ? "bg-green-500"
+                        : "bg-red-500"
+                    }`}
+                  ></div>
+                  <span
+                    className={`font-medium ${
+                      (selectedVariety?.store_stock ?? 0) > 0
+                        ? "text-green-600"
+                        : "text-red-600"
+                    }`}
+                  >
+                    {(selectedVariety?.store_stock ?? 0) > 0
+                      ? `${selectedVariety?.store_stock} عدد موجود`
+                      : "ناموجود"}
+                  </span>
+                </div>
               </div>
-              <button
-                onClick={incrementQuantity}
-                className="w-12 h-12 bg-gray-50 hover:bg-gray-100 flex items-center justify-center transition-colors text-lg"
-                aria-label="افزایش تعداد"
-              >
-                +
-              </button>
             </div>
           </div>
+        </div>
 
+        {/* button add to Cart */}
+
+        <div className="mb-6">
           {/* Action Buttons */}
-          <div className="flex gap-4 mb-10">
+          <div className="flex gap-3 mb-6">
             <motion.button
               disabled={
                 !selectedVariety ||
@@ -347,58 +484,41 @@ export default function ProductInfo({ product }: ProductInfoProps) {
               whileTap={
                 (selectedVariety?.store_stock ?? 0) > 0 ? { scale: 0.98 } : {}
               }
-              className={`flex-1 py-4 px-6 rounded-xl flex items-center justify-center gap-3 font-medium text-base transition-all ${
+              className={`flex-1 py-3 px-4 flex items-center justify-center gap-2 font-medium text-sm transition-all ${
                 (selectedVariety?.store_stock ?? 0) > 0 && !checkoutLoading
-                  ? "bg-blue-600 text-white hover:bg-blue-700 shadow-md"
+                  ? "bg-black text-white hover:bg-black/80 shadow-sm"
                   : "bg-gray-200 text-gray-400 cursor-not-allowed"
               }`}
             >
               {isAddingToCart ? (
                 <>
-                  <Check size={20} />
+                  <Check size={16} />
                   <span>اضافه شد</span>
                 </>
               ) : checkoutLoading ? (
                 <span>در حال پردازش...</span>
               ) : (
                 <>
-                  <ShoppingCart size={20} />
+                  <ShoppingCart size={16} />
                   <span>افزودن به سبد خرید</span>
                 </>
               )}
             </motion.button>
-
-            <motion.button
-              onClick={() => setIsFavorite(!isFavorite)}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="p-4 rounded-xl border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-colors"
-              aria-label={
-                isFavorite ? "حذف از علاقه‌مندی‌ها" : "افزودن به علاقه‌مندی‌ها"
-              }
-            >
-              <Heart
-                size={24}
-                className={
-                  isFavorite ? "fill-red-500 text-red-500" : "text-gray-400"
-                }
-              />
-            </motion.button>
           </div>
 
           {/* Additional Product Info */}
-          <div className="border-t border-gray-200 pt-8">
-            <h3 className="text-xl font-semibold mb-5">مشخصات محصول</h3>
-            <ul className="space-y-3 text-base text-gray-700">
+          <div className="border-t border-gray-200 pt-6">
+            <h3 className="text-lg font-semibold mb-3">مشخصات محصول</h3>
+            <ul className="space-y-2 text-sm text-gray-700">
               <li className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-gray-300 inline-block"></span>
+                <span className="w-2 h-2 rounded-full bg-gray-300 inline-block"></span>
                 دسته‌بندی:{" "}
                 <span className="font-medium">
                   {selectedVariety?.category?.cat_name || "نامشخص"}
                 </span>
               </li>
               <li className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-gray-300 inline-block"></span>
+                <span className="w-2 h-2 rounded-full bg-gray-300 inline-block"></span>
                 موجودی:{" "}
                 <span
                   className={`font-medium ${
@@ -414,7 +534,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
               </li>
               {selectedVariety?.show_unit && (
                 <li className="flex items-center gap-2">
-                  <span className="w-3 h-3 rounded-full bg-gray-300 inline-block"></span>
+                  <span className="w-2 h-2 rounded-full bg-gray-300 inline-block"></span>
                   واحد:{" "}
                   <span className="font-medium">
                     {selectedVariety.show_unit}

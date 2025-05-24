@@ -18,7 +18,7 @@ export default function HomeBlogs() {
 
         <div className="flex justify-center">
           <Link href="/blog">
-            <button className="bg-transparent text-nowrap text-sm text-black border border-gray-500 px-1 py-1 md:px-8 md:py-3 rounded-lg md:text-lg font-medium transition-all duration-300 flex items-center gap-2 group">
+            <button className="bg-transparent text-nowrap text-sm text-black border border-dashed border-gray-400 px-1 py-1 md:px-8 md:py-3 rounded-lg md:text-lg font-medium transition-all duration-300 flex items-center gap-2 group">
               مشاهده همه مقالات
               <ArrowLeft className="w-5 h-5 transition-transform duration-300 group-hover:-translate-x-1" />
             </button>
@@ -32,7 +32,7 @@ export default function HomeBlogs() {
           <Link
             key={post.id}
             href={`/blog/${post.id}`}
-            className="group bg-white rounded-sm overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col h-full"
+            className="group border border-dashed border-gray-400 overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col h-full"
           >
             <div className="relative aspect-[16/10] overflow-hidden">
               <Image

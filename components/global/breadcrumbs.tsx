@@ -7,7 +7,7 @@ import { HiChevronLeft, HiHome } from "react-icons/hi";
 
 // Persian translations for common routes
 const routeTranslations: Record<string, string> = {
-  "": "صفحه اصلی",
+  "/": "صفحه اصلی",
   shop: "فروشگاه",
   products: "محصولات",
   blog: "وبلاگ",
@@ -18,16 +18,12 @@ const routeTranslations: Record<string, string> = {
   account: "حساب کاربری",
   login: "ورود",
   register: "ثبت نام",
+  auth: "ورود و ثبت نام",
   admin: "مدیریت",
+  corporateGifts: "هدایای سازمانی",
+  giftCart: "کارت هدیه",
   help: "راهنما",
-  faq: "سوالات متداول",
-  search: "جستجو",
   categories: "دسته‌بندی‌ها",
-  "mens-shirts": "پیراهن مردانه",
-  jeans: "شلوار جین",
-  suits: "کت و شلوار",
-  sportswear: "لباس ورزشی",
-  footwear: "کفش و کتانی",
 };
 
 const Breadcrumbs = () => {
@@ -54,20 +50,22 @@ const Breadcrumbs = () => {
     }),
   ];
 
+  if (pathname === "/admin" || pathname === "/auth") {
+    return null;
+  }
+
   return (
     <div className="container mx-auto px-4">
       {" "}
       {/* Increased top margin to account for navbar height */}
       <motion.nav
-        className="bg-white py-3 px-6 rounded-xl  relative overflow-hidden z-10"
+        className="bg-white py-3 px-6 relative overflow-hidden z-10"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         dir="rtl"
       >
-       
-
-        <ol className="flex flex-wrap items-center text-sm relative z-10">
+        <ol className="flex flex-wrap mt-20 sm:mt-0 items-center text-sm relative z-10">
           <AnimatePresence>
             {breadcrumbItems.map((item, index) => {
               const isLast = index === breadcrumbItems.length - 1;
@@ -94,19 +92,19 @@ const Breadcrumbs = () => {
                           <motion.div
                             whileHover={{ scale: 1.1, y: -2 }}
                             whileTap={{ scale: 0.95 }}
-                            className="ml-1 bg-gray-100 p-1.5 rounded-md group-hover:bg-gray-200 transition-colors"
+                            className="ml-1  p-1.5 transition-colors"
                           >
                             <HiHome className="text-lg" />
                           </motion.div>
                         ) : (
                           <motion.span
-                            className="relative px-2 py-1 rounded-md hover:bg-gray-50 transition-colors"
+                            className="relative px-2 py-1 transition-colors"
                             whileHover={{ y: -1 }}
                             whileTap={{ y: 0 }}
                           >
                             {item.label}
                             <motion.span
-                              className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-300 rounded-full"
+                              className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full"
                               initial={{ scaleX: 0, originX: 0 }}
                               whileHover={{ scaleX: 1 }}
                               transition={{ duration: 0.3 }}
@@ -114,34 +112,14 @@ const Breadcrumbs = () => {
                           </motion.span>
                         )}
                       </Link>
-                      <motion.div
-                        className="mx-2 text-gray-300"
-                        animate={{
-                          x: [0, 2, 0],
-                          opacity: [0.5, 1, 0.5],
-                        }}
-                        transition={{
-                          duration: 2,
-                          repeat: Infinity,
-                          repeatType: "mirror",
-                        }}
-                      >
+                      <motion.div className="mx-2 text-gray-300">
                         <HiChevronLeft />
                       </motion.div>
                     </>
                   ) : (
                     <motion.span
-                      className="font-medium text-black bg-gray-100 px-3 py-1 rounded-md"
+                      className="font-medium text-black px-3 py-1"
                       whileHover={{ scale: 1.03 }}
-                      initial={{ backgroundColor: "rgb(243 244 246)" }}
-                      animate={{
-                        boxShadow: [
-                          "0 0 0 rgba(0,0,0,0)",
-                          "0 0 5px rgba(0,0,0,0.1)",
-                          "0 0 0 rgba(0,0,0,0)",
-                        ],
-                      }}
-                      transition={{ duration: 2, repeat: Infinity }}
                     >
                       {item.label}
                     </motion.span>
@@ -151,14 +129,6 @@ const Breadcrumbs = () => {
             })}
           </AnimatePresence>
         </ol>
-
-        {/* Animated line at the bottom */}
-        <motion.div
-          className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-l from-transparent via-gray-400 to-transparent"
-          initial={{ width: 0 }}
-          animate={{ width: "100%" }}
-          transition={{ duration: 1, delay: 0.5 }}
-        />
       </motion.nav>
     </div>
   );

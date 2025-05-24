@@ -1,9 +1,7 @@
 "use client";
-
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Heart } from "lucide-react";
 import { Product } from "@/types/type";
 
 interface ProductCardProps {
@@ -12,8 +10,7 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const [isHovering, setIsHovering] = useState(false);
-  const [isFavorite, setIsFavorite] = useState(false);
-console.log(isHovering)
+  console.log(isHovering);
   // Format price
   const formattedPrice = new Intl.NumberFormat("fa-IR", {
     style: "currency",
@@ -22,26 +19,12 @@ console.log(isHovering)
   }).format(product.variety?.price_main ?? 0);
 
   // Get color information
-  const colorProperty = product.variety?.Properties?.find(
-    (prop) => prop.property.title === "رنگ"
-  );
 
   return (
     <div
       dir="rtl"
-      className="group relative bg-white rounded-sm overflow-hidden shadow-md p-2 hover:shadow-xl transition-all duration-300"
+      className="group relative border border-dashed border-gray-400 bg-white rounded-sm overflow-hidden  hover:shadow-xl transition-all duration-300"
     >
-      {/* Favorite button */}
-      <button
-        onClick={() => setIsFavorite(!isFavorite)}
-        className="absolute top-3 right-3 z-10 bg-white/80 p-1.5 rounded-full"
-      >
-        <Heart
-          size={20}
-          className={isFavorite ? "fill-red-500 text-red-500" : "text-gray-400"}
-        />
-      </button>
-
       {/* Product image with hover effect */}
       <Link href={`/shop/${product.slug}`} className="group">
         <div
@@ -78,37 +61,16 @@ console.log(isHovering)
           </h3>
         </div>
 
-        {/* Category */}
-        <div className="text-xs text-gray-500 mb-2">
-          دسته‌بندی: {product.variety?.category?.cat_name || "نامشخص"}
-        </div>
-
         <p className="text-sm text-gray-500 mb-3 line-clamp-2">
-          {product.seo_description}...
+          {product.seo_description.slice(0, 50)}...
         </p>
 
         {/* Price */}
-        <div className="flex justify-between items-center">
+        <div className="flex justify-end items-center">
           <div>
             <span className="font-bold text-lg">{formattedPrice}</span>
           </div>
         </div>
-
-        {/* Color indicator */}
-        {colorProperty && (
-          <div className="mt-3">
-            <div className="flex gap-1 mt-1">
-              <div
-                className="w-4 h-4 rounded-full border border-gray-300"
-                style={{ backgroundColor: colorProperty.code || "#000000" }}
-                title={colorProperty.title}
-              />
-              <span className="text-xs text-gray-500">
-                {colorProperty.title}
-              </span>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

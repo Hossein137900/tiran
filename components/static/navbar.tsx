@@ -166,7 +166,7 @@ const Navbar = () => {
     return null;
   }
 
-  if (pathname === "/admin") {
+  if (pathname === "/admin" || pathname === "/auth") {
     return null;
   }
 
@@ -389,7 +389,11 @@ const Navbar = () => {
                 onMouseEnter={() => setHoveredCategory(index)}
                 onMouseLeave={() => setHoveredCategory(null)}
               >
-                <Link href={`/category/${category.slug}`}>
+                <Link
+                  href={`/shop?category=${encodeURIComponent(
+                    category.cat_name
+                  )}`}
+                >
                   <span
                     className={`block px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-black transition-all duration-300 border-b-2 ${
                       hoveredCategory === index
@@ -411,8 +415,7 @@ const Navbar = () => {
           hoveredCategory={hoveredCategory}
           setHoveredCategory={setHoveredCategory}
         />
-                  <Breadcrumbs />
-
+        <Breadcrumbs />
       </motion.div>
 
       {/* Mobile menu */}
@@ -461,7 +464,12 @@ const Navbar = () => {
                               whileTap={{ scale: 0.98 }}
                               className="flex items-center justify-between"
                             >
-                              <Link href={`/category/${category.slug}`}>
+                              <Link
+                                href={`/shop?category=${encodeURIComponent(
+                                  category.cat_name
+                                )}`}
+                                onClick={() => setIsOpen(!isOpen)}
+                              >
                                 <span className="block px-4 py-2 text-sm font-medium text-black hover:text-black">
                                   {category.cat_name}
                                 </span>

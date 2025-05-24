@@ -57,7 +57,7 @@ export default function ProductGallery({
   return (
     <div className="space-y-4">
       {/* Main Image */}
-      <div className="relative aspect-square rounded-lg overflow-hidden ">
+      <div className="relative aspect-square overflow-hidden ">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentImageIndex}
@@ -71,8 +71,7 @@ export default function ProductGallery({
               src={allImages[currentImageIndex]}
               alt={`${productName} - تصویر ${currentImageIndex + 1}`}
               fill
-              // sizes="(max-width: 768px) 100vw, 50vw"
-              className={`object-contain transition-transform duration-300 ${
+              className={`object-cover border-dashed border border-gray-500 p-2 transition-transform duration-300 ${
                 isZoomed ? "scale-150 cursor-zoom-out" : "cursor-zoom-in"
               }`}
               onClick={() => setIsZoomed(!isZoomed)}
@@ -83,7 +82,7 @@ export default function ProductGallery({
 
         {/* Zoom indicator */}
         <button
-          className="absolute top-4 right-4 bg-white/80 p-2 rounded-full shadow-sm"
+          className="absolute top-4 right-4 bg-white/80 p-2 shadow-sm"
           onClick={() => setIsZoomed(!isZoomed)}
         >
           <ZoomIn size={20} />
@@ -93,13 +92,13 @@ export default function ProductGallery({
         {allImages.length > 1 && (
           <>
             <button
-              className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full shadow-sm"
+              className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 p-2 shadow-sm"
               onClick={handlePrevImage}
             >
               <ChevronLeft size={20} />
             </button>
             <button
-              className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full shadow-sm"
+              className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 p-2 shadow-sm"
               onClick={handleNextImage}
             >
               <ChevronRight size={20} />
@@ -114,10 +113,10 @@ export default function ProductGallery({
           {allImages.map((image, index) => (
             <button
               key={index}
-              className={`relative w-24 mt-1 mr-4 aspect-square rounded overflow-hidden ${
+              className={`relative w-24 mt-1 mr-4 aspect-square  overflow-hidden ${
                 currentImageIndex === index
-                  ? "ring-2 ring-black/40"
-                  : "opacity-70"
+                  ? "border border-dashed pb-2 border-gray-400"
+                  : "opacity-40 hover:opacity-70 transition-opacity duration-200"
               }`}
               onClick={() => handleThumbnailClick(index)}
             >
@@ -126,7 +125,7 @@ export default function ProductGallery({
                 alt={`${productName} تصویر کوچک ${index + 1}`}
                 fill
                 sizes="100px"
-                className="object-cover"
+                className="object-cover "
               />
             </button>
           ))}

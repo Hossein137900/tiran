@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { BiPhone, BiLock, BiLogIn } from "react-icons/bi";
+import Image from "next/image";
 
 const AuthPage = () => {
   const [step, setStep] = useState(1); // Step 1: Phone number, Step 2: SMS code
@@ -178,122 +179,194 @@ const AuthPage = () => {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-b from-gray-50 to-gray-100"
+      className="min-h-screen flex flex-col lg:flex-row pb-10 sm:pb-0 overflow-y-auto"
       dir="rtl"
     >
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="bg-white rounded-2xl p-8 w-full max-w-md shadow-lg border border-gray-100 mt-12 md:mt-32"
-      >
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={step}
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-          >
-            <motion.h2
-              variants={itemVariants}
-              className="text-3xl font-bold text-gray-800 text-center mb-8 flex items-center justify-center gap-2"
-            >
-              {step === 1 ? "ورود به حساب کاربری" : "تایید کد پیامک"}
-              <BiLogIn className="text-gray-800" size={28} />
-            </motion.h2>
+      {/* Right side - Form */}
 
-            <form onSubmit={handleSubmit} className="space-y-5">
-              {step === 1 ? (
-                <motion.div variants={itemVariants} className="relative">
-                  <BiPhone
-                    className="absolute right-3 top-3.5 text-gray-500"
-                    size={20}
-                  />
-                  <input
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 pr-10 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 focus:outline-none focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition-all"
-                    placeholder="شماره موبایل"
-                    disabled={isLoading}
-                  />
-                  {errors.phone && (
-                    <span className="text-red-500 text-sm block mt-1">
-                      {errors.phone}
-                    </span>
-                  )}
-                </motion.div>
-              ) : (
-                <>
-                  <motion.div
-                    variants={itemVariants}
-                    className="text-center mb-4"
-                  >
-                    <p className="text-gray-600">
-                      کد تایید به شماره {formData.phone} ارسال شد
-                    </p>
-                  </motion.div>
-                  <motion.div variants={itemVariants} className="relative">
-                    <BiLock
-                      className="absolute right-3 top-3.5 text-gray-500"
-                      size={20}
-                    />
-                    <input
-                      name="smsCode"
-                      value={formData.smsCode}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 pr-10 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 focus:outline-none focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition-all"
-                      placeholder="کد تایید"
-                      disabled={isLoading}
-                    />
-                    {errors.smsCode && (
-                      <span className="text-red-500 text-sm block mt-1">
-                        {errors.smsCode}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white order-2 lg:order-1">
+        <motion.div
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6 }}
+          className="w-full max-w-md"
+        >
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={step}
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="space-y-8"
+            >
+              {/* Logo/Brand */}
+              <motion.div
+                variants={itemVariants}
+                className="text-center mb-8 border-b border-dashed border-gray-400 pb-2"
+              >
+                <h1 className="text-4xl font-bold text-gray-900 mb-2">تیران</h1>
+                <p className="text-gray-600">به حساب کاربری خود وارد شوید</p>
+              </motion.div>
+
+              <motion.h2
+                variants={itemVariants}
+                className="text-2xl font-bold text-gray-800 text-center mb-8"
+              >
+                {step === 1 ? "ورود با شماره موبایل" : "تایید کد پیامک"}
+              </motion.h2>
+
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {step === 1 ? (
+                  <motion.div variants={itemVariants}>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      شماره موبایل
+                    </label>
+                    <div className="relative">
+                      <BiPhone
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                        size={20}
+                      />
+                      <input
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        className="w-full px-4 py-4 pr-12 placeholder:text-gray-300 rounded-lg border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all"
+                        placeholder="09123456789"
+                        disabled={isLoading}
+                        type="tel"
+                      />
+                    </div>
+                    {errors.phone && (
+                      <span className="text-red-500 text-sm block mt-2">
+                        {errors.phone}
                       </span>
                     )}
                   </motion.div>
-                </>
-              )}
+                ) : (
+                  <>
+                    <motion.div
+                      variants={itemVariants}
+                      className="text-center mb-6 p-4 bg-blue-50 rounded-lg"
+                    >
+                      <p className="text-gray-700">
+                        کد تایید به شماره{" "}
+                        <span className="font-semibold text-blue-600">
+                          {formData.phone}
+                        </span>{" "}
+                        ارسال شد
+                      </p>
+                    </motion.div>
+                    <motion.div variants={itemVariants}>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        کد تایید
+                      </label>
+                      <div className="relative">
+                        <BiLock
+                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                          size={20}
+                        />
+                        <input
+                          name="smsCode"
+                          value={formData.smsCode}
+                          onChange={handleChange}
+                          className="w-full px-4 py-4 pr-12 rounded-lg border border-gray-300 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                          placeholder="کد 4 رقمی را وارد کنید"
+                          disabled={isLoading}
+                          type="text"
+                          maxLength={6}
+                        />
+                      </div>
+                      {errors.smsCode && (
+                        <span className="text-red-500 text-sm block mt-2">
+                          {errors.smsCode}
+                        </span>
+                      )}
+                    </motion.div>
+                  </>
+                )}
 
-              <motion.button
-                variants={itemVariants}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className={`w-full py-3.5 mt-6 rounded-xl bg-gray-100 border text-black font-bold hover:bg-white transition-all duration-300 flex items-center justify-center gap-2 shadow-md ${
-                  isLoading ? "opacity-70 cursor-not-allowed" : ""
-                }`}
-                type="submit"
-                disabled={isLoading}
-              >
-                <BiLogIn size={20} />
-                {isLoading
-                  ? "در حال پردازش..."
-                  : step === 1
-                  ? "دریافت کد تایید"
-                  : "ورود"}
-              </motion.button>
-            </form>
-
-            {step === 2 && (
-              <motion.div variants={itemVariants} className="text-center mt-8">
                 <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  onClick={() => {
-                    setStep(1);
-                    setFormData((prev) => ({ ...prev, smsCode: "" }));
-                    setErrors({});
-                  }}
-                  className="text-gray-600 hover:text-black transition-colors flex items-center justify-center gap-2 mx-auto font-medium"
+                  variants={itemVariants}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className={`w-full py-4 mt-8 rounded-lg bg-black text-white font-semibold hover:bg-black/80 transition-all duration-300 flex items-center justify-center gap-2 shadow-lg ${
+                    isLoading ? "opacity-70 cursor-not-allowed" : ""
+                  }`}
+                  type="submit"
                   disabled={isLoading}
                 >
-                  تغییر شماره موبایل
+                  {isLoading ? (
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  ) : (
+                    <BiLogIn size={20} />
+                  )}
+                  {isLoading
+                    ? "در حال پردازش..."
+                    : step === 1
+                    ? "دریافت کد تایید"
+                    : "ورود به حساب کاربری"}
                 </motion.button>
+              </form>
+
+              {step === 2 && (
+                <motion.div
+                  variants={itemVariants}
+                  className="text-center mt-6"
+                >
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    onClick={() => {
+                      setStep(1);
+                      setFormData((prev) => ({ ...prev, smsCode: "" }));
+                      setErrors({});
+                    }}
+                    className="text-blue-600 hover:text-blue-800 transition-colors font-medium underline"
+                    disabled={isLoading}
+                  >
+                    تغییر شماره موبایل
+                  </motion.button>
+                </motion.div>
+              )}
+
+              {/* Additional info */}
+              <motion.div variants={itemVariants} className="text-center mt-8">
+                <p className="text-sm text-gray-500">
+                  با ورود به سایت، شما{" "}
+                  <a
+                    href="#"
+                    className="text-gray-900 font-bold hover:underline"
+                  >
+                    قوانین و مقررات
+                  </a>{" "}
+                  را می‌پذیرید
+                </p>
               </motion.div>
-            )}
-          </motion.div>
-        </AnimatePresence>
-      </motion.div>
+            </motion.div>
+          </AnimatePresence>
+        </motion.div>
+      </div>
+
+      {/* Left side - Image */}
+
+      <div className="w-full lg:w-1/2 h-82 lg:h-auto relative bg-gradient-to-br from-blue-600 to-purple-700 order-1 lg:order-2">
+        <motion.div
+          initial={{ opacity: 0, scale: 1.1 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8 }}
+          className="absolute inset-0 bg-black bg-opacity-20"
+        />
+
+        {/* Background Image */}
+        <Image
+          src="/assets/images/contact.jpg"
+          alt="Auth background"
+          fill
+          priority
+          className="object-cover"
+          style={{ objectFit: "cover" }}
+        />
+      </div>
     </div>
   );
 };

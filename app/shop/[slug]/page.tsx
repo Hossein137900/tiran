@@ -54,7 +54,7 @@ export default function ProductPage() {
         setLoading(false);
       } catch (error) {
         console.error("Error fetching product:", error);
-        setError("Failed to load product");
+        setError(" خطا در بارگذاری محصول");
         setLoading(false);
       }
     };
@@ -102,7 +102,6 @@ export default function ProductPage() {
     productImages.length > 1 ? productImages[1].src : primaryImage;
 
   // Get additional images (excluding the first two that we already used)
-  // Get additional images (excluding the first two that we already used)
   const additionalImages =
     productImages.length > 2
       ? productImages.slice(2).map((img) => img.src)
@@ -110,7 +109,7 @@ export default function ProductPage() {
 
   return (
     <main className="container mx-auto px-4 py-12" dir="rtl">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mt-36">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 sm:mt-36 mt-0">
         {/* Product Gallery */}
         <ProductGallery
           primaryImage={primaryImage}

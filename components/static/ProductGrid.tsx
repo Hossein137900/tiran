@@ -2,148 +2,149 @@
 import { useState, useEffect } from "react";
 import ProductCard from "./ProductCard";
 import { CartProvider } from "@/context/cartContext";
-import { Category, Product } from "@/types/type";
+import {  Product } from "@/types/type";
 import Link from "next/link";
 
-export default function ProductGrid() {
-  const [filter, setFilter] = useState("همه");
-  const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
+interface ProductGridProps {
+  categoryFilter?: string | null;
+}
+
+export default function ProductGrid({ categoryFilter }: ProductGridProps) {
+  const [products, setProducts] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  console.log(allProducts)
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchProducts = async () => {
+      setLoading(true);
       try {
-        setLoading(true);
+        let url = "/api/shop"; // Your products API endpoint
 
-        // Fetch categories
-        const categoryResponse = await fetch("/api/category");
-
-        if (!categoryResponse.ok) {
-          throw new Error("Failed to fetch categories");
-        }
-
-        const categoryData = await categoryResponse.json();
-
-        if (!categoryData.success || !categoryData.data) {
-          throw new Error("Invalid category data format");
-        }
-
-        setCategories(categoryData.data);
-
-        // Fetch products
-        const productResponse = await fetch("api/shop");
-
-        if (!productResponse.ok) {
+        const response = await fetch(url);
+        if (!response.ok) {
           throw new Error("Failed to fetch products");
         }
 
-        const productData = await productResponse.json();
+        const data = await response.json();
+        console.log(data, "Fetched products data");
 
-        if (productData.success && productData.data.items) {
-          setProducts(productData.data.items);
-          console.log(productData.data, "productData.data.items");
-        } else {
-          throw new Error("Invalid product data format");
+        // Store all products
+        const allProductsData = data.data?.items || data.items || [];
+        setAllProducts(allProductsData);
+
+        // Filter products based on category if provided
+        let filteredProducts = allProductsData;
+
+        if (categoryFilter) {
+          filteredProducts = allProductsData.filter((product: any) => {
+            // Check if product has variety and category structure
+            if (product.variety && product.variety.category) {
+              const category = product.variety.category;
+
+              // Check if current category matches
+              if (category.cat_name === categoryFilter) {
+                return true;
+              }
+
+              // Check if parent category matches
+              if (
+                category.parent &&
+                category.parent.cat_name === categoryFilter
+              ) {
+                return true;
+              }
+            }
+            return false;
+          });
         }
+
+        setProducts(filteredProducts);
+        console.log("Filtered products:", filteredProducts);
+        console.log("Category filter:", categoryFilter);
       } catch (error) {
-        console.error("Error fetching data:", error);
-        setError("Failed to load data. Please try again later.");
+        console.error("Error fetching products:", error);
+        setProducts([]);
+        setAllProducts([]);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
-  }, []);
-
-  const filteredProducts =
-    filter === "همه"
-      ? products
-      : products.filter((product) => {
-          // Check if the product's variety has a matching category or parent category
-          return (
-            product.variety &&
-            product.variety.category &&
-            // Match direct category name
-            (product.variety.category.cat_name === filter ||
-              // Match parent category name
-              (product.variety.category.parent &&
-                product.variety.category.parent.cat_name === filter))
-          );
-        });
+    fetchProducts();
+  }, [categoryFilter]); // Re-fetch when filter changes
 
   if (loading) {
     return (
-      <div className="flex justify-center bg-white items-center min-h-screen"></div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="text-center py-12">
-        <h3 className="text-xl font-medium text-red-600">{error}</h3>
-        <button
-          onClick={() => window.location.reload()}
-          className="mt-4 px-4 py-2 bg-black text-white rounded-full hover:bg-gray-800 transition-colors"
-        >
-          تلاش مجدد
-        </button>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-12">
+        {[...Array(8)].map((_, index) => (
+          <div key={index} className="animate-pulse">
+            <div className="bg-gray-200 aspect-square rounded-lg mb-4"></div>
+            <div className="bg-gray-200 h-4 rounded mb-2"></div>
+            <div className="bg-gray-200 h-4 rounded w-3/4"></div>
+          </div>
+        ))}
       </div>
     );
   }
 
   return (
     <CartProvider>
-      <div>
-        <div className="flex flex-wrap justify-center gap-4 mb-8">
-          <button
-            key="همه"
-            onClick={() => setFilter("همه")}
-            className={`px-4 py-2 mt-12 rounded-full transition-all ${
-              filter === "همه"
-                ? "bg-black text-white"
-                : "bg-gray-100 hover:bg-gray-200"
-            }`}
-          >
-            همه
-          </button>
+      <div className="mt-12">
+        {categoryFilter && (
+          <div className="mb-6">
+            <div className="flex items-center justify-between">
+              <p className="text-gray-600 text-sm">
+                {products.length} محصول در دسته‌بندی "{categoryFilter}" یافت شد
+              </p>
+              <Link
+                href="/shop"
+                className="text-gray-600 hover:text-blue-600 text-sm font-medium transition-colors"
+              >
+                مشاهده همه محصولات
+              </Link>
+            </div>
+          </div>
+        )}
 
-          {categories.map((category) => (
-            <button
-              key={category.id}
-              onClick={() => setFilter(category.cat_name)}
-              className={`px-4 py-2 mt-12 rounded-full transition-all ${
-                filter === category.cat_name
-                  ? "bg-black text-white"
-                  : "bg-gray-100 hover:bg-gray-200"
-              }`}
-            >
-              {category.cat_name}
-            </button>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {filteredProducts.length > 0 ? (
-            filteredProducts.map((product) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {products.length > 0 ? (
+            products.map((product: Product) => (
               <ProductCard key={product.id} product={product} />
             ))
           ) : (
-            <div className="text-center flex flex-col justify-center items-center py-12 col-span-full">
-              <h3 className="text-xl font-medium">
-                متاسفانه محصولی با این ویژگی پیدا نشد
-              </h3>
-              <p className="text-gray-500 mt-2">
-                لطفا فیلترها را تغییر دهید یا به صفحه اصلی برگردید.
-              </p>
-              <Link
-                href="/"
-                className="mt-4 px-6 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition-colors"
-              >
-                بازگشت به صفحه اصلی
-              </Link>
+            <div className="col-span-full text-center py-12">
+              <div className="max-w-md mx-auto">
+                <div className="text-gray-400 mb-4">
+                  <svg
+                    className="w-16 h-16 mx-auto"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1}
+                      d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2M4 13h2m13-8V4a1 1 0 00-1-1H7a1 1 0 00-1 1v1m8 0V4.5"
+                    />
+                  </svg>
+                </div>
+                <p className="text-gray-500 text-lg mb-2">
+                  {categoryFilter
+                    ? `محصولی در دسته‌بندی "${categoryFilter}" یافت نشد`
+                    : "محصولی یافت نشد"}
+                </p>
+                <p className="text-gray-400 text-sm mb-4">
+                  ممکن است محصولات این دسته‌بندی به زودی اضافه شوند
+                </p>
+                <Link
+                  href="/shop"
+                  className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  مشاهده همه محصولات
+                </Link>
+              </div>
             </div>
           )}
         </div>
