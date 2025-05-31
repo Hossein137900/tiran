@@ -26,7 +26,7 @@ import {
 import { usePathname } from "next/navigation";
 import { useCart } from "@/context/cartContext";
 import { Category, UserProfile } from "@/types/type";
-import MegaMenu from "./megaMenu";
+// import MegaMenu from "./megaMenu";
 import Breadcrumbs from "../global/breadcrumbs";
 
 const Navbar = () => {
@@ -373,7 +373,7 @@ const Navbar = () => {
         className="hidden md:block relative bg-white border-b border-gray-200"
         transition={{ duration: 0.3, ease: "easeInOut" }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             className="flex items-center justify-center space-x-1 space-x-reverse py-2"
             variants={desktopCategoryRowVariants}
@@ -407,14 +407,14 @@ const Navbar = () => {
               </motion.div>
             ))}
           </motion.div>
-        </div>
+        </div> */}
 
         {/* Mega Menu Component */}
-        <MegaMenu
+        {/* <MegaMenu
           categories={categories}
           hoveredCategory={hoveredCategory}
           setHoveredCategory={setHoveredCategory}
-        />
+        /> */}
         <Breadcrumbs />
       </motion.div>
 

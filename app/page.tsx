@@ -6,11 +6,13 @@ import ImageGrow from "@/components/global/imageGrow";
 import ProductCarousel from "@/components/global/productSlider";
 import HomeBlogs from "@/components/global/showBlogs";
 import SewingAnimation from "@/components/static/sewingAnimation";
+import ScrollMediaShowcase from "@/components/static/ui/scrollMediaShowcase";
 import { Product } from "@/types/type";
 import { motion } from "framer-motion";
 
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [showPostShowcase, setShowPostShowcase] = useState(false);
 
   const fetchProducts = async () => {
     try {
@@ -29,13 +31,17 @@ export default function Home() {
       console.error("Error fetching products:", error);
     }
   };
+
   useEffect(() => {
     fetchProducts();
   }, []);
 
+  // Listen for showcase completion
+
   return (
-    <main>
-      <div className="flex items-center justify-center flex-row-reverse h-screen">
+    <main className="relative my-20">
+      {/* Hero Section */}
+      {/* <div className="flex items-center justify-center flex-row-reverse h-screen">
         <div className="md:w-1/3 px-8">
           <motion.div
             initial={{ opacity: 0, x: 100 }}
@@ -66,7 +72,7 @@ export default function Home() {
           </motion.div>
         </div>
         <SewingAnimation />
-      </div>
+      </div> */}
 
       <ImageGrow
         imageSrc="/assets/images/imagegrow.avif"
@@ -77,7 +83,9 @@ export default function Home() {
         overlayColor="rgba(0, 0, 0, 0.3)"
         height="100vh"
       />
+
       <ExampleImageGrid />
+
       <ImageGrow
         imageSrc="/assets/images/imagegrr.webp"
         title="تجربه لاکچری تیران"
