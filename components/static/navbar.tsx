@@ -168,9 +168,7 @@ const Navbar = () => {
   return (
     <nav
       id="navbar"
-      className={`fixed w-full z-50 transition-all duration-500 flex flex-col 
-           md:bg-[#F5F5F5] bg-white/10 backdrop-blur-sm text-black
-      `}
+      className={`fixed w-full z-50 bg-white transition-all duration-500 flex flex-col  text-black`}
       dir="rtl"
     >
       <div className="max-w-screen">
@@ -365,7 +363,7 @@ const Navbar = () => {
 
       {/* Categories Row - Desktop */}
       <motion.div
-        className="hidden md:block relative bg-white border-b border-gray-200"
+        className="hidden md:block relative bg-white"
         transition={{ duration: 0.3, ease: "easeInOut" }}
       >
         {/* <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

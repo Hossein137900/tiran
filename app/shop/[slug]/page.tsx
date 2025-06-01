@@ -113,14 +113,12 @@ export default function ProductPage() {
       ? productImages.slice(2).map((img) => img.src)
       : [];
 
-
-
   // Desktop Layout
   if (isDesktop) {
     return (
-      <main className="min-h-screen bg-white" dir="rtl">
+      <main className="min-h-screen bg-white py-10" dir="rtl">
         {/* Product Gallery Section - Fixed Height */}
-        <div className="h-screen flex">
+        <div className="h-screen flex ">
           {/* Thumbnails Sidebar - Right */}
           <div className="w-20">
             <ProductGallery

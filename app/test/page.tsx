@@ -11,6 +11,9 @@ const Page = () => {
   >("showcase"); // Default to showcase
   const [expandingImage, setExpandingImage] = useState<string>("");
   const [isFirstLoad, setIsFirstLoad] = useState(true);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [showGrid, setShowGrid] = useState(false);
+  const [showShowcase, setShowShowcase] = useState(false);
 
   const slideImages = [
     "/assets/images/fashion/1.avif",
@@ -23,89 +26,156 @@ const Page = () => {
 
   // Check localStorage immediately on component mount
   useEffect(() => {
-    const hasSeenGrid = localStorage.getItem("tiran-fashion-grid-seen");
+    const hasSeenGrid = localStorage.getItem("tiran-fashion-grid-sen");
 
     if (hasSeenGrid !== "true") {
       // First time user, show the grid
       setCurrentComponent("grid");
+      setShowGrid(true);
 
       // Automatically transition after 5 seconds
       const timer = setTimeout(() => {
-        // Mark as seen and start transition
-        localStorage.setItem("tiran-fashion-grid-seen", "true");
-
-        // Get a random image for transition
-        const randomImage =
-          slideImages[Math.floor(Math.random() * slideImages.length)];
-        setExpandingImage(randomImage);
-        setCurrentComponent("transition");
-
-        // After 2 seconds, show the main content
-        setTimeout(() => {
-          setCurrentComponent("showcase");
-        }, 2000);
+        handleGridToShowcaseTransition();
       }, 5000);
 
       return () => clearTimeout(timer);
+    } else {
+      // Returning user, show showcase directly with no delay
+      setCurrentComponent("showcase");
+      setShowShowcase(true);
+      setIsFirstLoad(false);
     }
-
-    setIsFirstLoad(false);
   }, []);
 
-  // Handle manual grid completion (if user interacts before 5 seconds)
-  const handleGridComplete = (centerImage: string) => {
+  // Handle smooth transition from grid to showcase
+  const handleGridToShowcaseTransition = async () => {
+    // Mark as seen
     localStorage.setItem("tiran-fashion-grid-seen", "true");
-    setExpandingImage(centerImage);
+
+    // Start transition sequence
+    setIsTransitioning(true);
+
+    // Get a random image for transition effect
+    const randomImage =
+      slideImages[Math.floor(Math.random() * slideImages.length)];
+    setExpandingImage(randomImage);
+
+    // Phase 1: Fade out grid (300ms - reduced from 500ms)
+    setShowGrid(false);
+
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
+    // Phase 2: Show transition overlay (600ms - reduced from 1000ms)
     setCurrentComponent("transition");
 
-    setTimeout(() => {
-      setCurrentComponent("showcase");
-    }, 2000);
+    await new Promise((resolve) => setTimeout(resolve, 600));
+
+    // Phase 3: Switch to showcase and start showing it immediately
+    setCurrentComponent("showcase");
+    setShowShowcase(true);
+
+    await new Promise((resolve) => setTimeout(resolve, 200));
+
+    // Phase 4: Complete transition
+    setIsTransitioning(false);
+    setIsFirstLoad(false);
   };
 
-
-
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen overflow-hidden">
       {/* DynamicFashionGrid - shows for exactly 5 seconds on first visit */}
       {currentComponent === "grid" && (
-        <DynamicFashionGrid onComplete={handleGridComplete} />
-      )}
-
-      {/* Expanding image transition */}
-      {currentComponent === "transition" && (
-        <div className="fixed inset-0 z-50">
-          <img
-            src={expandingImage}
-            alt="Transition"
-            className="w-full h-full object-cover animate-scale-up"
-          />
+        <div
+          className={`fixed inset-0 z-50 transition-opacity duration-300 ease-out ${
+            showGrid ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          <DynamicFashionGrid />
         </div>
       )}
 
-      {/* Main content - shows after transition or directly for returning users */}
+    
+
+      {/* Main content - ONLY ScrollMediaShowcase renders here */}
       {currentComponent === "showcase" && (
-        <div className={`${!isFirstLoad ? "animate-fade-in" : ""}`}>
-          <ScrollMediaShowcase />
-          <EnhancedLogoLoadingScreen />
-          <MarqueeSlider images={slideImages} speed={25} direction="right" />
-          <EnhancedLogoLoadingScreen />
+        <div
+          className={`relative z-30 transition-all duration-500 ease-out ${
+            showShowcase
+              ? "opacity-100 transform translate-y-0"
+              : "opacity-0 transform translate-y-2"
+          }`}
+        >
+          {/* ScrollMediaShowcase - IMMEDIATE rendering with minimal delay */}
+          <div
+            className={`transition-all duration-600 ease-out ${
+              showShowcase
+                ? "opacity-100 transform scale-100"
+                : "opacity-0 transform scale-98"
+            }`}
+            style={{
+              transitionDelay: "0ms", // No delay for immediate show
+            }}
+          >
+            <ScrollMediaShowcase />
+          </div>
+
+          {/* Other components with faster staggered loading */}
+          <div
+            className={`transition-all duration-500 ease-out ${
+              showShowcase
+                ? "opacity-100 transform translate-y-0"
+                : "opacity-0 transform translate-y-4"
+            }`}
+            style={{
+              transitionDelay: "200ms", // Reduced from 800ms
+            }}
+          >
+            <EnhancedLogoLoadingScreen />
+          </div>
+
+          <div
+            className={`transition-all duration-500 ease-out ${
+              showShowcase
+                ? "opacity-100 transform translate-y-0"
+                : "opacity-0 transform translate-y-4"
+            }`}
+            style={{
+              transitionDelay: "400ms", // Reduced from 1200ms
+            }}
+          >
+            <MarqueeSlider images={slideImages} speed={25} direction="right" />
+          </div>
+
+          <div
+            className={`transition-all duration-500 ease-out ${
+              showShowcase
+                ? "opacity-100 transform translate-y-0"
+                : "opacity-0 transform translate-y-4"
+            }`}
+            style={{
+              transitionDelay: "600ms", // Reduced from 1600ms
+            }}
+          >
+            <EnhancedLogoLoadingScreen />
+          </div>
         </div>
       )}
 
       <style jsx>{`
-        @keyframes scale-up {
+        @keyframes scale-up-fast {
           from {
-            transform: scale(0.1);
-            border-radius: 12px;
+            transform: scale(0.2);
+            border-radius: 30%;
+            opacity: 0.8;
           }
           to {
-            transform: scale(1);
+            transform: scale(1.02);
             border-radius: 0;
+            opacity: 1;
           }
         }
 
-        @keyframes fade-in {
+        @keyframes fade-in-fast {
           from {
             opacity: 0;
           }
@@ -114,13 +184,14 @@ const Page = () => {
           }
         }
 
-        .animate-scale-up {
-          animation: scale-up 1s ease-out forwards;
+        .animate-scale-up-fast {
+          animation: scale-up-fast 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)
+            forwards;
           transform-origin: center;
         }
 
-        .animate-fade-in {
-          animation: fade-in 0.5s ease-in forwards;
+        .animate-fade-in-fast {
+          animation: fade-in-fast 0.5s ease-in-out forwards;
         }
       `}</style>
     </div>

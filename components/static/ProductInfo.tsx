@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { ShoppingCart, Check, Share2 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "@/context/cartContext";
 import { Product, ProductInfoProps } from "@/types/type";
 import { toast } from "react-toastify";
@@ -25,6 +25,10 @@ export default function ProductInfo({
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
+
+  // ProductTabs states
+  const [activeTab, setActiveTab] = useState("description");
+
   const { addItem } = useCart();
 
   // Initialize with the first variety if available
@@ -60,7 +64,6 @@ export default function ProductInfo({
   }).format(selectedVariety?.price_main ?? 0);
 
   // Extract all available properties from varieties
-
   const propertiesByType: Record<
     string,
     Array<{ id: number; title: string; propertyId: number }>
@@ -227,118 +230,42 @@ export default function ProductInfo({
   const decrementQuantity = () =>
     setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
 
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: product.fa_name,
-        text: product.seo_description,
-        url: window.location.href,
-      });
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      toast.success("لینک کپی شد", { position: "top-center" });
-    }
-  };
+  // ProductTabs configuration
+  const tabs = [
+    { id: "description", label: "توضیحات" },
+    { id: "details", label: "جزئیات" },
+    { id: "shipping", label: "حمل و نقل و برگشت" },
+  ];
 
   return (
     <div
       className={`${
         layout === "desktop"
-          ? "h-full flex flex-col"
-          : "container mx-auto px-4 sm:px-6"
-      }  mt-20  sm:pb-8`}
+          ? "h-full  flex flex-col"
+          : "container  mx-auto px-4 sm:px-6"
+      }  mt-20  w-full max-w-xl  sm:pb-8`}
     >
-      {" "}
       {/* Product Header */}
-      <div className="space-y-6">
+      <div className="space-y-2">
         {/* Header Section */}
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <h1
-              className={`font-light tracking-wide text-gray-900 ${
-                layout === "desktop" ? "text-xl" : "text-2xl"
-              }`}
-            >
-              {product.fa_name}
-            </h1>
-          </div>
-
-          {/* Action Icons */}
-          <div className="flex items-center gap-2">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={handleShare}
-              className="p-2 hover:bg-gray-50 rounded-full transition-colors"
-            >
-              <Share2 size={20} className="text-gray-400" />
-            </motion.button>
-          </div>
+        <div className="flex items-center justify-center">
+          <h1
+            className={`font-light tracking-wide text-gray-900 ${
+              layout === "desktop" ? "text-xl" : "text-2xl"
+            }`}
+          >
+            {product.fa_name}
+          </h1>
         </div>
 
         {/* Price & Stock */}
-        <div className="flex items-center justify-between py-4 border-b border-gray-100">
+        <div className="flex items-center justify-center">
           <div
             className={`font-medium text-gray-900 ${
               layout === "desktop" ? "text-lg" : "text-xl"
             }`}
           >
             {formattedPrice}
-          </div>
-          <div className="flex items-center gap-2">
-            <div
-              className={`w-2 h-2 rounded-full ${
-                (selectedVariety?.store_stock ?? 0) > 0
-                  ? "bg-green-500"
-                  : "bg-red-500"
-              }`}
-            />
-            <span
-              className={`text-sm font-medium ${
-                (selectedVariety?.store_stock ?? 0) > 0
-                  ? "text-green-600"
-                  : "text-red-600"
-              }`}
-            >
-              {(selectedVariety?.store_stock ?? 0) > 0 ? "موجود" : "ناموجود"}
-            </span>
-          </div>
-        </div>
-        {/* Quantity Selection */}
-        <div className="space-y-3">
-          <h3 className="font-medium text-gray-900 text-sm">تعداد</h3>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden">
-              <motion.button
-                whileHover={{ backgroundColor: "#f9fafb" }}
-                whileTap={{ scale: 0.95 }}
-                onClick={decrementQuantity}
-                className="w-10 h-10 flex items-center justify-center hover:bg-gray-50 transition-colors"
-              >
-                <span className="text-lg font-light">−</span>
-              </motion.button>
-
-              <div className="w-12 h-10 flex items-center justify-center border-x border-gray-200 font-medium text-sm">
-                {quantity}
-              </div>
-
-              <motion.button
-                whileHover={{ backgroundColor: "#f9fafb" }}
-                whileTap={{ scale: 0.95 }}
-                onClick={incrementQuantity}
-                className="w-10 h-10 flex items-center justify-center hover:bg-gray-50 transition-colors"
-              >
-                <span className="text-lg font-light">+</span>
-              </motion.button>
-            </div>
-
-            <div className="text-right">
-              <span className="text-xs text-gray-500">
-                {(selectedVariety?.store_stock ?? 0) > 0
-                  ? `${selectedVariety?.store_stock} عدد موجود`
-                  : "ناموجود"}
-              </span>
-            </div>
           </div>
         </div>
 
@@ -352,14 +279,14 @@ export default function ProductInfo({
             }
             onClick={handleAddToCart}
             whileHover={
-              (selectedVariety?.store_stock ?? 0) > 0 ? { scale: 1.01 } : {}
+              (selectedVariety?.store_stock ?? 0) > 0 ? { scale: 1 } : {}
             }
             whileTap={
               (selectedVariety?.store_stock ?? 0) > 0 ? { scale: 0.99 } : {}
             }
-            className={`w-full py-4 flex items-center justify-center gap-3 font-medium rounded-lg transition-all ${
+            className={`w-full py-3 flex items-center justify-center gap-3 border font-medium duration-300 transition-all ${
               (selectedVariety?.store_stock ?? 0) > 0 && !checkoutLoading
-                ? "bg-gray-900 text-white hover:bg-gray-800"
+                ? " text-black hover:border-gray-300"
                 : "bg-gray-100 text-gray-400 cursor-not-allowed"
             } ${layout === "desktop" ? "text-sm" : "text-base"}`}
           >
@@ -380,7 +307,7 @@ export default function ProductInfo({
         </div>
 
         {/* Product Details with Options */}
-        <div className="pt-6 border-t border-gray-100">
+        <div className="pt-6 border-b pb-3 border-gray-200">
           <details className="group">
             <summary className="flex items-center justify-between cursor-pointer">
               <h3 className="text-sm font-medium text-gray-900">
@@ -536,7 +463,306 @@ export default function ProductInfo({
             </div>
           </details>
         </div>
+
+        {/* Integrated ProductTabs Section - Dropdown Style */}
+        <div className="space-y-4">
+          {/* Description Tab */}
+          <div className="border-b pb-3 border-gray-200">
+            <details className="group">
+              <summary className="flex items-center justify-between cursor-pointer">
+                <h3 className="text-sm font-medium text-gray-900">
+                  توضیحات محصول
+                </h3>
+                <svg
+                  className="w-4 h-4 text-gray-500 transition-transform group-open:rotate-180"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </summary>
+
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+                className="mt-4"
+              >
+                <div className="prose max-w-none">
+                  <div className="text-gray-700 leading-relaxed text-sm font-light">
+                    {product.seo_description || "توضیحات محصول در دسترس نیست."}
+                  </div>
+                </div>
+              </motion.div>
+            </details>
+          </div>
+
+          {/* Details Tab */}
+          <div className="border-b pb-3 border-gray-200">
+            <details className="group">
+              <summary className="flex items-center justify-between cursor-pointer">
+                <h3 className="text-sm font-medium text-gray-900">
+                  مشخصات تفصیلی
+                </h3>
+                <svg
+                  className="w-4 h-4 text-gray-500 transition-transform group-open:rotate-180"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </summary>
+
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+                className="mt-4"
+              >
+                <div className="space-y-6">
+                  {/* Product Specifications */}
+                  <div className="space-y-4">
+                    <h4 className="font-medium text-gray-900 text-sm">
+                      مشخصات محصول
+                    </h4>
+                    {selectedVariety && (
+                      <div className="space-y-3">
+                        <div className="flex justify-between py-2 text-xs text-gray-600">
+                          <span>دسته بندی:</span>
+                          <span className="font-medium">
+                            {selectedVariety.category.cat_name}
+                          </span>
+                        </div>
+
+                        {selectedVariety.getColor && (
+                          <div className="flex justify-between py-2 text-xs text-gray-600">
+                            <span>رنگ:</span>
+                            <span className="font-medium">
+                              {selectedVariety.getColor.fa_name}
+                            </span>
+                          </div>
+                        )}
+
+                        {selectedVariety.showProperties &&
+                          selectedVariety.showProperties.length > 0 && (
+                            <div className="flex justify-between py-2 text-xs text-gray-600">
+                              <span>سایز:</span>
+                              <span className="font-medium">
+                                {selectedVariety.showProperties[0].child.title}
+                              </span>
+                            </div>
+                          )}
+
+                        {selectedVariety.show_unit && (
+                          <div className="flex justify-between py-2 text-xs text-gray-600">
+                            <span>واحد:</span>
+                            <span className="font-medium">
+                              {selectedVariety.show_unit}
+                            </span>
+                          </div>
+                        )}
+
+                        <div className="flex justify-between py-2 text-xs text-gray-600">
+                          <span>موجودی:</span>
+                          <span
+                            className={`font-medium ${
+                              selectedVariety.store_stock > 0
+                                ? "text-green-600"
+                                : "text-red-600"
+                            }`}
+                          >
+                            {selectedVariety.store_stock > 0
+                              ? `${selectedVariety.store_stock} عدد موجود`
+                              : "ناموجود"}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Size Guide */}
+                  <div className="pt-4 border-t border-gray-100">
+                    <h4 className="font-medium text-gray-900 text-sm mb-3">
+                      راهنمای سایز
+                    </h4>
+                    <div className="bg-gray-50 p-3 rounded-lg">
+                      <div className="space-y-2 text-xs">
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">سایز کوچک:</span>
+                          <span className="font-medium">36-38</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">سایز متوسط:</span>
+                          <span className="font-medium">40-42</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">سایز بزرگ:</span>
+                          <span className="font-medium">44-46</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </details>
+          </div>
+
+          {/* Shipping Tab */}
+          <div className="border-b pb-3 border-gray-200">
+            <details className="group">
+              <summary className="flex items-center justify-between cursor-pointer">
+                <h3 className="text-sm font-medium text-gray-900">
+                  حمل و نقل و برگشت
+                </h3>
+                <svg
+                  className="w-4 h-4 text-gray-500 transition-transform group-open:rotate-180"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </summary>
+
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+                className="mt-4"
+              >
+                <div className="space-y-6">
+                  {/* Shipping Information */}
+                  <div className="space-y-4">
+                    <h4 className="font-medium text-gray-900 text-sm">
+                      اطلاعات ارسال
+                    </h4>
+                    <div className="space-y-3 text-xs text-gray-600 leading-relaxed">
+                      <p>
+                        ما به سراسر کشور از طریق شرکای مطمئن خود ارسال می‌کنیم.
+                        ارسال استاندارد بین ۳ تا ۷ روز کاری بسته به موقعیت شما
+                        طول می‌کشد.
+                      </p>
+                      <div className="bg-gray-50 p-3 rounded-lg">
+                        <h5 className="font-medium mb-2 text-gray-900">
+                          هزینه ارسال:
+                        </h5>
+                        <ul className="space-y-1">
+                          <li>
+                            • ارسال رایگان برای خریدهای بالای ۵۰۰,۰۰۰ تومان
+                          </li>
+                          <li>• ارسال عادی: ۳۰,۰۰۰ تومان</li>
+                          <li>• ارسال اکسپرس: ۵۰,۰۰۰ تومان</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Return Policy */}
+                  <div className="pt-4 border-t border-gray-100">
+                    <h4 className="font-medium text-gray-900 text-sm mb-3">
+                      سیاست برگشت
+                    </h4>
+                    <div className="space-y-3 text-xs text-gray-600 leading-relaxed">
+                      <p>
+                        اگر از خرید خود کاملاً راضی نیستید، می‌توانید ظرف ۳۰ روز
+                        آن را برای بازپرداخت کامل برگردانید.
+                      </p>
+                      <div className="bg-gray-50 p-3 rounded-lg">
+                        <h5 className="font-medium mb-2 text-gray-900">
+                          شرایط برگشت:
+                        </h5>
+                        <ul className="space-y-1">
+                          <li>• محصول باید استفاده نشده باشد</li>
+                          <li>• برچسب‌ها و بسته‌بندی اصلی موجود باشد</li>
+                          <li>• رسید خرید ارائه شود</li>
+                          <li>• هزینه ارسال برگشت بر عهده خریدار</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Support Section */}
+                  <div className="pt-4 border-t border-gray-100">
+                    <h4 className="font-medium text-gray-900 text-sm mb-3">
+                      سوالی دارید؟
+                    </h4>
+                    <p className="text-xs text-gray-600 mb-3">
+                      تیم پشتیبانی ما آماده پاسخگویی به سوالات شما است
+                    </p>
+                    <div className="flex gap-3">
+                      <button className="flex-1 py-2 px-3 text-xs border border-gray-300 hover:border-gray-400 transition-colors rounded">
+                        تماس با ما
+                      </button>
+                      <button className="flex-1 py-2 px-3 text-xs bg-black text-white hover:bg-gray-800 transition-colors rounded">
+                        چت آنلاین
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </details>
+          </div>
+        </div>
+
+        {/* Quantity Selection */}
+        <div className="space-y-3">
+          <h3 className="font-medium text-gray-900 text-sm">تعداد</h3>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden">
+              <motion.button
+                whileHover={{ backgroundColor: "#f9fafb" }}
+                whileTap={{ scale: 0.95 }}
+                onClick={decrementQuantity}
+                className="w-10 h-10 flex items-center justify-center hover:bg-gray-50 transition-colors"
+              >
+                <span className="text-lg font-light">−</span>
+              </motion.button>
+
+              <div className="w-12 h-10 flex items-center justify-center border-x border-gray-200 font-medium text-sm">
+                {quantity}
+              </div>
+
+              <motion.button
+                whileHover={{ backgroundColor: "#f9fafb" }}
+                whileTap={{ scale: 0.95 }}
+                onClick={incrementQuantity}
+                className="w-10 h-10 flex items-center justify-center hover:bg-gray-50 transition-colors"
+              >
+                <span className="text-lg font-light">+</span>
+              </motion.button>
+            </div>
+
+            <div className="text-right">
+              <span className="text-xs text-gray-500">
+                {(selectedVariety?.store_stock ?? 0) > 0
+                  ? `${selectedVariety?.store_stock} عدد موجود`
+                  : "ناموجود"}
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
+
       {/* Address Modal */}
       <AddressModal
         isOpen={showAddressModal}

@@ -5,7 +5,6 @@ import { ray } from "@/next-persian-fonts/ray";
 import Footer from "@/components/static/footer";
 import { ToastContainer } from "react-toastify";
 import { CartProvider } from "@/context/cartContext";
-import Breadcrumbs from "@/components/global/breadcrumbs";
 
 export const metadata: Metadata = {
   title: "تیران - فروشگاه آنلاین پوشاک",
@@ -28,7 +27,6 @@ export default function RootLayout({
         />
         <CartProvider>
           <Navbar />
-          <Breadcrumbs />
 
           {children}
 

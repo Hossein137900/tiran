@@ -4,7 +4,10 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MediaItem } from "@/types/type";
 
-
+interface ScrollMediaShowcaseProps {
+  initialCenterImage?: string;
+  transitionComplete?: () => void;
+}
 
 const mediaItems: MediaItem[] = [
   {
@@ -78,18 +81,40 @@ const mediaItems: MediaItem[] = [
   },
 ];
 
-const ScrollMediaShowcase = () => {
+const ScrollMediaShowcase = ({
+  initialCenterImage,
+  transitionComplete,
+}: ScrollMediaShowcaseProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isActive, setIsActive] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isMounted, setIsMounted] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
 
-  console.log(scrollProgress)
+  const [isInitializing, setIsInitializing] = useState(true);
+  const [initialImage, setInitialImage] = useState(initialCenterImage || "");
+  console.log(scrollProgress);
 
+  useEffect(() => {
+    if (initialImage) {
+      const timer = setTimeout(() => {
+        setIsInitializing(false);
+        if (transitionComplete) transitionComplete();
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [initialImage, transitionComplete]);
   // Handle client-side mounting
   useEffect(() => {
     setIsMounted(true);
+    // Add a small delay then trigger the fade-in animation
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, []);
 
   // Get only videos for center position
@@ -207,196 +232,519 @@ const ScrollMediaShowcase = () => {
   }
 
   return (
-    <div ref={containerRef} className="min-h-[300vh] relative">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: isVisible ? 1 : 0 }}
+      transition={{
+        duration: 2,
+        ease: [0.25, 0.46, 0.45, 0.94],
+      }}
+      ref={containerRef}
+      className="min-h-[300vh] -mt-34 relative"
+    >
       {/* Sticky container for media showcase */}
-      <div className="sticky top-28 h-screen flex items-center justify-center overflow-hidden">
+      <div className="sticky top-2 md:top-20 h-screen flex items-center justify-center overflow-hidden">
         {/* Background */}
-        <div className="w-full max-w-7xl mx-auto px-8 relative">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: isVisible ? 1 : 0, scale: isVisible ? 1 : 0.95 }}
+          transition={{
+            duration: 2.5,
+            delay: 0.3,
+            ease: [0.25, 0.46, 0.45, 0.94],
+          }}
+          className="w-full max-w-7xl mx-auto px-8 relative"
+        >
           <div className="relative h-[80vh] flex items-center justify-center">
-            {/* Left Image - Fixed Position with Slide Animation */}
-            <div className="absolute left-35 top-1/2 transform -translate-y-1/2 z-10 -rotate-[30deg]">
-              <div className="w-72 h-96 rounded-2xl overflow-hidden shadow-2xl border border-white/20 relative">
-                <AnimatePresence mode="wait" custom={1}>
-                  <motion.div
-                    key={`left-${currentIndex}`}
-                    custom={1}
-                    variants={slideVariants}
-                    initial="enter"
-                    animate="center"
-                    exit="exit"
-                    transition={{
-                      duration: 0.2,
-                      ease: [0.25, 0.46, 0.45, 0.94],
-                    }}
-                    className="absolute inset-0"
-                  >
-                    <img
-                      src={sideImages.left.src}
-                      alt={sideImages.left.alt}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-                  </motion.div>
-                </AnimatePresence>
-              </div>
-            </div>
-
-            {/* Center Video - Fixed Position with Slide Animation */}
-            <div className="relative z-20">
-              <div className="w-96 h-[520px] rounded-3xl overflow-hidden shadow-2xl border-2 border-white/30 relative">
-                <AnimatePresence mode="wait" custom={1}>
-                  <motion.div
-                    key={`center-${currentIndex}`}
-                    custom={1}
-                    variants={slideVariants}
-                    initial="enter"
-                    animate="center"
-                    exit="exit"
-                    transition={{
-                      duration: 0.2,
-                      ease: [0.25, 0.46, 0.45, 0.94],
-                      delay: 0.1,
-                    }}
-                    className="absolute inset-0"
-                  >
-                    <video
-                      src={centerVideo.src}
-                      autoPlay
-                      muted
-                      loop
-                      playsInline
-                      className="w-full h-full object-cover"
-                    />
-
-                    {/* Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-
-                    {/* Content */}
-                    <div className="absolute bottom-8 left-6 right-6 text-center">
-                      <motion.h2
-                        initial={{ y: 30, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.4, duration: 0.4 }}
-                        className="text-3xl font-bold text-white mb-3"
-                      >
-                        {centerVideo.title}
-                      </motion.h2>
-                      <motion.p
-                        initial={{ y: 30, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.5, duration: 0.4 }}
-                        className="text-gray-200 text-lg"
-                      >
-                        {centerVideo.description}
-                      </motion.p>
-                    </div>
-                  </motion.div>
-                </AnimatePresence>
-
-                {/* Glow Effect */}
+            {/* Mobile Layout */}
+            <div className="block md:hidden w-full px-4">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 30 }}
+                transition={{
+                  duration: 1.8,
+                  delay: 0.6,
+                  ease: "easeOut",
+                }}
+                className="relative h-[60vh] flex items-center justify-center w-full"
+              >
+                {/* Left Image - Mobile Version */}
                 <motion.div
+                  initial={{ opacity: 0, x: -50, rotate: -25 }}
                   animate={{
-                    scale: [1, 1.05, 1],
-                    opacity: [0.5, 0.8, 0.5],
+                    opacity: isVisible ? 1 : 0,
+                    x: isVisible ? 0 : -50,
+                    rotate: isVisible ? -25 : -35,
                   }}
                   transition={{
-                    duration: 3,
+                    duration: 1.5,
+                    delay: 0.8,
+                    ease: "easeOut",
+                  }}
+                  className="absolute -left-2 top-1/2 transform -translate-y-1/2 z-10"
+                >
+                  <div className="w-24 h-36 sm:w-24 sm:h-32 rounded-xl overflow-hidden shadow-xl border border-white/20 relative">
+                    <AnimatePresence mode="wait" custom={1}>
+                      <motion.div
+                        key={`mobile-left-${currentIndex}`}
+                        custom={1}
+                        variants={slideVariants}
+                        initial="enter"
+                        animate="center"
+                        exit="exit"
+                        transition={{
+                          duration: 0.1,
+                          ease: [0.25, 0.46, 0.45, 0.94],
+                        }}
+                        className="absolute inset-0"
+                      >
+                        <img
+                          src={sideImages.left.src}
+                          alt={sideImages.left.alt}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                      </motion.div>
+                    </AnimatePresence>
+                  </div>
+                </motion.div>
+
+                {/* Center Video - Mobile Version */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{
+                    opacity: isVisible ? 1 : 0,
+                    scale: isVisible ? 1 : 0.8,
+                  }}
+                  transition={{
+                    duration: 2,
+                    delay: 1,
+                    ease: [0.25, 0.46, 0.45, 0.94],
+                  }}
+                  className="relative z-20"
+                >
+                  <div className="w-45 h-64 sm:w-56 sm:h-72 overflow-hidden shadow-2xl border-2 border-white/30 relative">
+                    <AnimatePresence mode="wait" custom={1}>
+                      <motion.div
+                        key={`center-mobile-${currentIndex}`}
+                        custom={1}
+                        variants={slideVariants}
+                        initial="enter"
+                        animate="center"
+                        exit="exit"
+                        transition={{
+                          duration: 0.1,
+                          ease: [0.25, 0.46, 0.45, 0.94],
+                          delay: 0.1,
+                        }}
+                        className="absolute inset-0"
+                      >
+                        <video
+                          src={centerVideo.src}
+                          autoPlay
+                          muted
+                          loop
+                          playsInline
+                          className="w-full h-full object-cover"
+                        />
+
+                        {/* Overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+
+                        {/* Content */}
+                        <div className="absolute bottom-3 left-3 right-3 text-center">
+                          <motion.h2
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: 0.4, duration: 0.4 }}
+                            className="text-sm sm:text-base font-bold text-white mb-1"
+                          >
+                            {centerVideo.title}
+                          </motion.h2>
+                          <motion.p
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: 0.5, duration: 0.4 }}
+                            className="text-gray-200 text-xs sm:text-sm line-clamp-2"
+                          >
+                            {centerVideo.description}
+                          </motion.p>
+                        </div>
+                      </motion.div>
+                    </AnimatePresence>
+
+                    {/* Glow Effect */}
+                    <motion.div
+                      animate={{
+                        scale: [1, 1.05, 1],
+                        opacity: [0.3, 0.6, 0.3],
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
+                      className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-500/20 to-blue-500/20 blur-lg -z-10"
+                    />
+                  </div>
+                </motion.div>
+
+                {/* Right Image - Mobile Version */}
+                <motion.div
+                  initial={{ opacity: 0, x: 50, rotate: 25 }}
+                  animate={{
+                    opacity: isVisible ? 1 : 0,
+                    x: isVisible ? 0 : 50,
+                    rotate: isVisible ? 25 : 35,
+                  }}
+                  transition={{
+                    duration: 1.5,
+                    delay: 0.8,
+                    ease: "easeOut",
+                  }}
+                  className="absolute -right-2 top-1/2 transform -translate-y-1/2 z-10"
+                >
+                  <div className="w-24 h-36 sm:w-24 sm:h-32 rounded-xl overflow-hidden shadow-xl border border-white/20 relative">
+                    <AnimatePresence mode="wait" custom={1}>
+                      <motion.div
+                        key={`mobile-right-${currentIndex}`}
+                        custom={1}
+                        variants={slideVariants}
+                        initial="enter"
+                        animate="center"
+                        exit="exit"
+                        transition={{
+                          duration: 0.1,
+                          ease: [0.25, 0.46, 0.45, 0.94],
+                        }}
+                        className="absolute inset-0"
+                      >
+                        <img
+                          src={sideImages.right.src}
+                          alt={sideImages.right.alt}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                      </motion.div>
+                    </AnimatePresence>
+                  </div>
+                </motion.div>
+
+                {/* Mobile Background Effects */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  animate={{
+                    opacity: isVisible ? [0.03, 0.08, 0.03] : 0,
+                    scale: isVisible ? [1, 1.1, 1] : 0.5,
+                  }}
+                  transition={{
+                    duration: 6,
                     repeat: Infinity,
                     ease: "easeInOut",
+                    delay: 1.2,
                   }}
-                  className="absolute inset-0 rounded-3xl bg-gradient-to-r from-purple-500/20 to-blue-500/20 blur-xl -z-10"
+                  className="absolute top-1/4 left-1/4 w-24 h-24 sm:w-32 sm:h-32 bg-purple-500/20 rounded-full blur-2xl pointer-events-none"
                 />
-              </div>
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  animate={{
+                    opacity: isVisible ? [0.03, 0.08, 0.03] : 0,
+                    scale: isVisible ? [1.1, 1, 1.1] : 0.5,
+                  }}
+                  transition={{
+                    duration: 8,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: 3.2,
+                  }}
+                  className="absolute bottom-1/4 right-1/4 w-20 h-20 sm:w-28 sm:h-28 bg-blue-500/20 rounded-full blur-2xl pointer-events-none"
+                />
+
+                {/* Progress Indicators - Mobile */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{
+                    opacity: isVisible ? 1 : 0,
+                    y: isVisible ? 0 : 20,
+                  }}
+                  transition={{
+                    duration: 1,
+                    delay: 1.5,
+                    ease: "easeOut",
+                  }}
+                  className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2"
+                >
+                  {mediaItems
+                    .filter((item) => item.type === "video")
+                    .map((_, index) => (
+                      <div
+                        key={index}
+                        className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                          index ===
+                          Math.floor(
+                            (currentIndex / mediaItems.length) *
+                              mediaItems.filter((item) => item.type === "video")
+                                .length
+                          )
+                            ? "bg-white scale-125"
+                            : "bg-white/30"
+                        }`}
+                      />
+                    ))}
+                </motion.div>
+
+                {/* Additional Floating Elements for Mobile */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{
+                    opacity: isVisible ? 1 : 0,
+                    y: isVisible ? [0, -10, 0] : 0,
+                    rotate: isVisible ? [0, 5, 0] : 0,
+                  }}
+                  transition={{
+                    opacity: { duration: 1, delay: 1.8 },
+                    y: { duration: 4, repeat: Infinity, ease: "easeInOut" },
+                    rotate: {
+                      duration: 4,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    },
+                  }}
+                  className="absolute top-16 left-8 w-3 h-3 bg-white/20 rounded-full blur-sm"
+                />
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{
+                    opacity: isVisible ? 1 : 0,
+                    y: isVisible ? [0, 10, 0] : 0,
+                    rotate: isVisible ? [0, -5, 0] : 0,
+                  }}
+                  transition={{
+                    opacity: { duration: 1, delay: 2 },
+                    y: {
+                      duration: 5,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                      delay: 1,
+                    },
+                    rotate: {
+                      duration: 5,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                      delay: 1,
+                    },
+                  }}
+                  className="absolute top-20 right-12 w-2 h-2 bg-white/15 rounded-full blur-sm"
+                />
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{
+                    opacity: isVisible ? 1 : 0,
+                    y: isVisible ? [0, -8, 0] : 0,
+                    x: isVisible ? [0, 5, 0] : 0,
+                  }}
+                  transition={{
+                    opacity: { duration: 1, delay: 2.2 },
+                    y: {
+                      duration: 6,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                      delay: 2,
+                    },
+                    x: {
+                      duration: 6,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                      delay: 2,
+                    },
+                  }}
+                  className="absolute bottom-16 left-12 w-2.5 h-2.5 bg-white/10 rounded-full blur-sm"
+                />
+              </motion.div>
             </div>
 
-            {/* Right Image - Fixed Position with Slide Animation */}
-            <div className="absolute right-35 top-1/2 transform -translate-y-1/2 z-10 rotate-[30deg]">
-              <div className="w-72 h-96 rounded-2xl overflow-hidden shadow-2xl border border-white/20 relative">
-                <AnimatePresence mode="wait" custom={1}>
-                  <motion.div
-                    key={`right-${currentIndex}`}
-                    custom={1}
-                    variants={slideVariants}
-                    initial="enter"
-                    animate="center"
-                    exit="exit"
-                    transition={{
-                      duration: 0.2,
-                      ease: [0.25, 0.46, 0.45, 0.94],
-                      delay: 0.2,
-                    }}
-                    className="absolute inset-0"
-                  >
-                    <img
-                      src={sideImages.right.src}
-                      alt={sideImages.right.alt}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-                  </motion.div>
-                </AnimatePresence>
-              </div>
-            </div>
-          </div>
-          {/* Progress Dots */}
-
-          {/* Background Particles */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            {Array.from({ length: 20 }).map((_, i) => (
+            {/* Desktop Layout */}
+            <div className="hidden md:flex items-center justify-center w-full">
+              {/* Left Image - Fixed Position with Slide Animation */}
               <motion.div
-                key={i}
-                initial={{
-                  x: Math.random() * (window?.innerWidth || 1920),
-                  y: Math.random() * (window?.innerHeight || 1080),
-                  opacity: 0,
-                }}
+                initial={{ opacity: 0, x: -100, rotate: -30 }}
                 animate={{
-                  x: Math.random() * (window?.innerWidth || 1920),
-                  y: Math.random() * (window?.innerHeight || 1080),
-                  opacity: [0, Math.random() * 0.3 + 0.1, 0],
+                  opacity: isVisible ? 1 : 0,
+                  x: isVisible ? 0 : -100,
+                  rotate: isVisible ? -30 : -40,
                 }}
                 transition={{
-                  duration: Math.random() * 15 + 10,
-                  repeat: Infinity,
-                  ease: "linear",
-                  delay: Math.random() * 5,
+                  duration: 1.8,
+                  delay: 0.8,
+                  ease: [0.25, 0.46, 0.45, 0.94],
                 }}
-                className="absolute w-1 h-1 bg-white/20 rounded-full"
-              />
-            ))}
+                className="absolute left-35 top-1/2 transform -translate-y-1/2 z-10"
+              >
+                <div className="w-72 h-96 overflow-hidden shadow-2xl border border-white/20 relative">
+                  <AnimatePresence mode="wait" custom={1}>
+                    <motion.div
+                      key={`left-${currentIndex}`}
+                      custom={1}
+                      variants={slideVariants}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
+                      transition={{
+                        duration: 0.1,
+                        ease: [0.25, 0.46, 0.45, 0.94],
+                      }}
+                      className="absolute inset-0"
+                    >
+                      <img
+                        src={sideImages.left.src}
+                        alt={sideImages.left.alt}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+              </motion.div>
+
+              {/* Center Video - Fixed Position with Slide Animation */}
+              <div className="relative z-20">
+                {isInitializing && initialImage && (
+                  <motion.div
+                    initial={{ scale: 0.8, opacity: 1 }}
+                    animate={{ scale: 1.1, opacity: 0 }}
+                    transition={{ duration: 1, ease: "easeInOut" }}
+                    className="absolute inset-0 flex items-center justify-center"
+                  >
+                    <img
+                      src={initialImage}
+                      alt="Transition center"
+                      className="w-40 h-40 object-cover rounded-lg"
+                    />
+                  </motion.div>
+                )}
+                <div className="w-96 h-[520px] overflow-hidden shadow-2xl border-2 border-white/30 relative">
+                  {" "}
+                  <AnimatePresence mode="wait" custom={1}>
+                    <motion.div
+                      key={`center-${currentIndex}`}
+                      custom={1}
+                      variants={slideVariants}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
+                      transition={{
+                        duration: 0.1,
+                        ease: [0.25, 0.46, 0.45, 0.94],
+                        delay: 0.1,
+                      }}
+                      className="absolute inset-0"
+                    >
+                      <video
+                        src={centerVideo.src}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        className="w-full h-full object-cover"
+                      />
+
+                      {/* Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+
+                      {/* Content */}
+                      <div className="absolute bottom-8 left-6 right-6 text-center">
+                        <motion.h2
+                          initial={{ y: 30, opacity: 0 }}
+                          animate={{ y: 0, opacity: 1 }}
+                          transition={{ delay: 0.4, duration: 0.4 }}
+                          className="text-3xl font-bold text-white mb-3"
+                        >
+                          {centerVideo.title}
+                        </motion.h2>
+                        <motion.p
+                          initial={{ y: 30, opacity: 0 }}
+                          animate={{ y: 0, opacity: 1 }}
+                          transition={{ delay: 0.5, duration: 0.4 }}
+                          className="text-gray-200 text-lg"
+                        >
+                          {centerVideo.description}
+                        </motion.p>
+                      </div>
+                    </motion.div>
+                  </AnimatePresence>
+                  {/* Glow Effect */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{
+                      opacity: isVisible ? [0.5, 0.8, 0.5] : 0,
+                      scale: isVisible ? [1, 1.05, 1] : 1,
+                    }}
+                    transition={{
+                      opacity: {
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: 1.5,
+                      },
+                      scale: {
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: 1.5,
+                      },
+                    }}
+                    className="absolute inset-0 rounded-3xl bg-gradient-to-r from-purple-500/20 to-blue-500/20 blur-xl -z-10"
+                  />
+                </div>
+              </div>
+
+              {/* Right Image - Fixed Position with Slide Animation */}
+              <motion.div
+                initial={{ opacity: 0, x: 100, rotate: 30 }}
+                animate={{
+                  opacity: isVisible ? 1 : 0,
+                  x: isVisible ? 0 : 100,
+                  rotate: isVisible ? 30 : 40,
+                }}
+                transition={{
+                  duration: 1.8,
+                  delay: 0.8,
+                  ease: [0.25, 0.46, 0.45, 0.94],
+                }}
+                className="absolute right-35 top-1/2 transform -translate-y-1/2 z-10"
+              >
+                <div className="w-72 h-96 overflow-hidden shadow-2xl border border-white/20 relative">
+                  <AnimatePresence mode="wait" custom={1}>
+                    <motion.div
+                      key={`right-${currentIndex}`}
+                      custom={1}
+                      variants={slideVariants}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
+                      transition={{
+                        duration: 0.1,
+                        ease: [0.25, 0.46, 0.45, 0.94],
+                      }}
+                      className="absolute inset-0"
+                    >
+                      <img
+                        src={sideImages.right.src}
+                        alt={sideImages.right.alt}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+              </motion.div>
+            </div>
           </div>
-          {/* Ambient Glow Effects */}
-          <motion.div
-            animate={{
-              scale: [1, 1.2, 1],
-              opacity: [0.05, 0.15, 0.05],
-            }}
-            transition={{
-              duration: 8,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-            className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl pointer-events-none"
-          />
-          <motion.div
-            animate={{
-              scale: [1.2, 1, 1.2],
-              opacity: [0.05, 0.15, 0.05],
-            }}
-            transition={{
-              duration: 10,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: 3,
-            }}
-            className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"
-          />
-        </div>
+        </motion.div>
       </div>
 
       {/* Spacer for scroll height */}
-      <div className="h-screen" />
-    </div>
+    </motion.div>
   );
 };
 

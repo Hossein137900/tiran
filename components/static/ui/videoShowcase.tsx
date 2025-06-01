@@ -314,9 +314,9 @@ const VideoShowcase: React.FC<VideoShowcaseProps> = ({
 
                   {/* Title */}
                   <div className="mt-2">
-                    <p className="text-white text-xs font-light tracking-wide truncate">
+                    {/* <p className="text-white text-xs font-light tracking-wide truncate">
                       {video.title}
-                    </p>
+                    </p> */}
                   </div>
                 </div>
               </div>
