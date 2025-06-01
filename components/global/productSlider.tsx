@@ -33,7 +33,7 @@ const ProductCarousel = ({ products }: ProductSliderProps) => {
 
         <div className="flex justify-center">
           <Link href="/shop">
-            <button className="bg-transparent text-nowrap text-sm text-black border border-dashed border-gray-400px-1 py-1 md:px-8 md:py-3 rounded-lg md:text-lg font-medium transition-all duration-300 flex items-center gap-2 group">
+            <button className="bg-transparent text-nowrap border-b text-sm text-black py-1 md:px-8 md:py-3 md:text-lg font-medium transition-all duration-300 flex items-center gap-2 group">
               مشاهده همه محصولات
               <ArrowLeft className="w-5 h-5 transition-transform duration-300 group-hover:-translate-x-1" />
             </button>
@@ -55,7 +55,7 @@ const ProductCarousel = ({ products }: ProductSliderProps) => {
           {lastSixProducts.map((product, index) => (
             <motion.div
               key={product.id}
-              className="min-w-[250px] md:min-w-[300px] shadow-sm flex-shrink-0 "
+              className="min-w-[250px] md:min-w-[300px] hover:shadow-lg  flex-shrink-0 "
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{
@@ -66,7 +66,7 @@ const ProductCarousel = ({ products }: ProductSliderProps) => {
             >
               <Link href={`/shop/${product.slug}`}>
                 <motion.div
-                  className="bg-white border border-dashed border-gray-400 overflow-hidden h-full flex flex-col  transition-all duration-300"
+                  className="bg-white overflow-hidden h-full flex flex-col  transition-all duration-300"
                   whileHover={{
                     y: -5,
                   }}

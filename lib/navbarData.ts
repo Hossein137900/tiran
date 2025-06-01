@@ -1,4 +1,3 @@
-
 export const navItems = [
   { name: "فروشگاه", href: "/shop" },
   { name: "راهنما", href: "/help" },

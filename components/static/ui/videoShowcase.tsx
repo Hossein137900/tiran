@@ -268,12 +268,20 @@ const VideoShowcase: React.FC<VideoShowcaseProps> = ({
       </div>
 
       {/* Marquee Section - 20% */}
-      <div className="w-1/5 bg-black border-l border-white/10">
-        <div className="h-screen overflow-hidden py-4">
+      <div className="w-1/5 bg-black">
+        <div className="min-h-screen overflow-hidden py-4">
           <div
-            className="flex flex-col gap-4"
+            className="flex flex-col gap-4 overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/20 hover:scrollbar-thumb-white/40"
             style={{
               animation: `verticalMarquee ${marqueeSpeed}s linear infinite`,
+              animationPlayState: "running",
+              height: `${infiniteVideos.length * 100}px`, // Dynamic height based on content
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.animationPlayState = "paused";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.animationPlayState = "running";
             }}
           >
             {infiniteVideos.map((video, index) => (
@@ -285,6 +293,7 @@ const VideoShowcase: React.FC<VideoShowcaseProps> = ({
                     : "opacity-60 hover:opacity-80"
                 }`}
                 onClick={() => handleVideoSelect(video)}
+                style={{ minHeight: "120px" }} // Consistent item height
               >
                 <div className="relative group">
                   <div className="aspect-[3/4] overflow-hidden rounded-lg">
@@ -322,7 +331,9 @@ const VideoShowcase: React.FC<VideoShowcaseProps> = ({
             transform: translateY(0%);
           }
           100% {
-            transform: translateY(-${100 / 3}%);
+            transform: translateY(
+              -${(100 * videos.length) / infiniteVideos.length}%
+            );
           }
         }
 

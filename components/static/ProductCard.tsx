@@ -2,11 +2,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Product } from "@/types/type";
-
-interface ProductCardProps {
-  product: Product;
-}
+import { ProductCardProps } from "@/types/type";
 
 export default function ProductCard({ product }: ProductCardProps) {
   const [isHovering, setIsHovering] = useState(false);

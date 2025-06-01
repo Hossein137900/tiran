@@ -2,18 +2,14 @@
 import { useState, useEffect } from "react";
 import ProductCard from "./ProductCard";
 import { CartProvider } from "@/context/cartContext";
-import {  Product } from "@/types/type";
+import { Product, ProductGridProps } from "@/types/type";
 import Link from "next/link";
-
-interface ProductGridProps {
-  categoryFilter?: string | null;
-}
 
 export default function ProductGrid({ categoryFilter }: ProductGridProps) {
   const [products, setProducts] = useState([]);
   const [allProducts, setAllProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  console.log(allProducts)
+  console.log(allProducts);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -87,7 +83,7 @@ export default function ProductGrid({ categoryFilter }: ProductGridProps) {
   }
 
   return (
-    <CartProvider >
+    <CartProvider>
       <div className="mt-12">
         {categoryFilter && (
           <div className="mb-6">

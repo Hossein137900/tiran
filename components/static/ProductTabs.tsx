@@ -2,11 +2,8 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Product } from "@/types/type";
+import {  ProductTabsProps } from "@/types/type";
 
-interface ProductTabsProps {
-  product: Product;
-}
 
 export default function ProductTabs({ product }: ProductTabsProps) {
   const [activeTab, setActiveTab] = useState("description");
@@ -28,12 +25,12 @@ export default function ProductTabs({ product }: ProductTabsProps) {
       {/* Tab Navigation */}
       <div className="border-b border-gray-200 mb-8">
         <div className="flex justify-center">
-          <div className="flex space-x-12">
+          <div className="flex gap-7">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`py-4 px-2 relative font-light tracking-wide transition-colors ${
+                className={`py-4 px-2 relative text-nowrap text-sm md:text-lg font-light tracking-wide transition-colors ${
                   activeTab === tab.id
                     ? "text-black"
                     : "text-gray-500 hover:text-gray-700"

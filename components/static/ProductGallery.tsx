@@ -2,30 +2,20 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  ChevronLeft,
-  ChevronRight,
-  ZoomIn,
-  ChevronUp,
-  ChevronDown,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, ZoomIn } from "lucide-react";
 import Image from "next/image";
-
-interface ProductGalleryProps {
-  primaryImage: string;
-  secondaryImage: string;
-  additionalImages: string[];
-  productName: string;
-  layout?: "desktop" | "thumbnails" | "mobile";
-}
+import { ProductGalleryProps } from "@/types/type";
 
 export default function ProductGallery({
   primaryImage,
   secondaryImage,
   additionalImages,
   productName,
-  layout = "mobile",
-}: ProductGalleryProps) {
+  layout,
+  activeImageIndex = 0,
+  onThumbnailClick,
+}: // onImageChange,
+ProductGalleryProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isZoomed, setIsZoomed] = useState(false);
   const [zoomedImageSrc, setZoomedImageSrc] = useState("");
@@ -37,9 +27,36 @@ export default function ProductGallery({
   const mainImagesRef = useRef<HTMLDivElement>(null);
   const imageRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  // Combine all images
-  const allImages = [primaryImage, secondaryImage, ...additionalImages];
+  console.log(canScrollDown , canScrollUp)
 
+  // Combine all images
+  const allImages = [primaryImage, secondaryImage, ...additionalImages].filter(
+    Boolean
+  );
+  // Smooth scroll to active image in main gallery
+  useEffect(() => {
+    if (layout === "desktop" && mainImagesRef.current) {
+      const targetImage = mainImagesRef.current.children[
+        activeImageIndex
+      ] as HTMLElement;
+      if (targetImage) {
+        targetImage.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+          inline: "center",
+        });
+      }
+    }
+  }, [activeImageIndex, layout]);
+
+  // click on Thumbnails to scroll to main images
+  const handleThumbnailClick = (index: number) => {
+    if (onThumbnailClick) {
+      onThumbnailClick(index);
+    }
+  };
+
+  // naviagtion buttons in mobile
   const nextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % allImages.length);
   };
@@ -50,19 +67,6 @@ export default function ProductGallery({
     );
   };
 
-  // Scroll to specific image in desktop layout
-  const scrollToImage = (index: number) => {
-    setCurrentImageIndex(index);
-
-    if (layout === "desktop" && imageRefs.current[index]) {
-      imageRefs.current[index]?.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-        inline: "nearest",
-      });
-    }
-  };
-
   // Check scroll position for thumbnail navigation
   const checkScrollPosition = () => {
     if (scrollContainerRef.current) {
@@ -70,22 +74,6 @@ export default function ProductGallery({
         scrollContainerRef.current;
       setCanScrollUp(scrollTop > 0);
       setCanScrollDown(scrollTop < scrollHeight - clientHeight - 10);
-    }
-  };
-
-  // Scroll thumbnails
-  const scrollThumbnails = (direction: "up" | "down") => {
-    if (scrollContainerRef.current) {
-      const scrollAmount = 200;
-      const newScrollTop =
-        direction === "up"
-          ? scrollContainerRef.current.scrollTop - scrollAmount
-          : scrollContainerRef.current.scrollTop + scrollAmount;
-
-      scrollContainerRef.current.scrollTo({
-        top: newScrollTop,
-        behavior: "smooth",
-      });
     }
   };
 
@@ -104,6 +92,7 @@ export default function ProductGallery({
     }
   };
 
+  // Effect: Scroll to active thumbnail when image changes or layout switches to thumbnails
   useEffect(() => {
     if (layout === "thumbnails") {
       checkScrollPosition();
@@ -111,6 +100,7 @@ export default function ProductGallery({
     }
   }, [currentImageIndex, layout]);
 
+  // Effect: Set up scroll event listener for thumbnail navigation buttons
   useEffect(() => {
     if (layout === "thumbnails") {
       const container = scrollContainerRef.current;
@@ -118,27 +108,30 @@ export default function ProductGallery({
         container.addEventListener("scroll", checkScrollPosition);
         checkScrollPosition();
 
+        // Cleanup: Remove scroll event listener on component unmount
         return () =>
           container.removeEventListener("scroll", checkScrollPosition);
       }
     }
   }, [layout]);
 
-  // Touch handlers for mobile swipe
+  // Touch handler: Capture initial touch position for swipe gesture detection
   const handleTouchStart = (e: React.TouchEvent) => {
     setTouchStart(e.targetTouches[0].clientX);
   };
+  // Touch handler: Track finger movement during swipe gesture
 
   const handleTouchMove = (e: React.TouchEvent) => {
     setTouchEnd(e.targetTouches[0].clientX);
   };
 
+  // Touch handler: Process swipe gesture and navigate images based on swipe direction
   const handleTouchEnd = () => {
     if (!touchStart || !touchEnd) return;
 
     const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > 50;
-    const isRightSwipe = distance < -50;
+    const isLeftSwipe = distance > 50; // Swipe left: next image
+    const isRightSwipe = distance < -50; // Swipe right: previous image
 
     if (isLeftSwipe) {
       nextImage();
@@ -148,7 +141,7 @@ export default function ProductGallery({
     }
   };
 
-  // Handle zoom functionality
+  // Function: Open zoom modal with selected image for detailed view
   const handleZoom = (imageSrc: string) => {
     setZoomedImageSrc(imageSrc);
     setIsZoomed(true);
@@ -180,7 +173,7 @@ export default function ProductGallery({
             >
               <div className="relative bg-white overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
                 <Image
-                  src={image}
+                  src={image || ""}
                   alt={`${productName} - تصویر ${index + 1}`}
                   width={600}
                   height={800}
@@ -190,7 +183,7 @@ export default function ProductGallery({
 
                 {/* Zoom Button */}
                 <button
-                  onClick={() => handleZoom(image)}
+                  onClick={() => image && handleZoom(image)}
                   className="absolute top-4 right-4 p-2 bg-white/80 hover:bg-white rounded-full shadow-md transition-all opacity-0 group-hover:opacity-100"
                 >
                   <ZoomIn size={20} />
@@ -255,140 +248,64 @@ export default function ProductGallery({
     );
   }
 
-  // Thumbnails Layout - Enhanced Right Sidebar
+  // Thumbnails Layout - Right Sidebar
   if (layout === "thumbnails") {
     return (
-      <div className="h-full bg-white relative flex flex-col mt-20">
-        {/* Header */}
-        <div className="p-4 border-b border-gray-100">
-          <div className="text-center">
-            <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-              تصاویر محصول
-            </span>
-            <div className="text-xs text-gray-400 mt-1">
-              {currentImageIndex + 1} از {allImages.length}
+      <div
+        ref={scrollContainerRef}
+        className="flex flex-col gap-2 mt-27 p-2 h-full overflow-y-auto scrollbar-thin"
+      >
+        {allImages.map((image, index) => (
+          <div
+            key={index}
+            className={`relative cursor-pointer transition-all duration-300 ${
+              activeImageIndex === index
+                ? "ring-2 ring-gray-500 opacity-100"
+                : "opacity-40 hover:opacity-80"
+            }`}
+            onClick={() => handleThumbnailClick(index)}
+          >
+            <div className="aspect-square overflow-hidden">
+              <img
+                src={image}
+                alt={`${productName} - Image ${index + 1}`}
+                className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+              />
             </div>
           </div>
-        </div>
+        ))}
 
-        {/* Scroll Up Button */}
-        {canScrollUp && (
-          <motion.button
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => scrollThumbnails("up")}
-            className="absolute top-16 left-1/2 -translate-x-1/2 z-10 p-2 bg-white shadow-lg rounded-full border border-gray-200 hover:bg-gray-50 transition-all"
-          >
-            <ChevronUp size={16} className="text-gray-600" />
-          </motion.button>
-        )}
-
-        {/* Thumbnails Container */}
-        <div
-          ref={scrollContainerRef}
-          className="flex-1 overflow-y-auto overflow-x-hidden px-3 py-4 scrollbar-hide"
-          style={{
-            scrollbarWidth: "none",
-            msOverflowStyle: "none",
-          }}
-        >
-          <div className="space-y-3">
-            {allImages.map((image, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="relative group"
-              >
-                <motion.button
-                  onClick={() => scrollToImage(index)}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className={`relative w-full aspect-square overflow-hidden transition-all duration-300 ${
-                    currentImageIndex === index
-                      ? "ring-2 ring-black ring-offset-2 shadow-lg"
-                      : "ring-1 ring-gray-200 hover:ring-gray-300 hover:shadow-md"
-                  }`}
-                >
-                  <Image
-                    src={image}
-                    alt={`${productName} - thumbnail ${index + 1}`}
-                    fill
-                    className={`object-cover transition-all duration-300 ${
-                      currentImageIndex === index
-                        ? "scale-100"
-                        : "scale-95 group-hover:scale-100"
-                    }`}
-                    sizes="(max-width: 768px) 100vw, 200px"
-                  />
-
-                  {/* Active Indicator */}
-                  {currentImageIndex === index && (
-                    <motion.div
-                      layoutId="activeIndicator"
-                      className="absolute inset-0 bg-black/10"
-                      transition={{
-                        type: "spring",
-                        stiffness: 500,
-                        damping: 30,
-                      }}
-                    />
-                  )}
-
-                  {/* Hover Overlay */}
-                  <div
-                    className={`absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-all duration-300 ${
-                      currentImageIndex === index ? "bg-black/0" : ""
-                    }`}
-                  />
-
-                  {/* Image Number */}
-                  <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                    {index + 1}
-                  </div>
-                </motion.button>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-
-        {/* Scroll Down Button */}
-        {canScrollDown && (
-          <motion.button
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => scrollThumbnails("down")}
-            className="absolute bottom-16 left-1/2 -translate-x-1/2 z-10 p-2 bg-white shadow-lg rounded-full border border-gray-200 hover:bg-gray-50 transition-all"
-          >
-            <ChevronDown size={16} className="text-gray-600" />
-          </motion.button>
-        )}
-
-        {/* Quick Navigation */}
-        <div className="p-3 border-t border-gray-100 bg-gray-50">
-          <div className="flex justify-center gap-2">
-            <button
-              onClick={() => scrollToImage(Math.max(0, currentImageIndex - 1))}
-              disabled={currentImageIndex === 0}
-              className="p-2 rounded-full bg-white border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-            >
-              <ChevronUp size={14} className="text-gray-600" />
-            </button>
-            <button
-              onClick={() =>
-                scrollToImage(
-                  Math.min(allImages.length - 1, currentImageIndex + 1)
-                )
+        {/* Scroll to Top Button */}
+        <div className="flex justify-center md:mt-4 lg:mt-24 xl:mt-20">
+          <button
+            onClick={() => {
+              // Select first thumbnail
+              handleThumbnailClick(0);
+              // Scroll to top
+              if (scrollContainerRef.current) {
+                scrollContainerRef.current.scrollTo({
+                  top: 0,
+                  behavior: "smooth",
+                });
               }
-              disabled={currentImageIndex === allImages.length - 1}
-              className="p-2 rounded-full bg-white border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            }}
+            className="p-2 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors duration-200 shadow-sm"
+            aria-label="Go to first image and scroll to top"
+          >
+            <svg
+              className="w-4 h-4 text-gray-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
             >
-              <ChevronDown size={14} className="text-gray-600" />
-            </button>
-          </div>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 15l7-7 7 7"
+              />
+            </svg>
+          </button>
         </div>
       </div>
     );
@@ -408,10 +325,10 @@ export default function ProductGallery({
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.3 }}
-          className="relative w-full h-full flex items-center justify-center p-4"
+          className="relative w-full h-80 flex items-center justify-center p-4"
         >
           <Image
-            src={allImages[currentImageIndex]}
+            src={allImages[currentImageIndex] || ""}
             alt={`${productName} - تصویر ${currentImageIndex + 1}`}
             width={400}
             height={600}
@@ -454,7 +371,10 @@ export default function ProductGallery({
 
       {/* Zoom functionality for mobile */}
       <button
-        onClick={() => handleZoom(allImages[currentImageIndex])}
+        onClick={() =>
+          allImages[currentImageIndex] &&
+          handleZoom(allImages[currentImageIndex])
+        }
         className="absolute top-4 right-4 p-2 bg-white/80 rounded-full shadow-md"
       >
         <ZoomIn size={18} />
@@ -467,7 +387,7 @@ export default function ProductGallery({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black z-50 flex items-center justify-center"
+            className="fixed inset-0 bg-black/10 backdrop-blur-md z-50 flex items-center justify-center"
             onClick={() => setIsZoomed(false)}
           >
             <motion.div
@@ -488,7 +408,7 @@ export default function ProductGallery({
               {/* Close button for mobile zoom */}
               <button
                 onClick={() => setIsZoomed(false)}
-                className="absolute top-4 right-4 p-2 bg-white/20 text-white rounded-full hover:bg-white/30 transition-colors"
+                className="absolute top-4 right-4 p-2 bg-white/80 text-black rounded-full hover:bg-white/30 transition-colors"
               >
                 <svg
                   width="24"

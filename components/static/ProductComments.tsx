@@ -5,59 +5,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Star, Send } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-
-interface CommentChild {
-  id: number;
-  name: string;
-  title: string;
-  comment: string;
-  can_edit: boolean;
-  childs: CommentChild[];
-}
-
-interface CommentItem {
-  id: number;
-  name: string;
-  title: string;
-  comment: string;
-  can_edit: boolean;
-  childs: CommentChild[];
-}
-
-interface CommentResponse {
-  success: boolean;
-  data: {
-    items: CommentItem[];
-    _links: {
-      self: { href: string };
-      first: { href: string };
-      last: { href: string };
-    };
-    _meta: {
-      totalCount: number;
-      pageCount: number;
-      currentPage: number;
-      perPage: number;
-    };
-  };
-}
-
-// For displaying in the UI, we'll convert the API response to this format
-interface Comment {
-  id: number | string;
-  name: string;
-  avatar: string;
-  rating: number;
-  date: string;
-  text: string;
-  title?: string;
-  replies?: Comment[];
-}
-
-interface ProductCommentsProps {
-  productSlug: string;
-  productId: number;
-}
+import {
+  ProductCommentsProps,
+  Comment,
+  CommentItem,
+  CommentResponse,
+} from "@/types/type";
 
 export default function ProductComments({
   productSlug,

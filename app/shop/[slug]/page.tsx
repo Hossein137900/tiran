@@ -18,6 +18,9 @@ export default function ProductPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isDesktop, setIsDesktop] = useState(false);
+  // Add state for active image index
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  // Create array of all images
 
   // Check if desktop
   useEffect(() => {
@@ -110,6 +113,8 @@ export default function ProductPage() {
       ? productImages.slice(2).map((img) => img.src)
       : [];
 
+
+
   // Desktop Layout
   if (isDesktop) {
     return (
@@ -117,13 +122,15 @@ export default function ProductPage() {
         {/* Product Gallery Section - Fixed Height */}
         <div className="h-screen flex">
           {/* Thumbnails Sidebar - Right */}
-          <div className="w-20 border-l border-gray-200 bg-gray-50">
+          <div className="w-20">
             <ProductGallery
               primaryImage={primaryImage}
               secondaryImage={secondaryImage}
               additionalImages={additionalImages}
               productName={product.fa_name}
               layout="thumbnails"
+              activeImageIndex={activeImageIndex}
+              onThumbnailClick={setActiveImageIndex}
             />
           </div>
 
@@ -135,12 +142,14 @@ export default function ProductPage() {
               additionalImages={additionalImages}
               productName={product.fa_name}
               layout="desktop"
+              activeImageIndex={activeImageIndex}
+              onImageChange={setActiveImageIndex}
             />
           </div>
 
           {/* Product Info Sidebar - Left */}
-          <div className="w-180 border-r border-gray-200 bg-white">
-            <div className="h-full overflow-y-auto p-6 scrollbar-hide">
+          <div className="w-180  bg-white">
+            <div className="h-full p-6 scrollbar-hide">
               <ProductInfo product={product} layout="desktop" />
             </div>
           </div>

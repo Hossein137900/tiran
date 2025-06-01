@@ -46,7 +46,7 @@ const DynamicFashionGrid = ({ onComplete }: DynamicFashionGridProps) => {
   const [displayedRightText, setDisplayedRightText] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [centerImage, setCenterImage] = useState("");
-
+console.log(centerImage)
   // Typewriter effect function
   const typeWriter = (
     text: string,

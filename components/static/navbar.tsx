@@ -7,8 +7,6 @@ import {
   navItems,
   categoryItemVariants,
   categoryVariants,
-  desktopCategoryItemVariants,
-  desktopCategoryRowVariants,
   itemVariants,
   logoVariants,
   mobileMenuVariants,
@@ -26,7 +24,6 @@ import {
 import { usePathname } from "next/navigation";
 import { useCart } from "@/context/cartContext";
 import { Category, UserProfile } from "@/types/type";
-// import MegaMenu from "./megaMenu";
 import Breadcrumbs from "../global/breadcrumbs";
 
 const Navbar = () => {
@@ -36,11 +33,9 @@ const Navbar = () => {
   const [activeItem, setActiveItem] = useState("/");
   const [expandedCategory, setExpandedCategory] = useState(false);
   const [hoveredCategory, setHoveredCategory] = useState<number | null>(null);
-  // const [scrolledPastHero] = useState(false);
   const [isNavbarVisible, setIsNavbarVisible] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
-  // const router = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [userProfile, setUserProfile] = useState<UserProfile>();

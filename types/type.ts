@@ -1,3 +1,5 @@
+// ------------------------------ category -----------------------------------
+
 export interface Category {
   id: number;
   cat_name: string;
@@ -11,8 +13,10 @@ export interface Category {
   selected: number;
   parent: Category | null;
   children: Category[];
-  image_url:string
+  image_url: string;
 }
+
+// --------------------------------- product type ---------------------------
 
 export interface Product {
   id: number;
@@ -178,8 +182,6 @@ export interface Product {
   }>;
 }
 
-
-
 export interface ProductResponse {
   items: Product[];
   _links: {
@@ -195,7 +197,73 @@ export interface ProductResponse {
   };
 }
 
-// User interfaces
+export interface ProductCardProps {
+  product: Product;
+}
+
+// ---------------------------- product comment ------------------------------
+export interface CommentChild {
+  id: number;
+  name: string;
+  title: string;
+  comment: string;
+  can_edit: boolean;
+  childs: CommentChild[];
+}
+
+export interface CommentItem {
+  id: number;
+  name: string;
+  title: string;
+  comment: string;
+  can_edit: boolean;
+  childs: CommentChild[];
+}
+
+export interface CommentResponse {
+  success: boolean;
+  data: {
+    items: CommentItem[];
+    _links: {
+      self: { href: string };
+      first: { href: string };
+      last: { href: string };
+    };
+    _meta: {
+      totalCount: number;
+      pageCount: number;
+      currentPage: number;
+      perPage: number;
+    };
+  };
+}
+
+export interface Comment {
+  id: number | string;
+  name: string;
+  avatar: string;
+  rating: number;
+  date: string;
+  text: string;
+  title?: string;
+  replies?: Comment[];
+}
+
+export interface ProductCommentsProps {
+  productSlug: string;
+  productId: number;
+}
+
+// ---------------------------- productgrid ---------------------------------
+export interface ProductGridProps {
+  categoryFilter?: string | null;
+}
+// ---------------------------- producttabs ---------------------------------
+export interface ProductTabsProps {
+  product: Product;
+}
+
+//-------------------------- User interfaces dashboard -------------------------
 export interface KeyValuePair {
   key: number;
   value: string | boolean;
@@ -228,4 +296,94 @@ export interface UserProfile {
   birthday: string | null;
   complete: boolean;
   jobs: any[]; // You can define a more specific type if needed
+}
+// -------------------------------- ProductGallery ---------------------
+
+export interface ProductGalleryProps {
+  primaryImage: string;
+  secondaryImage?: string;
+  additionalImages: string[];
+  productName: string;
+  layout: "thumbnails" | "desktop" | "mobile";
+  activeImageIndex?: number;
+  onThumbnailClick?: (index: number) => void;
+  onImageChange?: (index: number) => void;
+}
+// ------------------------------- ProductInfo ------------------------
+
+export interface ProductInfoProps {
+  product: Product;
+  layout?: "desktop" | "mobile";
+}
+
+// ----------------------------- contact -----------------------------
+
+export type FormState = {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+};
+
+// Form status type
+export type FormStatus = "idle" | "submitting" | "success" | "error";
+
+// ---------------------------- cart --------------------------------
+export interface CartItem {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+  image: null | number;
+  size: null | string;
+  color: null | string;
+}
+
+export interface CartContextType {
+  items: CartItem[];
+  addItem: (item: CartItem) => void;
+  removeItem: (id: string) => void;
+  updateQuantity: (id: string, quantity: number) => void;
+  clearCart: () => void;
+  totalItems: number;
+  totalPrice: number;
+}
+
+// ---------------------------- ScrollMediaShowcase ----------------------
+export interface MediaItem {
+  id: number;
+  type: "image" | "video";
+  src: string;
+  alt?: string;
+  title: string;
+  description: string;
+}
+
+// ------------------------ datepicker ----------------------------------------
+export interface PersianDatePickerProps {
+  value: string;
+  onChange: (date: string) => void;
+  minDate?: Date;
+  maxDate?: Date;
+  className?: string;
+}
+
+// ------------------------ locationselector for cart ------------------------
+export interface LocationSelectorProps {
+  onProvinceChange?: (provinceId: string, provinceName: string) => void;
+  onCityChange?: (cityId: string, cityName: string) => void;
+  onLocationSelected?: (
+    provinceId: string,
+    provinceName: string,
+    cityId: string,
+    cityName: string
+  ) => void;
+  className?: string;
+}
+
+// ---------------------------- megamenu ----------------------------------------
+export interface MegaMenuProps {
+  categories: Category[];
+  hoveredCategory: number | null;
+  setHoveredCategory: (index: number | null) => void;
 }

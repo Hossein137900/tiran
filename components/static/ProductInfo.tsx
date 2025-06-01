@@ -1,9 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
-import { ShoppingCart, Check, Heart, Share2 } from "lucide-react";
+import { ShoppingCart, Check, Share2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useCart } from "@/context/cartContext";
-import { Product } from "@/types/type";
+import { Product, ProductInfoProps } from "@/types/type";
 import { toast } from "react-toastify";
 import AddressModal from "./addressModal";
 import {
@@ -11,11 +11,6 @@ import {
   completeCheckout,
   getCheckoutInfo,
 } from "@/middleware/checkout";
-
-interface ProductInfoProps {
-  product: Product;
-  layout?: "desktop" | "mobile";
-}
 
 export default function ProductInfo({
   product,
@@ -30,7 +25,6 @@ export default function ProductInfo({
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
-  const [isFavorite, setIsFavorite] = useState(false);
   const { addItem } = useCart();
 
   // Initialize with the first variety if available
@@ -66,6 +60,7 @@ export default function ProductInfo({
   }).format(selectedVariety?.price_main ?? 0);
 
   // Extract all available properties from varieties
+
   const propertiesByType: Record<
     string,
     Array<{ id: number; title: string; propertyId: number }>
@@ -251,183 +246,79 @@ export default function ProductInfo({
         layout === "desktop"
           ? "h-full flex flex-col"
           : "container mx-auto px-4 sm:px-6"
-      } pb-6 sm:pb-8`}
+      }  mt-20  sm:pb-8`}
     >
       {" "}
       {/* Product Header */}
-      <div className="space-y-3">
+      <div className="space-y-6">
+        {/* Header Section */}
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <h1
-              className={`font-light tracking-wide ${
-                layout === "desktop" ? "text-lg" : "text-2xl"
+              className={`font-light tracking-wide text-gray-900 ${
+                layout === "desktop" ? "text-xl" : "text-2xl"
               }`}
             >
               {product.fa_name}
             </h1>
-            <p
-              className={`text-gray-600 mt-2 leading-relaxed ${
-                layout === "desktop" ? "text-sm" : "text-base"
-              }`}
-            >
-              {product.seo_description}
-            </p>
           </div>
 
           {/* Action Icons */}
-          <div className="flex items-center gap-3 mr-4">
+          <div className="flex items-center gap-2">
             <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={() => setIsFavorite(!isFavorite)}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-            >
-              <Heart
-                size={layout === "desktop" ? 18 : 20}
-                className={
-                  isFavorite ? "fill-red-500 text-red-500" : "text-gray-600"
-                }
-              />
-            </motion.button>
-
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={handleShare}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              className="p-2 hover:bg-gray-50 rounded-full transition-colors"
             >
-              <Share2
-                size={layout === "desktop" ? 18 : 20}
-                className="text-gray-600"
-              />
+              <Share2 size={20} className="text-gray-400" />
             </motion.button>
           </div>
         </div>
 
-        {/* Price */}
-        <div className="flex items-center justify-between  pb-4">
+        {/* Price & Stock */}
+        <div className="flex items-center justify-between py-4 border-b border-gray-100">
           <div
-            className={`font-light ${
+            className={`font-medium text-gray-900 ${
               layout === "desktop" ? "text-lg" : "text-xl"
             }`}
           >
             {formattedPrice}
           </div>
-          <span
-            className={`text-xs font-medium px-3 py-1 rounded-full ${
-              (selectedVariety?.store_stock ?? 0) > 0
-                ? "bg-green-50 text-green-700"
-                : "bg-red-50 text-red-700"
-            }`}
-          >
-            {(selectedVariety?.store_stock ?? 0) > 0 ? "موجود" : "ناموجود"}
-          </span>
-        </div>
-      </div>
-      {/* Product Options */}
-      <div className="flex  flex-roe items-center justify-center gap-12">
-        {/* Size Selection */}
-        {Object.entries(propertiesByType).map(
-          ([propertyType, options]) =>
-            options.length > 0 && (
-              <div key={propertyType} className="space-y-3">
-                <h3
-                  className={`font-medium text-gray-900 ${
-                    layout === "desktop" ? "text-sm" : "text-base"
-                  }`}
-                >
-                  {propertyType}
-                </h3>
-                <div className="grid grid-cols-3 gap-2">
-                  {options.map((option) => (
-                    <motion.button
-                      key={option.id}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => {
-                        handlePropertyChange(
-                          option.title,
-                          option.id,
-                          option.propertyId
-                        );
-                      }}
-                      className={`py-3 px-4 text-center  transition-all ${
-                        selectedSize === option.title
-                          ? "border-black bg-black text-white"
-                          : "border-gray-300 hover:border-gray-400"
-                      } ${layout === "desktop" ? "text-xs" : "text-sm"}`}
-                    >
-                      {option.title}
-                    </motion.button>
-                  ))}
-                </div>
-              </div>
-            )
-        )}
-
-        {/* Color Selection */}
-        {color && (
-          <div className="space-y-3">
-            <h3
-              className={`font-medium text-gray-900 ${
-                layout === "desktop" ? "text-sm" : "text-base"
+          <div className="flex items-center gap-2">
+            <div
+              className={`w-2 h-2 rounded-full ${
+                (selectedVariety?.store_stock ?? 0) > 0
+                  ? "bg-green-500"
+                  : "bg-red-500"
+              }`}
+            />
+            <span
+              className={`text-sm font-medium ${
+                (selectedVariety?.store_stock ?? 0) > 0
+                  ? "text-green-600"
+                  : "text-red-600"
               }`}
             >
-              رنگ
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {Array.from(
-                new Set(
-                  product?.varieties
-                    ?.filter((v) => v.getColor)
-                    ?.map((v) => v.getColor!.fa_name)
-                )
-              ).map((colorName) => (
-                <motion.button
-                  key={colorName}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => {
-                    setSelectedColor(colorName);
-                    const match = product?.varieties?.find(
-                      (v) => v.getColor?.fa_name === colorName
-                    );
-                    if (match) setSelectedVariety(match);
-                  }}
-                  className={`py-2 px-4  transition-all ${
-                    selectedColor === colorName
-                      ? "border-black bg-black text-white"
-                      : "border-gray-300 hover:border-gray-400"
-                  } ${layout === "desktop" ? "text-xs" : "text-sm"}`}
-                >
-                  {colorName}
-                </motion.button>
-              ))}
-            </div>
+              {(selectedVariety?.store_stock ?? 0) > 0 ? "موجود" : "ناموجود"}
+            </span>
           </div>
-        )}
-
-        {/* Quantity */}
+        </div>
+        {/* Quantity Selection */}
         <div className="space-y-3">
-          <h3
-            className={`font-medium text-gray-900 ${
-              layout === "desktop" ? "text-sm" : "text-base"
-            }`}
-          >
-            تعداد
-          </h3>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center border border-gray-300">
+          <h3 className="font-medium text-gray-900 text-sm">تعداد</h3>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden">
               <motion.button
                 whileHover={{ backgroundColor: "#f9fafb" }}
                 whileTap={{ scale: 0.95 }}
                 onClick={decrementQuantity}
-                className="w-10 h-10 flex items-center justify-center hover:bg-gray-50"
+                className="w-10 h-10 flex items-center justify-center hover:bg-gray-50 transition-colors"
               >
-                <span className="text-lg">−</span>
+                <span className="text-lg font-light">−</span>
               </motion.button>
 
-              <div className="w-12 h-10 flex items-center justify-center border-x border-gray-300 font-medium">
+              <div className="w-12 h-10 flex items-center justify-center border-x border-gray-200 font-medium text-sm">
                 {quantity}
               </div>
 
@@ -435,89 +326,217 @@ export default function ProductInfo({
                 whileHover={{ backgroundColor: "#f9fafb" }}
                 whileTap={{ scale: 0.95 }}
                 onClick={incrementQuantity}
-                className="w-10 h-10 flex items-center justify-center hover:bg-gray-50"
+                className="w-10 h-10 flex items-center justify-center hover:bg-gray-50 transition-colors"
               >
-                <span className="text-lg">+</span>
+                <span className="text-lg font-light">+</span>
               </motion.button>
             </div>
 
-            <div className="flex items-center gap-2">
-              <div
-                className={`w-2 h-2 rounded-full ${
-                  (selectedVariety?.store_stock ?? 0) > 0
-                    ? "bg-green-500"
-                    : "bg-red-500"
-                }`}
-              ></div>
-              <span
-                className={`text-xs ${
-                  (selectedVariety?.store_stock ?? 0) > 0
-                    ? "text-green-600"
-                    : "text-red-600"
-                }`}
-              >
+            <div className="text-right">
+              <span className="text-xs text-gray-500">
                 {(selectedVariety?.store_stock ?? 0) > 0
-                  ? `${selectedVariety?.store_stock} عدد`
+                  ? `${selectedVariety?.store_stock} عدد موجود`
                   : "ناموجود"}
               </span>
             </div>
           </div>
         </div>
-      </div>
-      {/* Add to Cart Button */}
-      <div className="space-y-4 pt-2">
-        <motion.button
-          disabled={
-            !selectedVariety ||
-            selectedVariety.store_stock <= 0 ||
-            checkoutLoading
-          }
-          onClick={handleAddToCart}
-          whileHover={
-            (selectedVariety?.store_stock ?? 0) > 0 ? { scale: 1.02 } : {}
-          }
-          whileTap={
-            (selectedVariety?.store_stock ?? 0) > 0 ? { scale: 0.98 } : {}
-          }
-          className={`w-full py-4 flex items-center justify-center gap-3 font-medium transition-all ${
-            (selectedVariety?.store_stock ?? 0) > 0 && !checkoutLoading
-              ? "bg-black text-white hover:bg-gray-800"
-              : "bg-gray-200 text-gray-400 cursor-not-allowed"
-          } ${layout === "desktop" ? "text-sm" : "text-base"}`}
-        >
-          {isAddingToCart ? (
-            <>
-              <Check size={layout === "desktop" ? 16 : 18} />
-              <span>اضافه شد</span>
-            </>
-          ) : checkoutLoading ? (
-            <span>در حال پردازش...</span>
-          ) : (
-            <>
-              <ShoppingCart size={layout === "desktop" ? 16 : 18} />
-              <span>افزودن به سبد خرید</span>
-            </>
-          )}
-        </motion.button>
-      </div>
-      {/* Product Details */}
-      {layout === "desktop" && (
-        <div className="space-y-4 pt-6 border-t border-gray-200">
-          <h3 className="text-sm font-medium">جزئیات محصول</h3>
-          <div className="space-y-2 text-xs text-gray-600">
-            <div className="flex justify-between">
-              <span>دسته‌بندی:</span>
-              <span>{selectedVariety?.category?.cat_name || "نامشخص"}</span>
-            </div>
-            {selectedVariety?.show_unit && (
-              <div className="flex justify-between">
-                <span>واحد:</span>
-                <span>{selectedVariety.show_unit}</span>
-              </div>
+
+        {/* Add to Cart Button */}
+        <div className="pt-4">
+          <motion.button
+            disabled={
+              !selectedVariety ||
+              selectedVariety.store_stock <= 0 ||
+              checkoutLoading
+            }
+            onClick={handleAddToCart}
+            whileHover={
+              (selectedVariety?.store_stock ?? 0) > 0 ? { scale: 1.01 } : {}
+            }
+            whileTap={
+              (selectedVariety?.store_stock ?? 0) > 0 ? { scale: 0.99 } : {}
+            }
+            className={`w-full py-4 flex items-center justify-center gap-3 font-medium rounded-lg transition-all ${
+              (selectedVariety?.store_stock ?? 0) > 0 && !checkoutLoading
+                ? "bg-gray-900 text-white hover:bg-gray-800"
+                : "bg-gray-100 text-gray-400 cursor-not-allowed"
+            } ${layout === "desktop" ? "text-sm" : "text-base"}`}
+          >
+            {isAddingToCart ? (
+              <>
+                <Check size={18} />
+                <span>اضافه شد</span>
+              </>
+            ) : checkoutLoading ? (
+              <span>در حال پردازش...</span>
+            ) : (
+              <>
+                <ShoppingCart size={18} />
+                <span>افزودن به سبد خرید</span>
+              </>
             )}
-          </div>
+          </motion.button>
         </div>
-      )}
+
+        {/* Product Details with Options */}
+        <div className="pt-6 border-t border-gray-100">
+          <details className="group">
+            <summary className="flex items-center justify-between cursor-pointer">
+              <h3 className="text-sm font-medium text-gray-900">
+                جزئیات و تنظیمات محصول
+              </h3>
+              <svg
+                className="w-4 h-4 text-gray-500 transition-transform group-open:rotate-180"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </summary>
+
+            <div className="mt-4 space-y-6">
+              {/* Product Options */}
+              <div className="space-y-4">
+                {/* Size Selection Dropdown */}
+                {Object.entries(propertiesByType).map(
+                  ([propertyType, options]) =>
+                    options.length > 0 && (
+                      <div key={propertyType} className="space-y-2">
+                        <details className="group/size">
+                          <summary className="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors">
+                            <span className="font-medium text-gray-900 text-sm">
+                              {propertyType}: {selectedSize || "انتخاب کنید"}
+                            </span>
+                            <svg
+                              className="w-4 h-4 text-gray-500 transition-transform group-open/size:rotate-180"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M19 9l-7 7-7-7"
+                              />
+                            </svg>
+                          </summary>
+                          <div className="mt-2 p-3 bg-white border border-gray-200 rounded-lg">
+                            <div className="grid grid-cols-3 gap-2">
+                              {options.map((option) => (
+                                <motion.button
+                                  key={option.id}
+                                  whileHover={{ scale: 1.02 }}
+                                  whileTap={{ scale: 0.98 }}
+                                  onClick={() => {
+                                    handlePropertyChange(
+                                      option.title,
+                                      option.id,
+                                      option.propertyId
+                                    );
+                                  }}
+                                  className={`py-2 px-3 text-sm border rounded-md transition-all ${
+                                    selectedSize === option.title
+                                      ? "border-gray-900 bg-gray-900 text-white"
+                                      : "border-gray-200 hover:border-gray-300 text-gray-700"
+                                  }`}
+                                >
+                                  {option.title}
+                                </motion.button>
+                              ))}
+                            </div>
+                          </div>
+                        </details>
+                      </div>
+                    )
+                )}
+
+                {/* Color Selection Dropdown */}
+                {color && (
+                  <div className="space-y-2">
+                    <details className="group/color">
+                      <summary className="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors">
+                        <span className="font-medium text-gray-900 text-sm">
+                          رنگ: {selectedColor || "انتخاب کنید"}
+                        </span>
+                        <svg
+                          className="w-4 h-4 text-gray-500 transition-transform group-open/color:rotate-180"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 9l-7 7-7-7"
+                          />
+                        </svg>
+                      </summary>
+                      <div className="mt-2 p-3 bg-white border border-gray-200 rounded-lg">
+                        <div className="flex flex-wrap gap-2">
+                          {Array.from(
+                            new Set(
+                              product?.varieties
+                                ?.filter((v) => v.getColor)
+                                ?.map((v) => v.getColor!.fa_name)
+                            )
+                          ).map((colorName) => (
+                            <motion.button
+                              key={colorName}
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
+                              onClick={() => {
+                                setSelectedColor(colorName);
+                                const match = product?.varieties?.find(
+                                  (v) => v.getColor?.fa_name === colorName
+                                );
+                                if (match) setSelectedVariety(match);
+                              }}
+                              className={`py-2 px-3 text-sm border rounded-md transition-all ${
+                                selectedColor === colorName
+                                  ? "border-gray-900 bg-gray-900 text-white"
+                                  : "border-gray-200 hover:border-gray-300 text-gray-700"
+                              }`}
+                            >
+                              {colorName}
+                            </motion.button>
+                          ))}
+                        </div>
+                      </div>
+                    </details>
+                  </div>
+                )}
+              </div>
+
+              {/* Product Information */}
+              <div className="pt-4 border-t border-gray-100">
+                <div className="space-y-2 text-xs text-gray-600">
+                  <div className="flex justify-between py-1">
+                    <span>دسته‌بندی:</span>
+                    <span>
+                      {selectedVariety?.category?.cat_name || "نامشخص"}
+                    </span>
+                  </div>
+                  {selectedVariety?.show_unit && (
+                    <div className="flex justify-between py-1">
+                      <span>واحد:</span>
+                      <span>{selectedVariety.show_unit}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
       {/* Address Modal */}
       <AddressModal
         isOpen={showAddressModal}

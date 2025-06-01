@@ -8,11 +8,9 @@ import { useMediaQuery } from "react-responsive";
 
 
 interface SewingMachineProps {
-  // Add specific props here if needed
   className?: string;
   style?: React.CSSProperties;
-  
-  // Add any other props that the component accepts
+
 }
 
 // Loading indicator component

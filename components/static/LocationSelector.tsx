@@ -3,18 +3,7 @@ import { useState, useEffect } from "react";
 import { getProvincesForDropdown, getCitiesForDropdown } from "@/lib/dataCity";
 import { motion, AnimatePresence } from "framer-motion";
 import { MapPin, Navigation, ChevronDown, Check, X } from "lucide-react";
-
-interface LocationSelectorProps {
-  onProvinceChange?: (provinceId: string, provinceName: string) => void;
-  onCityChange?: (cityId: string, cityName: string) => void;
-  onLocationSelected?: (
-    provinceId: string,
-    provinceName: string,
-    cityId: string,
-    cityName: string
-  ) => void;
-  className?: string;
-}
+import { LocationSelectorProps } from "@/types/type";
 
 export default function LocationSelector({
   onProvinceChange,

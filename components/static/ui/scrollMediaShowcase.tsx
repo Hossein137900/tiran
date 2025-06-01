@@ -2,15 +2,9 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { MediaItem } from "@/types/type";
 
-interface MediaItem {
-  id: number;
-  type: "image" | "video";
-  src: string;
-  alt?: string;
-  title: string;
-  description: string;
-}
+
 
 const mediaItems: MediaItem[] = [
   {
@@ -90,6 +84,8 @@ const ScrollMediaShowcase = () => {
   const [isActive, setIsActive] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isMounted, setIsMounted] = useState(false);
+
+  console.log(scrollProgress)
 
   // Handle client-side mounting
   useEffect(() => {

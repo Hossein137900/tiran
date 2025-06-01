@@ -23,7 +23,3 @@ export const storyCards = [
     icon: MdSupportAgent,
   },
 ];
-
-
-
-

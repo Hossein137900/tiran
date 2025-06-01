@@ -2,13 +2,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Category } from "@/types/type";
-
-interface MegaMenuProps {
-  categories: Category[];
-  hoveredCategory: number | null;
-  setHoveredCategory: (index: number | null) => void;
-}
+import { MegaMenuProps } from "@/types/type";
 
 const MegaMenu: React.FC<MegaMenuProps> = ({
   categories,
@@ -19,7 +13,7 @@ const MegaMenu: React.FC<MegaMenuProps> = ({
   const [hoveredSubcategory, setHoveredSubcategory] = useState<number | null>(
     null
   );
-  console.log(hoveredSubcategory)
+  console.log(hoveredSubcategory);
 
   useEffect(() => {
     setIsClient(true);

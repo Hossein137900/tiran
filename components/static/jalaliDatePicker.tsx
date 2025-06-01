@@ -3,14 +3,7 @@ import DatePicker from "react-multi-date-picker";
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
 import type { DateObject } from "react-multi-date-picker";
-
-interface PersianDatePickerProps {
-  value: string;
-  onChange: (date: string) => void;
-  minDate?: Date;
-  maxDate?: Date;
-  className?: string;
-}
+import { PersianDatePickerProps } from "@/types/type";
 
 const PersianDatePicker: React.FC<PersianDatePickerProps> = ({
   value,
