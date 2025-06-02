@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import ProductGallery from "@/components/static/ProductGallery";
 import ProductInfo from "@/components/static/ProductInfo";
 import ProductComments from "@/components/static/ProductComments";
-import ProductTabs from "@/components/static/ProductTabs";
 import RelatedProducts from "@/components/static/RelatedProducts";
 import { Product } from "@/types/type";
 
@@ -118,37 +117,39 @@ export default function ProductPage() {
     return (
       <main className="min-h-screen bg-white py-10" dir="rtl">
         {/* Product Gallery Section - Fixed Height */}
-        <div className="h-screen flex ">
-          {/* Thumbnails Sidebar - Right */}
-          <div className="w-20">
-            <ProductGallery
-              primaryImage={primaryImage}
-              secondaryImage={secondaryImage}
-              additionalImages={additionalImages}
-              productName={product.fa_name}
-              layout="thumbnails"
-              activeImageIndex={activeImageIndex}
-              onThumbnailClick={setActiveImageIndex}
-            />
-          </div>
+        <div className="min-h-screen mt-20">
+          <div className="grid grid-cols-12 h-full gap-0">
+            {/* Thumbnails Sidebar - 2 columns */}
+            <div className="col-span-1 mt-5">
+              <ProductGallery
+                primaryImage={primaryImage}
+                secondaryImage={secondaryImage}
+                additionalImages={additionalImages}
+                productName={product.fa_name}
+                layout="thumbnails"
+                activeImageIndex={activeImageIndex}
+                onThumbnailClick={setActiveImageIndex}
+              />
+            </div>
 
-          {/* Main Images - Center */}
-          <div className="flex-1 bg-white">
-            <ProductGallery
-              primaryImage={primaryImage}
-              secondaryImage={secondaryImage}
-              additionalImages={additionalImages}
-              productName={product.fa_name}
-              layout="desktop"
-              activeImageIndex={activeImageIndex}
-              onImageChange={setActiveImageIndex}
-            />
-          </div>
+            {/* Main Images - 4 columns */}
+            <div className="col-span-5 overflow-auto min-h-full bg-white">
+              <ProductGallery
+                primaryImage={primaryImage}
+                secondaryImage={secondaryImage}
+                additionalImages={additionalImages}
+                productName={product.fa_name}
+                layout="desktop"
+                activeImageIndex={activeImageIndex}
+                onImageChange={setActiveImageIndex}
+              />
+            </div>
 
-          {/* Product Info Sidebar - Left */}
-          <div className="w-180  bg-white">
-            <div className="h-full p-6 scrollbar-hide">
-              <ProductInfo product={product} layout="desktop" />
+            {/* Product Info Sidebar - 6 columns */}
+            <div className="col-span-6 bg-white">
+              <div className="h-full overflow-y-auto scrollbar-hide">
+                <ProductInfo product={product} layout="desktop" />
+              </div>
             </div>
           </div>
         </div>
@@ -156,9 +157,6 @@ export default function ProductPage() {
         {/* Full Width Sections Below - Normal Flow */}
         <div className="bg-white">
           <div className="container mx-auto px-4 py-8">
-            {/* Product Details Tabs */}
-            <ProductTabs product={product} />
-
             {/* Product Comments */}
             <ProductComments
               productSlug={product.slug}
@@ -191,9 +189,6 @@ export default function ProductPage() {
         {/* Product Information */}
         <ProductInfo product={product} layout="mobile" />
       </div>
-
-      {/* Product Details Tabs */}
-      <ProductTabs product={product} />
 
       {/* Product Comments */}
       <ProductComments productSlug={product.slug} productId={product.id} />

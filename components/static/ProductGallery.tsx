@@ -27,7 +27,7 @@ ProductGalleryProps) {
   const mainImagesRef = useRef<HTMLDivElement>(null);
   const imageRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  console.log(canScrollDown , canScrollUp)
+  console.log(canScrollDown, canScrollUp);
 
   // Combine all images
   const allImages = [primaryImage, secondaryImage, ...additionalImages].filter(
@@ -150,10 +150,10 @@ ProductGalleryProps) {
   // Desktop Layout - All Images in Column
   if (layout === "desktop") {
     return (
-      <div className="relative w-180 h-full mt-20">
+      <div className="relative h-full w-full">
         <div
           ref={mainImagesRef}
-          className="h-full overflow-y-auto p-8 space-y-8 scrollbar-hide"
+          className="h-full overflow-y-auto px-4 py-8 space-y-6 scrollbar-hide"
           style={{
             scrollbarWidth: "none",
             msOverflowStyle: "none",
@@ -175,8 +175,8 @@ ProductGalleryProps) {
                 <Image
                   src={image || ""}
                   alt={`${productName} - تصویر ${index + 1}`}
-                  width={600}
-                  height={800}
+                  width={500}
+                  height={700}
                   className="w-full h-auto object-contain"
                   priority={index === 0}
                 />
@@ -186,11 +186,11 @@ ProductGalleryProps) {
                   onClick={() => image && handleZoom(image)}
                   className="absolute top-4 right-4 p-2 bg-white/80 hover:bg-white rounded-full shadow-md transition-all opacity-0 group-hover:opacity-100"
                 >
-                  <ZoomIn size={20} />
+                  <ZoomIn size={18} />
                 </button>
 
                 {/* Image Number */}
-                <div className="absolute bottom-4 left-4 px-3 py-1 bg-black/70 text-white text-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="absolute bottom-4 left-4 px-2 py-1 bg-black/70 text-white text-xs rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
                   {index + 1} / {allImages.length}
                 </div>
               </div>
@@ -251,32 +251,43 @@ ProductGalleryProps) {
   // Thumbnails Layout - Right Sidebar
   if (layout === "thumbnails") {
     return (
-      <div
-        ref={scrollContainerRef}
-        className="flex flex-col gap-2 mt-27 p-2 h-full overflow-y-auto scrollbar-thin"
-      >
-        {allImages.map((image, index) => (
-          <div
-            key={index}
-            className={`relative cursor-pointer transition-all duration-300 ${
-              activeImageIndex === index
-                ? "ring-2 ring-gray-500 opacity-100"
-                : "opacity-40 hover:opacity-80"
-            }`}
-            onClick={() => handleThumbnailClick(index)}
-          >
-            <div className="aspect-square overflow-hidden">
-              <img
-                src={image}
-                alt={`${productName} - Image ${index + 1}`}
-                className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
-              />
+      <div className="h-full flex flex-col">
+        <div
+          ref={scrollContainerRef}
+          className="flex-1 flex flex-col gap-3 p-3 overflow-y-auto scrollbar-thin"
+        >
+          {allImages.map((image, index) => (
+            <div
+              key={index}
+              className={`relative cursor-pointer transition-all duration-300 overflow-hidden ${
+                activeImageIndex === index
+                  ? "ring-2 ring-gray-400 opacity-100 shadow-md"
+                  : "opacity-50 hover:opacity-80"
+              }`}
+              onClick={() => handleThumbnailClick(index)}
+            >
+              <div className="">
+                <Image
+                  src={image || ''}
+                  width={1000}
+                  height={1000}
+                  alt={`${productName} - Image ${index + 1}`}
+                  className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                />
+              </div>
+
+              {/* Active indicator */}
+              {activeImageIndex === index && (
+                <div className="absolute inset-0 bg-black/10 flex items-center justify-center">
+                  <div className="w-2 h-2 bg-white rounded-full shadow-lg"></div>
+                </div>
+              )}
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
 
         {/* Scroll to Top Button */}
-        <div className="flex justify-center md:mt-4 lg:mt-24 xl:mt-20">
+        <div className="flex justify-center p-3">
           <button
             onClick={() => {
               // Select first thumbnail

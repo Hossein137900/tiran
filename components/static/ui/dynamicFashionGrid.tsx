@@ -59,7 +59,7 @@ const DynamicFashionGrid = ({ onComplete }: DynamicFashionGridProps) => {
   };
 
   const [currentImages, setCurrentImages] = useState<string[]>([]);
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [isAnimating] = useState(false);
   const [currentTextIndex, setCurrentTextIndex] = useState(0);
   const [displayedLeftText, setDisplayedLeftText] = useState("");
   const [displayedRightText, setDisplayedRightText] = useState("");

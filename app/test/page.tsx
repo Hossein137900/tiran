@@ -1,4 +1,5 @@
 "use client";
+import CategoryShowcase from "@/components/static/ui/categoryImage";
 import DynamicFashionGrid from "@/components/static/ui/dynamicFashionGrid";
 import EnhancedLogoLoadingScreen from "@/components/static/ui/enhancedLogoLoadingScreen";
 import MarqueeSlider from "@/components/static/ui/marqueeSlider";
@@ -15,18 +16,100 @@ const Page = () => {
   const [showGrid, setShowGrid] = useState(false);
   const [showShowcase, setShowShowcase] = useState(false);
 
-  const slideImages = [
-    "/assets/images/fashion/1.avif",
-    "/assets/images/fashion/2.avif",
-    "/assets/images/fashion/3.avif",
-    "/assets/images/fashion/4.avif",
-    "/assets/images/fashion/5.avif",
-    "/assets/images/fashion/6.avif",
+  console.log(expandingImage, isFirstLoad, isTransitioning);
+
+  const slideItems = [
+    {
+      image: "/assets/images/fashion/1.avif",
+      title: "مجموعه بهاری",
+      description:
+        "کشف کنید جدیدترین مد بهاری با طراحی‌های منحصر به فرد و رنگ‌های شاد که روح شما را نوازش می‌دهد.",
+    },
+    {
+      image: "/assets/images/fashion/2.avif",
+      title: "استایل مدرن",
+      description:
+        "ترکیبی از کلاسیک و مدرن برای ایجاد ظاهری بی‌نظیر که شخصیت شما را به بهترین شکل نمایان می‌سازد.",
+    },
+    {
+      image: "/assets/images/fashion/3.avif",
+      title: "کیفیت برتر",
+      description:
+        "با استفاده از بهترین مواد اولیه و دقت در جزئیات، محصولاتی با کیفیت و دوام بالا ارائه می‌دهیم.",
+    },
+    {
+      image: "/assets/images/fashion/4.avif",
+      title: "طراحی منحصر",
+      description:
+        "هر قطعه با الهام از هنر و طبیعت طراحی شده تا تجربه‌ای فراموش‌نشدنی از پوشیدن برای شما فراهم کند.",
+    },
+    {
+      image: "/assets/images/fashion/5.avif",
+      title: "راحتی بی‌نظیر",
+      description:
+        "ترکیب زیبایی و راحتی در طراحی‌هایی که برای زندگی روزمره شما ساخته شده و احساس آزادی می‌دهد.",
+    },
+    {
+      image: "/assets/images/fashion/6.avif",
+      title: "مجموعه ویژه",
+      description:
+        "کلکسیون محدود با طراحی‌های انحصاری که فقط برای کسانی است که به دنبال تمایز و اصالت هستند.",
+    },
+  ];
+  const categories = [
+    {
+      id: 1,
+      imageDefault: "/assets/images/fashion/1.avif", // Black & white version
+      imageHover: "/assets/images/fashion/2.avif", // Black & white version
+      title: "لوازم الکترونیکی",
+
+      color: "#fff",
+    },
+    {
+      id: 2,
+      imageDefault: "/assets/images/fashion/2.avif", // Black & white version
+      imageHover: "/assets/images/fashion/1.avif", // Black & white version
+      title: "مد و پوشاک",
+
+      color: "#fff",
+    },
+    {
+      id: 3,
+      imageDefault: "/assets/images/fashion/3.avif", // Black & white version
+      imageHover: "/assets/images/fashion/4.avif", // Black & white version
+      title: "خانه و آشپزخانه",
+
+      color: "#fff",
+    },
+    {
+      id: 4,
+      imageDefault: "/assets/images/fashion/4.avif", // Black & white version
+      imageHover: "/assets/images/fashion/3.avif", // Black & white version
+      title: "ورزش و سرگرمی",
+
+      color: "#fff",
+    },
+    {
+      id: 5,
+      imageDefault: "/assets/images/fashion/1.avif", // Black & white version
+      imageHover: "/assets/images/fashion/4.avif", // Black & white version
+      title: "کتاب و فرهنگ",
+
+      color: "#fff",
+    },
+    {
+      id: 6,
+      imageDefault: "/assets/images/fashion/5.avif", // Black & white version
+      imageHover: "/assets/images/fashion/6.avif", // Black & white version
+      title: "اسباب بازی",
+
+      color: "#fff",
+    },
   ];
 
   // Check localStorage immediately on component mount
   useEffect(() => {
-    const hasSeenGrid = localStorage.getItem("tiran-fashion-grid-sen");
+    const hasSeenGrid = localStorage.getItem("tiran-fashion-grid-seen");
 
     if (hasSeenGrid !== "true") {
       // First time user, show the grid
@@ -57,7 +140,7 @@ const Page = () => {
 
     // Get a random image for transition effect
     const randomImage =
-      slideImages[Math.floor(Math.random() * slideImages.length)];
+      slideItems[Math.floor(Math.random() * slideItems.length)].image;
     setExpandingImage(randomImage);
 
     // Phase 1: Fade out grid (300ms - reduced from 500ms)
@@ -93,8 +176,6 @@ const Page = () => {
           <DynamicFashionGrid />
         </div>
       )}
-
-    
 
       {/* Main content - ONLY ScrollMediaShowcase renders here */}
       {currentComponent === "showcase" && (
@@ -143,7 +224,12 @@ const Page = () => {
               transitionDelay: "400ms", // Reduced from 1200ms
             }}
           >
-            <MarqueeSlider images={slideImages} speed={25} direction="right" />
+            <MarqueeSlider
+              items={slideItems}
+              speed={20}
+              direction="left"
+              pauseOnHover={true}
+            />{" "}
           </div>
 
           <div
@@ -157,6 +243,13 @@ const Page = () => {
             }}
           >
             <EnhancedLogoLoadingScreen />
+          </div>
+          <div className="min-h-screen">
+            <CategoryShowcase
+              categories={categories}
+              title="دسته‌بندی‌های ما"
+              subtitle="کشف کنید، تجربه کنید، لذت ببرید"
+            />
           </div>
         </div>
       )}

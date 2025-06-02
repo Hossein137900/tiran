@@ -190,7 +190,7 @@ export default function ProductComments({
       className="border border-gray-200 rounded-lg p-6"
     >
       <div className="flex items-start gap-4">
-        <div className="relative w-10 h-10 rounded-full overflow-hidden bg-gray-200">
+        <div className="relative w-10 h-10 rounded-full overflow-hidden">
           <Image
             src={comment.avatar}
             alt={comment.name}
@@ -260,7 +260,7 @@ export default function ProductComments({
       <form
         id="comment-form"
         onSubmit={handleSubmitComment}
-        className="mb-10 bg-gray-50 p-6 rounded-lg"
+        className="mb-10 p-6 rounded-lg"
       >
         <h3 className="text-lg font-medium mb-4">
           {replyToId ? "پاسخ به نظر" : "نظرات خود را با ما به اشتراک بگذارید"}
@@ -335,13 +335,11 @@ export default function ProductComments({
         </div>
 
         {submitError && (
-          <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg">
-            {submitError}
-          </div>
+          <div className="mb-4 p-3 bg-red-50 text-red-600">{submitError}</div>
         )}
 
         {!isAuthenticated ? (
-          <div className="mb-4 p-3 bg-yellow-50 text-yellow-700 rounded-lg">
+          <div className="mb-4 p-3 bg-gray-600 text-white">
             برای ثبت نظر باید وارد حساب کاربری خود شوید.
             <button
               type="button"

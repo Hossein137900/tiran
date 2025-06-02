@@ -93,7 +93,7 @@ const ScrollMediaShowcase = ({
   const [isVisible, setIsVisible] = useState(false);
 
   const [isInitializing, setIsInitializing] = useState(true);
-  const [initialImage, setInitialImage] = useState(initialCenterImage || "");
+  const [initialImage] = useState(initialCenterImage || "");
   console.log(scrollProgress);
 
   useEffect(() => {

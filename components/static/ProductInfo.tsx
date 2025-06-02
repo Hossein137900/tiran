@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
-import { ShoppingCart, Check, Share2 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { ShoppingCart, Check } from "lucide-react";
+import { motion } from "framer-motion";
 import { useCart } from "@/context/cartContext";
 import { Product, ProductInfoProps } from "@/types/type";
 import { toast } from "react-toastify";
@@ -27,7 +27,6 @@ export default function ProductInfo({
   const [checkoutLoading, setCheckoutLoading] = useState(false);
 
   // ProductTabs states
-  const [activeTab, setActiveTab] = useState("description");
 
   const { addItem } = useCart();
 
@@ -231,27 +230,23 @@ export default function ProductInfo({
     setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
 
   // ProductTabs configuration
-  const tabs = [
-    { id: "description", label: "توضیحات" },
-    { id: "details", label: "جزئیات" },
-    { id: "shipping", label: "حمل و نقل و برگشت" },
-  ];
+
 
   return (
     <div
       className={`${
         layout === "desktop"
-          ? "h-full  flex flex-col"
-          : "container  mx-auto px-4 sm:px-6"
-      }  mt-20  w-full max-w-xl  sm:pb-8`}
+          ? "h-full max-w-none flex flex-col px-6 py-8"
+          : "container mx-auto px-4 sm:px-6"
+      } ${layout === "desktop" ? "" : "mt-20 sm:pb-8"}`}
     >
       {/* Product Header */}
       <div className="space-y-2">
         {/* Header Section */}
         <div className="flex items-center justify-center">
-          <h1
-            className={`font-light tracking-wide text-gray-900 ${
-              layout === "desktop" ? "text-xl" : "text-2xl"
+           <h1
+            className={`font-light tracking-wide text-gray-900 mb-3 ${
+              layout === "desktop" ? "text-2xl lg:text-3xl" : "text-2xl"
             }`}
           >
             {product.fa_name}
@@ -307,169 +302,173 @@ export default function ProductInfo({
         </div>
 
         {/* Product Details with Options */}
-        <div className="pt-6 border-b pb-3 border-gray-200">
-          <details className="group">
-            <summary className="flex items-center justify-between cursor-pointer">
-              <h3 className="text-sm font-medium text-gray-900">
-                جزئیات و تنظیمات محصول
-              </h3>
-              <svg
-                className="w-4 h-4 text-gray-500 transition-transform group-open:rotate-180"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </summary>
+        <div className="pt-4">
+          <div className="border-b border-gray-200 pb-2 mb-1">
+            <details className="group">
+              <summary className="flex items-center justify-between cursor-pointer py-2">
+                <h3 className="text-sm font-medium text-gray-900">
+                  جزئیات و تنظیمات محصول
+                </h3>
+                <svg
+                  className="w-4 h-4 text-gray-500 transition-transform group-open:rotate-180"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </summary>
 
-            <div className="mt-4 space-y-6">
-              {/* Product Options */}
-              <div className="space-y-4">
-                {/* Size Selection Dropdown */}
-                {Object.entries(propertiesByType).map(
-                  ([propertyType, options]) =>
-                    options.length > 0 && (
-                      <div key={propertyType} className="space-y-2">
-                        <details className="group/size">
-                          <summary className="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors">
-                            <span className="font-medium text-gray-900 text-sm">
-                              {propertyType}: {selectedSize || "انتخاب کنید"}
-                            </span>
-                            <svg
-                              className="w-4 h-4 text-gray-500 transition-transform group-open/size:rotate-180"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M19 9l-7 7-7-7"
-                              />
-                            </svg>
-                          </summary>
-                          <div className="mt-2 p-3 bg-white border border-gray-200 rounded-lg">
-                            <div className="grid grid-cols-3 gap-2">
-                              {options.map((option) => (
-                                <motion.button
-                                  key={option.id}
-                                  whileHover={{ scale: 1.02 }}
-                                  whileTap={{ scale: 0.98 }}
-                                  onClick={() => {
-                                    handlePropertyChange(
-                                      option.title,
-                                      option.id,
-                                      option.propertyId
-                                    );
-                                  }}
-                                  className={`py-2 px-3 text-sm border rounded-md transition-all ${
-                                    selectedSize === option.title
-                                      ? "border-gray-900 bg-gray-900 text-white"
-                                      : "border-gray-200 hover:border-gray-300 text-gray-700"
-                                  }`}
-                                >
-                                  {option.title}
-                                </motion.button>
-                              ))}
+              <div className="mt-6 space-y-6">
+                {/* Product Options */}
+                <div className="space-y-5">
+                  {/* Size Selection Dropdown */}
+                  {Object.entries(propertiesByType).map(
+                    ([propertyType, options]) =>
+                      options.length > 0 && (
+                        <div key={propertyType} className="space-y-3">
+                          <details className="group/size">
+                            <summary className="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors">
+                              <span className="font-medium text-gray-900 text-sm">
+                                {propertyType}: {selectedSize || "انتخاب کنید"}
+                              </span>
+                              <svg
+                                className="w-4 h-4 text-gray-500 transition-transform group-open/size:rotate-180"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M19 9l-7 7-7-7"
+                                />
+                              </svg>
+                            </summary>
+                            <div className="mt-3 p-3 bg-white border border-gray-200 rounded-lg">
+                              <div className="grid grid-cols-3 gap-2">
+                                {options.map((option) => (
+                                  <motion.button
+                                    key={option.id}
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    onClick={() => {
+                                      handlePropertyChange(
+                                        option.title,
+                                        option.id,
+                                        option.propertyId
+                                      );
+                                    }}
+                                    className={`py-2 px-3 text-sm border rounded-md transition-all ${
+                                      selectedSize === option.title
+                                        ? "border-gray-900 bg-gray-900 text-white"
+                                        : "border-gray-200 hover:border-gray-300 text-gray-700"
+                                    }`}
+                                  >
+                                    {option.title}
+                                  </motion.button>
+                                ))}
+                              </div>
                             </div>
-                          </div>
-                        </details>
-                      </div>
-                    )
-                )}
-
-                {/* Color Selection Dropdown */}
-                {color && (
-                  <div className="space-y-2">
-                    <details className="group/color">
-                      <summary className="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors">
-                        <span className="font-medium text-gray-900 text-sm">
-                          رنگ: {selectedColor || "انتخاب کنید"}
-                        </span>
-                        <svg
-                          className="w-4 h-4 text-gray-500 transition-transform group-open/color:rotate-180"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 9l-7 7-7-7"
-                          />
-                        </svg>
-                      </summary>
-                      <div className="mt-2 p-3 bg-white border border-gray-200 rounded-lg">
-                        <div className="flex flex-wrap gap-2">
-                          {Array.from(
-                            new Set(
-                              product?.varieties
-                                ?.filter((v) => v.getColor)
-                                ?.map((v) => v.getColor!.fa_name)
-                            )
-                          ).map((colorName) => (
-                            <motion.button
-                              key={colorName}
-                              whileHover={{ scale: 1.02 }}
-                              whileTap={{ scale: 0.98 }}
-                              onClick={() => {
-                                setSelectedColor(colorName);
-                                const match = product?.varieties?.find(
-                                  (v) => v.getColor?.fa_name === colorName
-                                );
-                                if (match) setSelectedVariety(match);
-                              }}
-                              className={`py-2 px-3 text-sm border rounded-md transition-all ${
-                                selectedColor === colorName
-                                  ? "border-gray-900 bg-gray-900 text-white"
-                                  : "border-gray-200 hover:border-gray-300 text-gray-700"
-                              }`}
-                            >
-                              {colorName}
-                            </motion.button>
-                          ))}
+                          </details>
                         </div>
-                      </div>
-                    </details>
-                  </div>
-                )}
-              </div>
+                      )
+                  )}
 
-              {/* Product Information */}
-              <div className="pt-4 border-t border-gray-100">
-                <div className="space-y-2 text-xs text-gray-600">
-                  <div className="flex justify-between py-1">
-                    <span>دسته‌بندی:</span>
-                    <span>
-                      {selectedVariety?.category?.cat_name || "نامشخص"}
-                    </span>
-                  </div>
-                  {selectedVariety?.show_unit && (
-                    <div className="flex justify-between py-1">
-                      <span>واحد:</span>
-                      <span>{selectedVariety.show_unit}</span>
+                  {/* Color Selection Dropdown */}
+                  {color && (
+                    <div className="space-y-3">
+                      <details className="group/color">
+                        <summary className="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors">
+                          <span className="font-medium text-gray-900 text-sm">
+                            رنگ: {selectedColor || "انتخاب کنید"}
+                          </span>
+                          <svg
+                            className="w-4 h-4 text-gray-500 transition-transform group-open/color:rotate-180"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 9l-7 7-7-7"
+                            />
+                          </svg>
+                        </summary>
+                        <div className="mt-3 p-3 bg-white border border-gray-200 rounded-lg">
+                          <div className="flex flex-wrap gap-2">
+                            {Array.from(
+                              new Set(
+                                product?.varieties
+                                  ?.filter((v) => v.getColor)
+                                  ?.map((v) => v.getColor!.fa_name)
+                              )
+                            ).map((colorName) => (
+                              <motion.button
+                                key={colorName}
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                onClick={() => {
+                                  setSelectedColor(colorName);
+                                  const match = product?.varieties?.find(
+                                    (v) => v.getColor?.fa_name === colorName
+                                  );
+                                  if (match) setSelectedVariety(match);
+                                }}
+                                className={`py-2 px-3 text-sm border rounded-md transition-all ${
+                                  selectedColor === colorName
+                                    ? "border-gray-900 bg-gray-900 text-white"
+                                    : "border-gray-200 hover:border-gray-300 text-gray-700"
+                                }`}
+                              >
+                                {colorName}
+                              </motion.button>
+                            ))}
+                          </div>
+                        </div>
+                      </details>
                     </div>
                   )}
                 </div>
+
+                {/* Product Information */}
+                <div className="pt-5 border-t border-gray-100">
+                  <div className="space-y-3 text-xs text-gray-600">
+                    <div className="flex justify-between py-2">
+                      <span>دسته‌بندی:</span>
+                      <span className="font-medium">
+                        {selectedVariety?.category?.cat_name || "نامشخص"}
+                      </span>
+                    </div>
+                    {selectedVariety?.show_unit && (
+                      <div className="flex justify-between py-2">
+                        <span>واحد:</span>
+                        <span className="font-medium">
+                          {selectedVariety.show_unit}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
-            </div>
-          </details>
+            </details>
+          </div>
         </div>
 
         {/* Integrated ProductTabs Section - Dropdown Style */}
-        <div className="space-y-4">
+        <div className="">
           {/* Description Tab */}
-          <div className="border-b pb-3 border-gray-200">
+          <div className="border-b border-gray-200 pb-3 mb-1">
             <details className="group">
-              <summary className="flex items-center justify-between cursor-pointer">
+              <summary className="flex items-center justify-between cursor-pointer pt-2">
                 <h3 className="text-sm font-medium text-gray-900">
                   توضیحات محصول
                 </h3>
@@ -493,7 +492,7 @@ export default function ProductInfo({
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.3 }}
-                className="mt-4"
+                className="mt-5"
               >
                 <div className="prose max-w-none">
                   <div className="text-gray-700 leading-relaxed text-sm font-light">
@@ -505,9 +504,9 @@ export default function ProductInfo({
           </div>
 
           {/* Details Tab */}
-          <div className="border-b pb-3 border-gray-200">
+          <div className="border-b border-gray-200 pb-2 mb-1">
             <details className="group">
-              <summary className="flex items-center justify-between cursor-pointer">
+              <summary className="flex items-center justify-between cursor-pointer pt-2 pb-2">
                 <h3 className="text-sm font-medium text-gray-900">
                   مشخصات تفصیلی
                 </h3>
@@ -531,7 +530,7 @@ export default function ProductInfo({
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.3 }}
-                className="mt-4"
+                className="mt-5"
               >
                 <div className="space-y-6">
                   {/* Product Specifications */}
@@ -595,12 +594,12 @@ export default function ProductInfo({
                   </div>
 
                   {/* Size Guide */}
-                  <div className="pt-4 border-t border-gray-100">
-                    <h4 className="font-medium text-gray-900 text-sm mb-3">
+                  <div className="pt-5 border-t border-gray-100">
+                    <h4 className="font-medium text-gray-900 text-sm mb-4">
                       راهنمای سایز
                     </h4>
-                    <div className="bg-gray-50 p-3 rounded-lg">
-                      <div className="space-y-2 text-xs">
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <div className="space-y-3 text-xs">
                         <div className="flex justify-between">
                           <span className="text-gray-600">سایز کوچک:</span>
                           <span className="font-medium">36-38</span>
@@ -622,9 +621,9 @@ export default function ProductInfo({
           </div>
 
           {/* Shipping Tab */}
-          <div className="border-b pb-3 border-gray-200">
+          <div className="border-b border-gray-200 pb-3 mb-1">
             <details className="group">
-              <summary className="flex items-center justify-between cursor-pointer">
+              <summary className="flex items-center justify-between cursor-pointer py-2">
                 <h3 className="text-sm font-medium text-gray-900">
                   حمل و نقل و برگشت
                 </h3>
@@ -648,7 +647,7 @@ export default function ProductInfo({
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.3 }}
-                className="mt-4"
+                className="mt-5"
               >
                 <div className="space-y-6">
                   {/* Shipping Information */}
@@ -656,17 +655,17 @@ export default function ProductInfo({
                     <h4 className="font-medium text-gray-900 text-sm">
                       اطلاعات ارسال
                     </h4>
-                    <div className="space-y-3 text-xs text-gray-600 leading-relaxed">
+                    <div className="space-y-4 text-xs text-gray-600 leading-relaxed">
                       <p>
                         ما به سراسر کشور از طریق شرکای مطمئن خود ارسال می‌کنیم.
                         ارسال استاندارد بین ۳ تا ۷ روز کاری بسته به موقعیت شما
                         طول می‌کشد.
                       </p>
-                      <div className="bg-gray-50 p-3 rounded-lg">
-                        <h5 className="font-medium mb-2 text-gray-900">
+                      <div className="bg-gray-50 p-4 rounded-lg">
+                        <h5 className="font-medium mb-3 text-gray-900">
                           هزینه ارسال:
                         </h5>
-                        <ul className="space-y-1">
+                        <ul className="space-y-2">
                           <li>
                             • ارسال رایگان برای خریدهای بالای ۵۰۰,۰۰۰ تومان
                           </li>
@@ -676,48 +675,6 @@ export default function ProductInfo({
                       </div>
                     </div>
                   </div>
-
-                  {/* Return Policy */}
-                  <div className="pt-4 border-t border-gray-100">
-                    <h4 className="font-medium text-gray-900 text-sm mb-3">
-                      سیاست برگشت
-                    </h4>
-                    <div className="space-y-3 text-xs text-gray-600 leading-relaxed">
-                      <p>
-                        اگر از خرید خود کاملاً راضی نیستید، می‌توانید ظرف ۳۰ روز
-                        آن را برای بازپرداخت کامل برگردانید.
-                      </p>
-                      <div className="bg-gray-50 p-3 rounded-lg">
-                        <h5 className="font-medium mb-2 text-gray-900">
-                          شرایط برگشت:
-                        </h5>
-                        <ul className="space-y-1">
-                          <li>• محصول باید استفاده نشده باشد</li>
-                          <li>• برچسب‌ها و بسته‌بندی اصلی موجود باشد</li>
-                          <li>• رسید خرید ارائه شود</li>
-                          <li>• هزینه ارسال برگشت بر عهده خریدار</li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Support Section */}
-                  <div className="pt-4 border-t border-gray-100">
-                    <h4 className="font-medium text-gray-900 text-sm mb-3">
-                      سوالی دارید؟
-                    </h4>
-                    <p className="text-xs text-gray-600 mb-3">
-                      تیم پشتیبانی ما آماده پاسخگویی به سوالات شما است
-                    </p>
-                    <div className="flex gap-3">
-                      <button className="flex-1 py-2 px-3 text-xs border border-gray-300 hover:border-gray-400 transition-colors rounded">
-                        تماس با ما
-                      </button>
-                      <button className="flex-1 py-2 px-3 text-xs bg-black text-white hover:bg-gray-800 transition-colors rounded">
-                        چت آنلاین
-                      </button>
-                    </div>
-                  </div>
                 </div>
               </motion.div>
             </details>
@@ -725,7 +682,7 @@ export default function ProductInfo({
         </div>
 
         {/* Quantity Selection */}
-        <div className="space-y-3">
+        <div className="space-y-4 pt-6">
           <h3 className="font-medium text-gray-900 text-sm">تعداد</h3>
           <div className="flex items-center justify-between">
             <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden">
