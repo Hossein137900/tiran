@@ -13,6 +13,12 @@ interface CategoryItem {
   color?: string;
   icon?: string;
 }
+interface MixedGridCardProps {
+  category: CategoryItem;
+  index: number;
+  isHovered: boolean;
+  size: string;
+}
 
 interface MixedGridShowcaseProps {
   categories: CategoryItem[];
@@ -46,40 +52,52 @@ const MixedGridShowcase: React.FC<MixedGridShowcaseProps> = ({
   // Smaller grid layout patterns with overlay support
   const gridPatterns = [
     {
-      size: "small",
-      span: "md:col-span-2 md:row-span-2",
-      height: "h-48 md:h-64",
-      zIndex: "z-10",
+      size: "large",
+      span: "md:col-span-1 md:row-span-1",
+      height: "h-64 md:h-80",
+      zIndex: "z-50",
+      priority: "high",
+      overlap: "none",
+    },
+    {
+      size: "medium",
+      span: "md:col-span-1 md:row-span-3",
+      height: "h-48 md:h-80",
+      zIndex: "z-40",
+      priority: "medium",
+      overlap: "slight",
     },
     {
       size: "small",
-      span: "md:col-span-1 md:row-span-1",
-      height: "h-32 md:h-52",
-      zIndex: "z-20",
-    },
-    {
-      size: "small",
-      span: "md:col-span-1 md:row-span-1",
-      height: "h-32 md:h-63",
+      span: "md:col-span-1 md:row-span-3",
+      height: "h-32 md:h-75",
       zIndex: "z-30",
+      priority: "low",
+      overlap: "moderate",
     },
     {
       size: "wide",
-      span: "md:col-span-2 md:row-span-1",
-      height: "h-32 md:h-41",
-      zIndex: "z-40",
+      span: "md:col-span-1 md:row-span-1",
+      height: "h-40 md:h-80",
+      zIndex: "z-45",
+      priority: "high",
+      overlap: "minimal",
     },
     {
       size: "small",
-      span: "md:col-span-1 md:row-span-1",
-      height: "h-32 md:h-40",
-      zIndex: "z-50",
+      span: "md:col-span-2 md:row-span-4",
+      height: "h-56 md:h-88",
+      zIndex: "z-35",
+      priority: "low",
+      overlap: "moderate",
     },
     {
-      size: "small",
-      span: "md:col-span-1 md:row-span-1",
-      height: "h-32 md:h-50",
+      size: "featured",
+      span: "md:col-span-2 md:row-span-4",
+      height: "h-72 md:h-88",
       zIndex: "z-60",
+      priority: "featured",
+      overlap: "artistic",
     },
   ];
 
@@ -208,22 +226,16 @@ const MixedGridShowcase: React.FC<MixedGridShowcaseProps> = ({
 };
 
 // Mixed Grid Card Component (Updated for smaller size)
-interface MixedGridCardProps {
-  category: CategoryItem;
-  index: number;
-  isHovered: boolean;
-  size: string;
-}
 
 const MixedGridCard: React.FC<MixedGridCardProps> = ({
   category,
-//   index,
+  //   index,
   isHovered,
   size,
 }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [showColorImage, setShowColorImage] = useState(false);
-  console.log(imageLoaded)
+  console.log(imageLoaded);
 
   return (
     <div
@@ -277,27 +289,11 @@ const MixedGridCard: React.FC<MixedGridCardProps> = ({
                 alt={`${category.title} - Color`}
                 fill
                 className="object-cover"
-                sizes={`(max-width: 768px) 50vw, ${
-                  size === "medium"
-                    ? "25vw"
-                    : size === "wide"
-                    ? "50vw"
-                    : "12.5vw"
-                }`}
               />
             </motion.div>
           )}
         </AnimatePresence>
       </div>
-
-      {/* Gradient Overlays */}
-      <motion.div
-        className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"
-        animate={{
-          opacity: isHovered ? 0.95 : 0.7,
-        }}
-        transition={{ duration: 0.4 }}
-      />
 
       {/* Glow Effect */}
       <motion.div

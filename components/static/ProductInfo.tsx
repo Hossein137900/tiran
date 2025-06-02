@@ -279,7 +279,7 @@ export default function ProductInfo({
             whileTap={
               (selectedVariety?.store_stock ?? 0) > 0 ? { scale: 0.99 } : {}
             }
-            className={`w-full py-3 flex items-center justify-center gap-3 border font-medium duration-300 transition-all ${
+            className={`w-full py-3 flex items-center justify-center gap-3 border border-dashed cursor-pointer font-medium duration-300 transition-all ${
               (selectedVariety?.store_stock ?? 0) > 0 && !checkoutLoading
                 ? " text-black hover:border-gray-300"
                 : "bg-gray-100 text-gray-400 cursor-not-allowed"
@@ -303,7 +303,7 @@ export default function ProductInfo({
 
         {/* Product Details with Options */}
         <div className="pt-4">
-          <div className="border-b border-gray-200 pb-2 mb-1">
+          <div className="border-b border-gray-200 border-dashed pb-2 mb-1">
             <details className="group">
               <summary className="flex items-center justify-between cursor-pointer py-2">
                 <h3 className="text-sm font-medium text-gray-900">
@@ -440,7 +440,7 @@ export default function ProductInfo({
                 </div>
 
                 {/* Product Information */}
-                <div className="pt-5 border-t border-gray-100">
+                <div className="pt-5 border-t border-gray-100 border-dashed">
                   <div className="space-y-3 text-xs text-gray-600">
                     <div className="flex justify-between py-2">
                       <span>دسته‌بندی:</span>
@@ -466,7 +466,7 @@ export default function ProductInfo({
         {/* Integrated ProductTabs Section - Dropdown Style */}
         <div className="">
           {/* Description Tab */}
-          <div className="border-b border-gray-200 pb-3 mb-1">
+          <div className="border-b border-gray-200 border-dashed pb-3 mb-1">
             <details className="group">
               <summary className="flex items-center justify-between cursor-pointer pt-2">
                 <h3 className="text-sm font-medium text-gray-900">
@@ -504,7 +504,7 @@ export default function ProductInfo({
           </div>
 
           {/* Details Tab */}
-          <div className="border-b border-gray-200 pb-2 mb-1">
+          <div className="border-b border-gray-200 border-dashed pb-2 mb-1">
             <details className="group">
               <summary className="flex items-center justify-between cursor-pointer pt-2 pb-2">
                 <h3 className="text-sm font-medium text-gray-900">
@@ -621,7 +621,7 @@ export default function ProductInfo({
           </div>
 
           {/* Shipping Tab */}
-          <div className="border-b border-gray-200 pb-3 mb-1">
+          <div className="border-b border-gray-200 border-dashed pb-3 mb-1">
             <details className="group">
               <summary className="flex items-center justify-between cursor-pointer py-2">
                 <h3 className="text-sm font-medium text-gray-900">

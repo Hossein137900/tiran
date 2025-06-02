@@ -16,6 +16,9 @@ const Page = () => {
   const [showGrid, setShowGrid] = useState(false);
   const [showShowcase, setShowShowcase] = useState(false);
 
+
+  
+
   console.log(expandingImage, isFirstLoad, isTransitioning);
 
   const slideItems = [
@@ -109,7 +112,7 @@ const Page = () => {
 
   // Check localStorage immediately on component mount
   useEffect(() => {
-    const hasSeenGrid = localStorage.getItem("tiran-fashion-grid-seen");
+    const hasSeenGrid = localStorage.getItem("tiran-fashion-grid-sen");
 
     if (hasSeenGrid !== "true") {
       // First time user, show the grid

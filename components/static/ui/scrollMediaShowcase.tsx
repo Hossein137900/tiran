@@ -91,10 +91,16 @@ const ScrollMediaShowcase = ({
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isMounted, setIsMounted] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [isScrollLocked, setIsScrollLocked] = useState(false);
+  const [hasCompletedCycle, setHasCompletedCycle] = useState(false);
+  const [accumulatedScroll, setAccumulatedScroll] = useState(0);
 
   const [isInitializing, setIsInitializing] = useState(true);
   const [initialImage] = useState(initialCenterImage || "");
-  console.log(scrollProgress);
+
+  // Total steps needed to show all items once
+  const totalSteps = mediaItems.length;
+  const scrollStepSize = 50; // Pixels per step
 
   useEffect(() => {
     if (initialImage) {
@@ -106,16 +112,37 @@ const ScrollMediaShowcase = ({
       return () => clearTimeout(timer);
     }
   }, [initialImage, transitionComplete]);
+
   // Handle client-side mounting
   useEffect(() => {
     setIsMounted(true);
-    // Add a small delay then trigger the fade-in animation
     const timer = setTimeout(() => {
       setIsVisible(true);
     }, 100);
 
     return () => clearTimeout(timer);
   }, []);
+
+  // Lock/unlock scroll based on component state
+  useEffect(() => {
+    if (!isMounted) return;
+
+    if (isScrollLocked) {
+      // Prevent scrolling
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+    } else {
+      // Allow scrolling
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+    }
+
+    return () => {
+      // Cleanup on unmount
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+    };
+  }, [isScrollLocked, isMounted]);
 
   // Get only videos for center position
   const getCenterVideo = () => {
@@ -142,46 +169,72 @@ const ScrollMediaShowcase = ({
   const centerVideo = getCenterVideo();
   const sideImages = getSideImages();
 
-  // Handle scroll events
+  // Handle wheel events for controlled scrolling
+  const handleWheel = useCallback((e: WheelEvent) => {
+    if (!isMounted || !containerRef.current || !isActive) return;
+
+    const container = containerRef.current;
+    const rect = container.getBoundingClientRect();
+    
+    // Check if we're in the component area
+    if (rect.top <= window.innerHeight && rect.bottom >= 0) {
+      if (!hasCompletedCycle) {
+        e.preventDefault();
+        
+        const deltaY = e.deltaY;
+        const newAccumulatedScroll = Math.max(0, accumulatedScroll + deltaY);
+        setAccumulatedScroll(newAccumulatedScroll);
+        
+        // Calculate progress based on accumulated scroll
+        const progress = Math.min(newAccumulatedScroll / (totalSteps * scrollStepSize), 1);
+        setScrollProgress(progress);
+        
+        // Calculate which media item should be shown
+        const newIndex = Math.floor(progress * totalSteps);
+        const clampedIndex = Math.min(newIndex, totalSteps - 1);
+        
+        if (clampedIndex !== currentIndex) {
+          setCurrentIndex(clampedIndex);
+        }
+        
+        // Check if we've completed the cycle
+        if (progress >= 1 && !hasCompletedCycle) {
+          setHasCompletedCycle(true);
+          setIsScrollLocked(false);
+          
+          // Small delay before allowing normal scroll
+          setTimeout(() => {
+            setIsActive(false);
+          }, 500);
+        }
+      }
+    }
+  }, [isMounted, isActive, hasCompletedCycle, accumulatedScroll, currentIndex, totalSteps]);
+
+  // Handle regular scroll events for activation
   const handleScroll = useCallback(() => {
     if (!isMounted || !containerRef.current) return;
 
     const container = containerRef.current;
     const rect = container.getBoundingClientRect();
     const windowHeight = window.innerHeight;
-    const containerHeight = container.offsetHeight;
 
-    // Check if container is in viewport
-    if (rect.top <= windowHeight && rect.bottom >= 0) {
-      // Calculate scroll progress within the container
-      const scrolled = Math.max(0, windowHeight - rect.top);
-      const maxScroll = windowHeight + containerHeight;
-      const progress = Math.min(scrolled / maxScroll, 1);
-
-      setScrollProgress(progress);
-
-      // Activate when container enters viewport
-      if (!isActive && rect.top <= windowHeight * 0.8) {
+    // Activate when container enters viewport
+    if (rect.top <= windowHeight * 0.8 && rect.bottom >= 0) {
+      if (!isActive && !hasCompletedCycle) {
         setIsActive(true);
-      }
-
-      // Calculate which media set should be shown based on scroll progress
-      const totalSteps = mediaItems.length;
-      const newIndex = Math.floor(progress * totalSteps);
-      const clampedIndex = Math.min(newIndex, totalSteps - 1);
-
-      if (clampedIndex !== currentIndex) {
-        setCurrentIndex(clampedIndex);
-      }
-
-      // Deactivate when container leaves viewport
-      if (isActive && rect.bottom < 0) {
-        setIsActive(false);
+        setIsScrollLocked(true);
       }
     }
-  }, [isMounted, isActive, currentIndex]);
 
-  // Add scroll listener
+    // Deactivate when container leaves viewport (only if cycle is complete)
+    if (hasCompletedCycle && (rect.bottom < 0 || rect.top > windowHeight)) {
+      setIsActive(false);
+      setIsScrollLocked(false);
+    }
+  }, [isMounted, isActive, hasCompletedCycle]);
+
+  // Add scroll and wheel listeners
   useEffect(() => {
     if (!isMounted) return;
 
@@ -190,14 +243,16 @@ const ScrollMediaShowcase = ({
     };
 
     window.addEventListener("scroll", throttledScroll, { passive: true });
+    window.addEventListener("wheel", handleWheel, { passive: false });
 
     // Initial check
     handleScroll();
 
     return () => {
       window.removeEventListener("scroll", throttledScroll);
+      window.removeEventListener("wheel", handleWheel);
     };
-  }, [handleScroll, isMounted]);
+  }, [handleScroll, handleWheel, isMounted]);
 
   // Slide animation variants
   const slideVariants = {
@@ -240,10 +295,31 @@ const ScrollMediaShowcase = ({
         ease: [0.25, 0.46, 0.45, 0.94],
       }}
       ref={containerRef}
-      className="min-h-[300vh] -mt-34 relative"
+      className="mt-12 relative min-h-screen"
     >
+      {/* Scroll indicator */}
+      {isActive && !hasCompletedCycle && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50"
+        >
+          <div className="bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 text-white text-sm">
+            Scroll to explore ({currentIndex + 1}/{totalSteps})
+          </div>
+          <div className="w-full bg-white/20 rounded-full h-1 mt-2">
+            <motion.div
+              className="bg-white rounded-full h-1"
+              initial={{ width: "0%" }}
+              animate={{ width: `${scrollProgress * 100}%` }}
+              transition={{ duration: 0.3 }}
+            />
+          </div>
+        </motion.div>
+      )}
+
       {/* Sticky container for media showcase */}
-      <div className="sticky top-2 md:top-20 h-screen flex items-center justify-center overflow-hidden">
+      <div className="sticky top-21 md:top-20 h-screen flex items-center justify-center overflow-hidden">
         {/* Background */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
@@ -308,7 +384,6 @@ const ScrollMediaShowcase = ({
                     </AnimatePresence>
                   </div>
                 </motion.div>
-
                 {/* Center Video - Mobile Version */}
                 <motion.div
                   initial={{ opacity: 0, scale: 0.8 }}
@@ -623,7 +698,6 @@ const ScrollMediaShowcase = ({
                   </motion.div>
                 )}
                 <div className="w-96 h-[520px] overflow-hidden shadow-2xl border-2 border-white/30 relative">
-                  {" "}
                   <AnimatePresence mode="wait" custom={1}>
                     <motion.div
                       key={`center-${currentIndex}`}
@@ -738,12 +812,146 @@ const ScrollMediaShowcase = ({
                   </AnimatePresence>
                 </div>
               </motion.div>
+
+              {/* Desktop Background Effects */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{
+                  opacity: isVisible ? [0.05, 0.15, 0.05] : 0,
+                  scale: isVisible ? [1, 1.2, 1] : 0.5,
+                }}
+                transition={{
+                  duration: 8,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 1.5,
+                }}
+                className="absolute top-1/4 left-1/4 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"
+              />
+              <motion.div
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{
+                  opacity: isVisible ? [0.05, 0.15, 0.05] : 0,
+                  scale: isVisible ? [1.2, 1, 1.2] : 0.5,
+                }}
+                transition={{
+                  duration: 10,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 4,
+                }}
+                className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"
+              />
+
+              {/* Progress Indicators - Desktop */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{
+                  opacity: isVisible ? 1 : 0,
+                  y: isVisible ? 0 : 30,
+                }}
+                transition={{
+                  duration: 1.2,
+                  delay: 2,
+                  ease: "easeOut",
+                }}
+                className="absolute bottom-12 left-1/2 transform -translate-x-1/2 flex space-x-3"
+              >
+                {mediaItems
+                  .filter((item) => item.type === "video")
+                  .map((_, index) => (
+                    <div
+                      key={index}
+                      className={`w-3 h-3 rounded-full transition-all duration-500 ${
+                        index ===
+                        Math.floor(
+                          (currentIndex / mediaItems.length) *
+                            mediaItems.filter((item) => item.type === "video")
+                              .length
+                        )
+                          ? "bg-white scale-150 shadow-lg"
+                          : "bg-white/40 hover:bg-white/60"
+                      }`}
+                    />
+                  ))}
+              </motion.div>
+
+              {/* Additional Floating Elements for Desktop */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{
+                  opacity: isVisible ? 1 : 0,
+                  y: isVisible ? [0, -20, 0] : 0,
+                  rotate: isVisible ? [0, 10, 0] : 0,
+                }}
+                transition={{
+                  opacity: { duration: 1.5, delay: 2.5 },
+                  y: { duration: 6, repeat: Infinity, ease: "easeInOut" },
+                  rotate: {
+                    duration: 6,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  },
+                }}
+                className="absolute top-20 left-20 w-6 h-6 bg-white/15 rounded-full blur-sm"
+              />
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{
+                  opacity: isVisible ? 1 : 0,
+                  y: isVisible ? [0, 15, 0] : 0,
+                  rotate: isVisible ? [0, -8, 0] : 0,
+                }}
+                transition={{
+                  opacity: { duration: 1.5, delay: 3 },
+                  y: {
+                    duration: 7,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: 2,
+                  },
+                  rotate: {
+                    duration: 7,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: 2,
+                  },
+                }}
+                className="absolute top-32 right-24 w-4 h-4 bg-white/12 rounded-full blur-sm"
+              />
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{
+                  opacity: isVisible ? 1 : 0,
+                  y: isVisible ? [0, -12, 0] : 0,
+                  x: isVisible ? [0, 8, 0] : 0,
+                }}
+                transition={{
+                  opacity: { duration: 1.5, delay: 3.5 },
+                  y: {
+                    duration: 8,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: 3,
+                  },
+                  x: {
+                    duration: 8,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: 3,
+                  },
+                }}
+                className="absolute bottom-24 left-32 w-5 h-5 bg-white/10 rounded-full blur-sm"
+              />
             </div>
           </div>
         </motion.div>
       </div>
 
-      {/* Spacer for scroll height */}
+      {/* Spacer for scroll height - only needed if cycle is not complete */}
+      {!hasCompletedCycle && (
+        <div className="h-[200vh]" />
+      )}
     </motion.div>
   );
 };
