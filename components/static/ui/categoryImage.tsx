@@ -54,7 +54,7 @@ const MixedGridShowcase: React.FC<MixedGridShowcaseProps> = ({
     {
       size: "large",
       span: "md:col-span-1 md:row-span-1",
-      height: "h-64 md:h-80",
+      height: "h-52 md:h-80",
       zIndex: "z-50",
       priority: "high",
       overlap: "none",
@@ -169,7 +169,7 @@ const MixedGridShowcase: React.FC<MixedGridShowcaseProps> = ({
         </motion.h1>
 
         <motion.p
-          className="text-lg md:text-xl text-white/90 border-b pb-3 border-gray-500 max-w-2xl mx-auto  drop-shadow-lg"
+          className="text-lg md:text-xl text-white/90 border-b pb-3 max-w-2xl mx-auto  drop-shadow-lg"
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
           transition={{ delay: 0.5, duration: 0.8 }}
@@ -239,7 +239,7 @@ const MixedGridCard: React.FC<MixedGridCardProps> = ({
 
   return (
     <div
-      className={`relative w-full h-full overflow-hidden  shadow-lg group transform transition-all duration-300`}
+      className={`relative space-x-2 w-full h-full overflow-hidden  shadow-lg group transform transition-all duration-300`}
       onMouseEnter={() => setShowColorImage(true)}
       onMouseLeave={() => setShowColorImage(false)}
     >

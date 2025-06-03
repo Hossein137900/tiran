@@ -2,84 +2,8 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MediaItem } from "@/types/type";
-
-interface ScrollMediaShowcaseProps {
-  initialCenterImage?: string;
-  transitionComplete?: () => void;
-}
-
-const mediaItems: MediaItem[] = [
-  {
-    id: 1,
-    type: "image",
-    src: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800&h=600&fit=crop",
-    alt: "Creative Design 1",
-    title: "Digital Innovation",
-    description: "Pushing boundaries in digital creativity",
-  },
-  {
-    id: 2,
-    type: "video",
-    src: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-    title: "Motion Graphics",
-    description: "Bringing ideas to life through motion",
-  },
-  {
-    id: 3,
-    type: "image",
-    src: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=600&fit=crop",
-    alt: "Creative Design 2",
-    title: "Visual Storytelling",
-    description: "Crafting narratives through visual design",
-  },
-  {
-    id: 4,
-    type: "image",
-    src: "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&h=600&fit=crop",
-    alt: "Creative Design 3",
-    title: "Brand Identity",
-    description: "Creating memorable brand experiences",
-  },
-  {
-    id: 5,
-    type: "video",
-    src: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
-    title: "Interactive Media",
-    description: "Engaging audiences through interaction",
-  },
-  {
-    id: 6,
-    type: "image",
-    src: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop",
-    alt: "Creative Design 4",
-    title: "Future Vision",
-    description: "Envisioning tomorrow's digital landscape",
-  },
-  {
-    id: 7,
-    type: "image",
-    src: "https://images.unsplash.com/photo-1547658719-da2b51169166?w=800&h=600&fit=crop",
-    alt: "Creative Design 5",
-    title: "Artistic Expression",
-    description: "Where art meets technology",
-  },
-  {
-    id: 8,
-    type: "video",
-    src: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-    title: "Dynamic Content",
-    description: "Creating engaging experiences",
-  },
-  {
-    id: 9,
-    type: "image",
-    src: "https://images.unsplash.com/photo-1561736778-92e52a7769ef?w=800&h=600&fit=crop",
-    alt: "Creative Design 6",
-    title: "Innovation Hub",
-    description: "The future of creative design",
-  },
-];
+import { mediaItems } from "@/lib/homePageData";
+import { ScrollMediaShowcaseProps } from "@/types/type";
 
 const ScrollMediaShowcase = ({
   initialCenterImage,
@@ -94,7 +18,6 @@ const ScrollMediaShowcase = ({
   const [isScrollLocked, setIsScrollLocked] = useState(false);
   const [hasCompletedCycle, setHasCompletedCycle] = useState(false);
   const [accumulatedScroll, setAccumulatedScroll] = useState(0);
-
   const [isInitializing, setIsInitializing] = useState(true);
   const [initialImage] = useState(initialCenterImage || "");
 
@@ -129,18 +52,18 @@ const ScrollMediaShowcase = ({
 
     if (isScrollLocked) {
       // Prevent scrolling
-      document.body.style.overflow = 'hidden';
-      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
     } else {
       // Allow scrolling
-      document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
     }
 
     return () => {
       // Cleanup on unmount
-      document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
     };
   }, [isScrollLocked, isMounted]);
 
@@ -170,46 +93,59 @@ const ScrollMediaShowcase = ({
   const sideImages = getSideImages();
 
   // Handle wheel events for controlled scrolling
-  const handleWheel = useCallback((e: WheelEvent) => {
-    if (!isMounted || !containerRef.current || !isActive) return;
+  const handleWheel = useCallback(
+    (e: WheelEvent) => {
+      if (!isMounted || !containerRef.current || !isActive) return;
 
-    const container = containerRef.current;
-    const rect = container.getBoundingClientRect();
-    
-    // Check if we're in the component area
-    if (rect.top <= window.innerHeight && rect.bottom >= 0) {
-      if (!hasCompletedCycle) {
-        e.preventDefault();
-        
-        const deltaY = e.deltaY;
-        const newAccumulatedScroll = Math.max(0, accumulatedScroll + deltaY);
-        setAccumulatedScroll(newAccumulatedScroll);
-        
-        // Calculate progress based on accumulated scroll
-        const progress = Math.min(newAccumulatedScroll / (totalSteps * scrollStepSize), 1);
-        setScrollProgress(progress);
-        
-        // Calculate which media item should be shown
-        const newIndex = Math.floor(progress * totalSteps);
-        const clampedIndex = Math.min(newIndex, totalSteps - 1);
-        
-        if (clampedIndex !== currentIndex) {
-          setCurrentIndex(clampedIndex);
-        }
-        
-        // Check if we've completed the cycle
-        if (progress >= 1 && !hasCompletedCycle) {
-          setHasCompletedCycle(true);
-          setIsScrollLocked(false);
-          
-          // Small delay before allowing normal scroll
-          setTimeout(() => {
-            setIsActive(false);
-          }, 500);
+      const container = containerRef.current;
+      const rect = container.getBoundingClientRect();
+
+      // Check if we're in the component area
+      if (rect.top <= window.innerHeight && rect.bottom >= 0) {
+        if (!hasCompletedCycle) {
+          e.preventDefault();
+
+          const deltaY = e.deltaY;
+          const newAccumulatedScroll = Math.max(0, accumulatedScroll + deltaY);
+          setAccumulatedScroll(newAccumulatedScroll);
+
+          // Calculate progress based on accumulated scroll
+          const progress = Math.min(
+            newAccumulatedScroll / (totalSteps * scrollStepSize),
+            1
+          );
+          setScrollProgress(progress);
+
+          // Calculate which media item should be shown
+          const newIndex = Math.floor(progress * totalSteps);
+          const clampedIndex = Math.min(newIndex, totalSteps - 1);
+
+          if (clampedIndex !== currentIndex) {
+            setCurrentIndex(clampedIndex);
+          }
+
+          // Check if we've completed the cycle
+          if (progress >= 1 && !hasCompletedCycle) {
+            setHasCompletedCycle(true);
+            setIsScrollLocked(false);
+
+            // Small delay before allowing normal scroll
+            setTimeout(() => {
+              setIsActive(false);
+            }, 500);
+          }
         }
       }
-    }
-  }, [isMounted, isActive, hasCompletedCycle, accumulatedScroll, currentIndex, totalSteps]);
+    },
+    [
+      isMounted,
+      isActive,
+      hasCompletedCycle,
+      accumulatedScroll,
+      currentIndex,
+      totalSteps,
+    ]
+  );
 
   // Handle regular scroll events for activation
   const handleScroll = useCallback(() => {
@@ -949,9 +885,7 @@ const ScrollMediaShowcase = ({
       </div>
 
       {/* Spacer for scroll height - only needed if cycle is not complete */}
-      {!hasCompletedCycle && (
-        <div className="h-[200vh]" />
-      )}
+      {!hasCompletedCycle && <div className="h-[200vh]" />}
     </motion.div>
   );
 };

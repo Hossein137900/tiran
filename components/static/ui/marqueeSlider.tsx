@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 
 interface SlideItem {
   image: string;
@@ -17,13 +17,24 @@ interface MarqueeSliderProps {
 
 const MarqueeSlider: React.FC<MarqueeSliderProps> = ({
   items,
-  speed,
+  speed = 20,
   direction = "left",
   pauseOnHover = true,
 }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [containerWidth, setContainerWidth] = useState(0);
+  const [isClient, setIsClient] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Generate stable animation name using useMemo
+  const animationName = useMemo(() => {
+    return `marquee-${direction}-${Math.random().toString(36).substr(2, 9)}`;
+  }, [direction]);
+
+  // Set client state after hydration
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Update container width and mobile state
   const updateDimensions = useCallback(() => {
@@ -34,10 +45,12 @@ const MarqueeSlider: React.FC<MarqueeSliderProps> = ({
   }, []);
 
   useEffect(() => {
+    if (!isClient) return;
+    
     updateDimensions();
     window.addEventListener("resize", updateDimensions);
     return () => window.removeEventListener("resize", updateDimensions);
-  }, [updateDimensions]);
+  }, [updateDimensions, isClient]);
 
   // Calculate item dimensions
   const itemWidth = isMobile ? 220 : 200;
@@ -52,11 +65,8 @@ const MarqueeSlider: React.FC<MarqueeSliderProps> = ({
   const setsNeeded = Math.max(3, Math.ceil((containerWidth * 2) / oneSetWidth));
   const infiniteItems = Array(setsNeeded).fill(items).flat();
 
-  // Create unique animation name
-  const animationName = `marquee-${direction}-${Date.now()}`;
-
   // Create CSS for animation
-  const createAnimationCSS = () => {
+  const createAnimationCSS = useCallback(() => {
     const keyframes =
       direction === "left"
         ? `
@@ -101,18 +111,86 @@ const MarqueeSlider: React.FC<MarqueeSliderProps> = ({
         overflow: hidden;
       }
     `;
-  };
+  }, [oneSetWidth, speed, direction, pauseOnHover, animationName]);
 
   useEffect(() => {
+    if (!isClient) return;
+
     // Inject CSS
     const style = document.createElement("style");
     style.textContent = createAnimationCSS();
     document.head.appendChild(style);
 
     return () => {
-      document.head.removeChild(style);
+      if (document.head.contains(style)) {
+        document.head.removeChild(style);
+      }
     };
-  }, [oneSetWidth, speed, direction, pauseOnHover, animationName]);
+  }, [createAnimationCSS, isClient]);
+
+  // Don't render animation classes until client-side
+  if (!isClient) {
+    return (
+      <div
+        ref={containerRef}
+        className="w-full overflow-hidden py-12"
+        style={{
+          maskImage:
+            "linear-gradient(to right, transparent 0%, black 3%, black 97%, transparent 100%)",
+          WebkitMaskImage:
+            "linear-gradient(to right, transparent 0%, black 3%, black 97%, transparent 100%)",
+        }}
+      >
+        <div className="flex items-center gap-8">
+          {items.map((item, index) => (
+            <div
+              key={`initial-${index}`}
+              className="group"
+              style={{
+                height: "280px",
+                width: "400px",
+                flexShrink: 0,
+              }}
+            >
+              <div className="relative h-full overflow-hidden shadow-lg bg-gray-900 cursor-pointer">
+                <Image
+                  src={item.image}
+                  alt={item.title}
+                  width={1000}
+                  height={1000}
+                  className="h-full w-full object-cover"
+                  loading="lazy"
+                  draggable={false}
+                />
+
+                {/* Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+
+                {/* Content Overlay */}
+                <div
+                  className="absolute bottom-3 right-3 flex flex-col p-4"
+                  dir="rtl"
+                >
+                  <div className="text-white">
+                    <h3 className="text-lg font-bold mb-2 leading-tight">
+                      {item.title}
+                    </h3>
+
+                    <p className="text-sm text-gray-200 leading-relaxed line-clamp-3 mb-3">
+                      {item.description}
+                    </p>
+
+                    {/* Decorative line */}
+                    <div className="h-0.5 bg-white w-12" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div

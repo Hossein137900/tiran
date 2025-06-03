@@ -387,3 +387,13 @@ export interface MegaMenuProps {
   hoveredCategory: number | null;
   setHoveredCategory: (index: number | null) => void;
 }
+
+
+
+
+
+
+export interface ScrollMediaShowcaseProps {
+  initialCenterImage?: string;
+  transitionComplete?: () => void;
+}

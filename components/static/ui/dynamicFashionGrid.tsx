@@ -9,16 +9,15 @@ interface DynamicFashionGridProps {
 const DynamicFashionGrid = ({ onComplete }: DynamicFashionGridProps) => {
   // Sample fashion images
   const fashionImages = [
-    "/assets/images/fashion/1.avif",
-    "/assets/images/fashion/2.avif",
-    "/assets/images/fashion/3.avif",
-    "/assets/images/fashion/4.avif",
-    "/assets/images/fashion/5.avif",
-    "/assets/images/fashion/6.avif",
-    "/assets/images/fashion/3.avif",
-    "/assets/images/fashion/2.avif",
-    "/assets/images/fashion/1.avif",
-    "/assets/images/fashion/5.avif",
+    "/assets/images/newImages/IMG_2652.webp",
+    "/assets/images/newImages/IMG_2653.webp",
+    "/assets/images/newImages/IMG_2654.webp",
+    "/assets/images/newImages/IMG_2669.webp",
+    "/assets/images/newImages/IMG_2658.webp",
+    "/assets/images/newImages/IMG_2662.webp",
+    "/assets/images/newImages/IMG_2663.webp",
+    "/assets/images/newImages/IMG_2664.webp",
+    "/assets/images/newImages/IMG_2665.webp",
   ];
 
   // Sample video data (you can replace with your actual video data)
@@ -266,15 +265,17 @@ const DynamicFashionGrid = ({ onComplete }: DynamicFashionGridProps) => {
   const centerVideo = videoData[currentVideoIndex];
 
   return (
-<motion.div
-    initial={{ opacity: 1 }}
-    animate={{ 
-      opacity: isTransitioning ? 0 : 1 
-    }}
-    transition={{ duration: 1, ease: "easeInOut" }}
-    className="fixed inset-0 h-full z-100000000 bg-black"
-    dir="rtl"
-  >      <div className="min-h-screen p-8">
+    <motion.div
+      initial={{ opacity: 1 }}
+      animate={{
+        opacity: isTransitioning ? 0 : 1,
+      }}
+      transition={{ duration: 1, ease: "easeInOut" }}
+      className="fixed inset-0 h-full z-100000000 bg-black"
+      dir="rtl"
+    >
+      {" "}
+      <div className="min-h-screen p-8">
         <div className="min-w-full">
           <div className="flex items-center justify-between gap-8 h-screen">
             {/* Left Text Box */}
@@ -300,7 +301,7 @@ const DynamicFashionGrid = ({ onComplete }: DynamicFashionGridProps) => {
               <div className="relative">
                 {!showVideoTransition ? (
                   // Image Grid Phase
-                  <div className="grid grid-cols-3 gap-3 p-6 backdrop-blur-lg rounded-3xl border border-white/10">
+                  <div className="grid grid-cols-3 gap-3 p-6 backdrop-blur-lg rounded-3xl ">
                     {currentImages.map((image, index) => (
                       <div
                         key={`${image}-${index}-${currentTextIndex}`}
@@ -340,7 +341,7 @@ const DynamicFashionGrid = ({ onComplete }: DynamicFashionGridProps) => {
                 ) : (
                   // Video Showcase Phase
                   <div className="relative z-20">
-                    <div className="w-96 h-[520px] overflow-hidden shadow-2xl border-2 border-white/30 relative">
+                    <div className="w-96 h-[520px] overflow-hidden shadow-2xl relative">
                       <AnimatePresence mode="wait" custom={1}>
                         <motion.div
                           key={`center-${currentVideoIndex}`}
@@ -446,7 +447,6 @@ const DynamicFashionGrid = ({ onComplete }: DynamicFashionGridProps) => {
           </div>
         </div>
       </div>
-
       {/* Additional transition effects */}
       {showVideoTransition && (
         <div className="absolute inset-0 pointer-events-none">
